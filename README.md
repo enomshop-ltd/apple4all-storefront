@@ -1,4 +1,4 @@
-#Deno Fresh + Medusa v2 Storefront
+# Deno Fresh + Medusa v2 Storefront
 
 A blazing-fast, modern e-commerce storefront built with [Deno Fresh](https://fresh.deno.dev/) and [Medusa v2](https://medusajs.com/).
 
