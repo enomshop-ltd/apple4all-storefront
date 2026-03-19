@@ -1,30 +1,29 @@
-import { useSignal } from "@preact/signals";
+import { Head } from "fresh/runtime";
+import { Partial } from "fresh/runtime";
 import { define } from "../utils.ts";
-import Counter from "../islands/Counter.tsx";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import Shop from "../islands/Shop.tsx";
 
-export default define.page(function Home(ctx) {
-  const count = useSignal(3);
-
-  ctx.state.title = count.value + " Fresh Counter" +
-    (Math.abs(count.value) === 1 ? "" : "s");
-
+export default define.page(function StorePage() {
   return (
-    <div class="px-4 py-8 mx-auto fresh-gradient min-h-screen">
-      <div class="max-w-screen-md mx-auto flex flex-col items-center justify-center">
-        <img
-          class="my-6"
-          src="/logo.svg"
-          width="128"
-          height="128"
-          alt="the Fresh logo: a sliced lemon dripping with juice"
-        />
-        <h1 class="text-4xl font-bold">Welcome to Fresh</h1>
-        <p class="my-4">
-          Try updating this message in the
-          <code class="mx-2">./routes/index.tsx</code> file, and refresh.
-        </p>
-        <Counter count={count} />
-      </div>
+    <div class="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 flex flex-col">
+      <Head>
+        <title>Store - Apple4All</title>
+        <meta name="description" content="Shop all our refurbished tech products." />
+        <meta property="og:title" content="Store - Apple4All" />
+        <meta property="og:description" content="Shop all our refurbished tech products." />
+      </Head>
+
+      <Header />
+
+      <Partial name="main">
+        <main class="flex-1">
+          <Shop />
+        </main>
+      </Partial>
+
+      <Footer />
     </div>
   );
 });

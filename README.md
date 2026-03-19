@@ -1,24 +1,20 @@
-# Fresh project
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
 
-Your new Fresh project is ready to go. You can follow the Fresh "Getting
-Started" guide here: https://fresh.deno.dev/docs/getting-started
+# Run and deploy your AI Studio app
 
-### Usage
+This contains everything you need to run your app locally.
 
-Make sure to install Deno:
-https://docs.deno.com/runtime/getting_started/installation
+View your app in AI Studio: https://ai.studio/apps/561d5ae0-a7f4-43be-af61-c9e179f7c946
 
-Then start the project in development mode:
+## Run Locally
 
-```
-deno task dev
-```
-
-This will watch the project directory and restart as necessary.
+**Prerequisites:**  Node.js
 
 
-### Clone and deploy
-
-Deploy your own version of this example with a couple of clicks
-
-[![Deploy on Deno](https://deno.com/button)](https://app.deno.com/new?clone=https://github.com/denoland/examples&path=with-fresh)
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
