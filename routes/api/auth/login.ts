@@ -30,9 +30,9 @@ export const handler = define.handlers({
         status: 200,
         headers,
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Login error:", e);
-      return new Response(JSON.stringify({ error: e.message || "Login failed" }), {
+      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Login failed" }), {
         status: 401,
         headers: { "Content-Type": "application/json" },
       });

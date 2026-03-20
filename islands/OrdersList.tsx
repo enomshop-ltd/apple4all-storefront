@@ -1,7 +1,8 @@
 import { useState } from "preact/hooks";
 import { Package, ChevronRight } from "lucide-react";
+import { HttpTypes } from "@medusajs/types";
 
-export function OrdersList({ initialOrders }: { initialOrders: any[] }) {
+export function OrdersList({ initialOrders }: { initialOrders: HttpTypes.StoreOrder[] }) {
   const [orders, setOrders] = useState(initialOrders || []);
 
   if (orders.length === 0) {
@@ -54,7 +55,7 @@ export function OrdersList({ initialOrders }: { initialOrders: any[] }) {
           <div class="p-6">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-4">
-                {order.items?.map((item: any, i: number) => (
+                {order.items?.map((item: HttpTypes.StoreOrderLineItem, i: number) => (
                   <div key={i} class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
                     <img src={item.thumbnail || "https://picsum.photos/seed/placeholder/100/100"} alt={item.title} class="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>

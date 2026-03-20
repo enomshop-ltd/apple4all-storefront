@@ -1,7 +1,8 @@
 import { useState } from "preact/hooks";
 import { Plus, Edit2, Trash2 } from "lucide-react";
+import { HttpTypes } from "@medusajs/types";
 
-export function AddressesList({ initialAddresses }: { initialAddresses: any[] }) {
+export function AddressesList({ initialAddresses }: { initialAddresses: HttpTypes.StoreCustomerAddress[] }) {
   const [addresses, setAddresses] = useState(initialAddresses || []);
 
   return (

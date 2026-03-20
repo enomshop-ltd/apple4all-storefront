@@ -6,35 +6,45 @@ import { Footer } from "../components/Footer.tsx";
 import { Checkout } from "../islands/Checkout.tsx";
 import { medusa } from "../lib/sdk.ts";
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
+import { HttpTypes } from "@medusajs/types";
 
-export default define.page(async function CheckoutPage(ctx) {
-  let cart = null;
-  const cookies = getCookies(ctx.req.headers);
-  const cartId = cookies["_medusa_cart_id"];
+export const handler = define.handlers({
+  async GET(ctx) {
+    let cart = null;
+    const cookies = getCookies(ctx.req.headers);
+    const cartId = cookies["_medusa_cart_id"];
 
-  if (cartId) {
-    try {
-      const res = await medusa.store.cart.retrieve(cartId, {
-        fields: "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address,*region"
-      });
-      cart = res.cart;
-    } catch (e) {
-      console.error("Error fetching cart for checkout:", e);
+    if (cartId) {
+      try {
+        const res = await medusa.store.cart.retrieve(cartId, {
+          fields: "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address,*region"
+        });
+        cart = res.cart;
+      } catch (e) {
+        console.error("Error fetching cart for checkout:", e);
+      }
     }
-  }
 
-  // If no cart exists, you might want to redirect to /cart
-  if (!cart) {
-    return new Response("", {
-      status: 302,
-      headers: { Location: "/cart" },
-    });
+    if (!cart) {
+      return new Response("", {
+        status: 302,
+        headers: { Location: "/cart" },
+      });
+    }
+
+    ctx.state.cart = cart;
+    return ctx.render();
   }
+});
+
+export default define.page(function CheckoutPage(ctx) {
+  const cart = ctx.state.cart as HttpTypes.StoreCart;
 
   return (
     <div class="min-h-screen bg-gray-50 flex flex-col">
       <Head>
         <title>Checkout - Apple4All</title>
+        <meta name="description" content="Complete your purchase securely at Apple4All." />
       </Head>
       <Header />
       <Partial name="main">

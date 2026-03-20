@@ -1,4 +1,6 @@
-export function getPriceInfo(product: any, currencyCode: string = "USD") {
+import { HttpTypes } from "@medusajs/types";
+
+export function getPriceInfo(product: HttpTypes.StoreProduct, currencyCode: string = "USD") {
   const variant = product.variants?.[0];
   let currentPrice = 0;
   let originalPrice = 0;
@@ -12,8 +14,9 @@ export function getPriceInfo(product: any, currencyCode: string = "USD") {
   }
 
   // MedusaJS returns prices in the smallest currency unit (e.g., cents for USD)
-  const zeroDecimalCurrencies = ["JPY", "KRW", "VND", "CLP", "PYG"];
-  const divisor = zeroDecimalCurrencies.includes(currencyCode.toUpperCase()) ? 1 : 100;
+  const zeroDecimalCurrencies = ["JPY", "KRW", "VND", "CLP", "PYG", "KES"];
+  const isZeroDecimal = zeroDecimalCurrencies.includes(currencyCode.toUpperCase());
+  const divisor = isZeroDecimal ? 1 : 100;
   
   currentPrice = currentPrice / divisor;
   originalPrice = originalPrice / divisor;
@@ -21,6 +24,8 @@ export function getPriceInfo(product: any, currencyCode: string = "USD") {
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currencyCode.toUpperCase(),
+    minimumFractionDigits: isZeroDecimal ? 0 : 2,
+    maximumFractionDigits: isZeroDecimal ? 0 : 2,
   });
 
   return {

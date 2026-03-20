@@ -5,21 +5,39 @@ import { define } from "../../utils.ts";
 import { AccountLayout } from "../../components/AccountLayout.tsx";
 import { medusa } from "../../lib/sdk.ts";
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
+import { HttpTypes } from "@medusajs/types";
+import { Head } from "fresh/runtime";
 
-export default define.page(async function ProfilePage(ctx) {
-  const cookies = getCookies(ctx.req.headers);
-  const token = cookies["_medusa_jwt"];
+export const handler = define.handlers({
+  async GET(ctx) {
+    const cookies = getCookies(ctx.req.headers);
+    const token = cookies["_medusa_jwt"];
 
-  if (!token) {
-    return new Response("", { status: 302, headers: { Location: "/login" } });
+    if (!token) {
+      return new Response("", { status: 302, headers: { Location: "/login" } });
+    }
+
+    try {
+      const { customer } = await medusa.store.customer.retrieve({
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      ctx.state.customer = customer;
+      return ctx.render();
+    } catch {
+      return new Response("", { status: 302, headers: { Location: "/login" } });
+    }
   }
+});
 
-  try {
-    const { customer } = await medusa.store.customer.retrieve({
-      headers: { Authorization: `Bearer ${token}` }
-    });
+export default define.page(function ProfilePage(ctx) {
+  const customer = ctx.state.customer as HttpTypes.StoreCustomer;
 
-    return (
+  return (
+    <>
+      <Head>
+        <title>Edit Profile - Apple4All</title>
+        <meta name="description" content="Update your personal details and password." />
+      </Head>
       <AccountLayout activeTab="profile">
         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <h2 class="text-xl font-semibold mb-4">Edit Profile</h2>
@@ -47,8 +65,6 @@ export default define.page(async function ProfilePage(ctx) {
           </div>
         </div>
       </AccountLayout>
-    );
-  } catch {
-    return new Response("", { status: 302, headers: { Location: "/login" } });
-  }
+    </>
+  );
 });

@@ -1,7 +1,8 @@
 import { useState } from "preact/hooks";
 import { Loader2 } from "lucide-react";
+import { HttpTypes } from "@medusajs/types";
 
-export function ProfileForm({ customer }: { customer: any }) {
+export function ProfileForm({ customer }: { customer: HttpTypes.StoreCustomer }) {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");

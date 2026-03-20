@@ -60,9 +60,9 @@ export const handler = define.handlers({
         status: 200,
         headers,
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Checkout error:", e);
-      return new Response(JSON.stringify({ error: e.message || "Failed to complete checkout" }), {
+      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Failed to complete checkout" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });

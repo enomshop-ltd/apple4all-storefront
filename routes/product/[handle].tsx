@@ -7,10 +7,11 @@ import { getStoreCurrency } from "../../lib/data.ts";
 import { getPriceInfo } from "../../lib/pricing.ts";
 import Image from "../../islands/Image.tsx";
 import { ProductActions } from "../../islands/ProductActions.tsx";
+import { HttpTypes } from "@medusajs/types";
 
 export default define.page(async function ProductPage(ctx) {
   const handle = ctx.params.handle;
-  let product = null;
+  let product: HttpTypes.StoreProduct | null = null;
   let currencyCode = "USD";
 
   try {
@@ -68,7 +69,7 @@ export default define.page(async function ProductPage(ctx) {
               </div>
               {product.images && product.images.length > 1 && (
                 <div class="grid grid-cols-4 gap-4">
-                  {product.images.slice(0, 4).map((img: any) => (
+                  {product.images.slice(0, 4).map((img: HttpTypes.StoreProductImage) => (
                     <div class="aspect-square rounded-xl overflow-hidden bg-white p-2 border border-gray-100 cursor-pointer hover:border-blue-500 transition-colors">
                       <Image src={img.url} alt={product.title} class="w-full h-full object-contain mix-blend-multiply bg-transparent" />
                     </div>

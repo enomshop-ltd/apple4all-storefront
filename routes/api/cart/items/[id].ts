@@ -22,9 +22,9 @@ export const handler = define.handlers({
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Cart item update error:", e);
-      return new Response(JSON.stringify({ error: e.message || "Failed to update item" }), {
+      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Failed to update item" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
@@ -46,9 +46,9 @@ export const handler = define.handlers({
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Cart item delete error:", e);
-      return new Response(JSON.stringify({ error: e.message || "Failed to delete item" }), {
+      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Failed to delete item" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });

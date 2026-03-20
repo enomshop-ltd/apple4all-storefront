@@ -4,31 +4,42 @@ import { medusa } from "../../../lib/sdk.ts";
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 import { getPriceInfo } from "../../../lib/pricing.ts";
 import Image from "../../../islands/Image.tsx";
+import { HttpTypes } from "@medusajs/types";
+import { Head } from "fresh/runtime";
 
-export default define.page(async function OrderDetailsPage(ctx) {
-  const cookies = getCookies(ctx.req.headers);
-  const token = cookies["_medusa_jwt"];
-  const orderId = ctx.params.id;
+export const handler = define.handlers({
+  async GET(ctx) {
+    const cookies = getCookies(ctx.req.headers);
+    const token = cookies["_medusa_jwt"];
+    const orderId = ctx.params.id;
 
-  if (!token) {
-    return new Response("", { status: 302, headers: { Location: "/login" } });
+    if (!token) {
+      return new Response("", { status: 302, headers: { Location: "/login" } });
+    }
+
+    let order = null;
+    try {
+      const { order: fetchedOrder } = await medusa.store.order.retrieve(orderId, {
+        fields: "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      order = fetchedOrder;
+    } catch (e) {
+      console.error("Failed to fetch order details", e);
+      return new Response("", { status: 302, headers: { Location: "/account/orders" } });
+    }
+
+    if (!order) {
+      return new Response("", { status: 302, headers: { Location: "/account/orders" } });
+    }
+
+    ctx.state.order = order;
+    return ctx.render();
   }
+});
 
-  let order = null;
-  try {
-    const { order: fetchedOrder } = await medusa.store.order.retrieve(orderId, {
-      fields: "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address",
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    order = fetchedOrder;
-  } catch (e) {
-    console.error("Failed to fetch order details", e);
-    return new Response("", { status: 302, headers: { Location: "/account/orders" } });
-  }
-
-  if (!order) {
-    return new Response("", { status: 302, headers: { Location: "/account/orders" } });
-  }
+export default define.page(function OrderDetailsPage(ctx) {
+  const order = ctx.state.order as HttpTypes.StoreOrder;
 
   const subtotal = (order.subtotal || 0) / 100;
   const shipping = (order.shipping_total || 0) / 100;
@@ -36,7 +47,12 @@ export default define.page(async function OrderDetailsPage(ctx) {
   const total = (order.total || 0) / 100;
 
   return (
-    <AccountLayout activeTab="orders">
+    <>
+      <Head>
+        <title>Order #{order.display_id} - Apple4All</title>
+        <meta name="description" content={`View details for order #${order.display_id}.`} />
+      </Head>
+      <AccountLayout activeTab="orders">
       <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-2xl font-bold text-gray-900">Order #{order.display_id}</h2>
@@ -48,7 +64,7 @@ export default define.page(async function OrderDetailsPage(ctx) {
         <p class="text-sm text-gray-500 mb-8">Placed on {new Date(order.created_at).toLocaleDateString()}</p>
 
         <div class="space-y-6 mb-8">
-          {order.items.map((item: any) => (
+          {order.items?.map((item: HttpTypes.StoreOrderLineItem) => (
             <div key={item.id} class="flex items-center gap-4 py-4 border-b border-gray-100 last:border-0">
               <div class="w-20 h-20 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 border border-gray-100 p-2">
                 {item.thumbnail ? (
@@ -106,6 +122,7 @@ export default define.page(async function OrderDetailsPage(ctx) {
           </div>
         </div>
       </div>
-    </AccountLayout>
+      </AccountLayout>
+    </>
   );
 });

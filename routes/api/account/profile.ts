@@ -23,9 +23,9 @@ export const handler = define.handlers({
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Profile update error:", e);
-      return new Response(JSON.stringify({ error: e.message || "Update failed" }), {
+      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Update failed" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });

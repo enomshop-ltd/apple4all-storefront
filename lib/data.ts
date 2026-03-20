@@ -15,7 +15,7 @@ export async function getStoreCurrency() {
 export async function getProducts(collectionHandle?: string) {
   try {
     // Medusa v2 SDK usage
-    const query: any = {};
+    const query: Record<string, string | string[]> = {};
     if (collectionHandle) {
       // Fetch collection first to get its ID
       const { collections } = await medusa.store.collection.list({

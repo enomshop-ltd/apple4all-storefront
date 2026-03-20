@@ -1,7 +1,8 @@
 import { useState } from "preact/hooks";
 import { Loader2 } from "lucide-react";
+import { HttpTypes } from "@medusajs/types";
 
-export function ProductActions({ product }: { product: any }) {
+export function ProductActions({ product }: { product: HttpTypes.StoreProduct }) {
   const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0]?.id);
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState("");
@@ -35,12 +36,14 @@ export function ProductActions({ product }: { product: any }) {
   return (
     <div class="flex flex-col h-full">
       {product.variants && product.variants.length > 1 && (
-        <div class="mb-8">
-          <h3 class="font-medium mb-3">Select Variant</h3>
+        <div class="mb-8" role="radiogroup" aria-labelledby="variant-label">
+          <h3 id="variant-label" class="font-medium mb-3">Select Variant</h3>
           <div class="flex flex-wrap gap-3">
-            {product.variants.map((variant: any) => (
+            {product.variants.map((variant: HttpTypes.StoreProductVariant) => (
               <button 
                 key={variant.id}
+                role="radio"
+                aria-checked={selectedVariant === variant.id}
                 onClick={() => setSelectedVariant(variant.id)}
                 class={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition-colors ${
                   selectedVariant === variant.id 

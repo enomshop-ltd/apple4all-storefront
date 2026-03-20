@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "preact/hooks";
 import { ProductCard } from "../components/ProductCard.tsx";
 import { PromoBanner } from "../components/PromoBanner.tsx";
+import { CustomBox } from "./CustomBox.tsx";
 import { Search, SlidersHorizontal, Loader2, AlertTriangle } from "lucide-react";
+import { HttpTypes } from "@medusajs/types";
 
 export default function Shop() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<HttpTypes.StoreProduct[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -128,6 +130,7 @@ export default function Shop() {
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <CustomBox />
         {products.map((product, index) => {
           const isLast = products.length === index + 1;
           const card = (
@@ -136,7 +139,8 @@ export default function Shop() {
             </div>
           );
           
-          if ((index + 1) % 12 === 0) {
+          // Insert PromoBanner after every 15 products (since CustomBox takes 1 slot, this makes it after 4 rows)
+          if ((index + 1) % 15 === 0) {
             return [
               card,
               <div key={`promo-${index}`} class="col-span-1 sm:col-span-2 lg:col-span-4 my-4">

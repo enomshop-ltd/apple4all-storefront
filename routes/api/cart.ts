@@ -18,9 +18,9 @@ export const handler = define.handlers({
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Cart retrieve error:", e);
-      return new Response(JSON.stringify({ error: e.message || "Failed to retrieve cart" }), {
+      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Failed to retrieve cart" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
@@ -69,9 +69,9 @@ export const handler = define.handlers({
         status: 200,
         headers,
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Cart update error:", e);
-      return new Response(JSON.stringify({ error: e.message || "Failed to update cart" }), {
+      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Failed to update cart" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });

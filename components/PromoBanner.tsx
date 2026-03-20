@@ -1,7 +1,7 @@
 export function PromoBanner() {
   return (
     <div class="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm w-full">
-      <div class="md:w-1/3 relative bg-[#d4ff59] overflow-hidden min-h-[200px] flex items-center justify-center">
+      <div class="md:w-1/3 relative bg-[#d4ff59] overflow-hidden min-h-[100px] flex items-center justify-center">
         {/* Concentric circles background */}
         <div class="absolute inset-0 flex items-center justify-center opacity-90">
           {[...Array(8)].map((_, i) => (
@@ -19,18 +19,20 @@ export function PromoBanner() {
         <img 
           src="https://picsum.photos/seed/iphone-promo/300/400" 
           alt="iPhone" 
-          class="relative z-10 h-48 object-contain transform -rotate-12 drop-shadow-2xl"
+          loading="lazy"
+          decoding="async"
+          class="relative z-10 h-24 object-contain transform -rotate-12 drop-shadow-2xl"
           referrerPolicy="no-referrer"
         />
       </div>
-      <div class="md:w-2/3 p-6 md:p-8 flex flex-col justify-center relative">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="md:w-2/3 p-3 md:p-4 flex flex-col justify-center relative">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div class="flex-1">
-            <p class="text-sm text-gray-500 mb-2">iPhones</p>
-            <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-3">
+            <p class="text-xs text-gray-500 mb-1">iPhones</p>
+            <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-2">
               Best iPhone for photos in 2026: Ultimate buyer's guide | Back Market
             </h2>
-            <p class="text-gray-600 text-sm md:text-base leading-relaxed">
+            <p class="text-gray-600 text-xs md:text-sm leading-relaxed">
               Expert-tested guide to the 7 best iPhones for photography in 2026. Compare camera quality, features, and value to find your perfect match—from flagship Pro models to an iPhone under $200.
             </p>
           </div>

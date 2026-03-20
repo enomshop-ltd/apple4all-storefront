@@ -7,14 +7,19 @@ import { LoginForm } from "../islands/LoginForm.tsx";
 
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 
-export default define.page(function LoginPage(ctx) {
-  const cookies = getCookies(ctx.req.headers);
-  const token = cookies["_medusa_jwt"];
+export const handler = define.handlers({
+  GET(ctx) {
+    const cookies = getCookies(ctx.req.headers);
+    const token = cookies["_medusa_jwt"];
 
-  if (token) {
-    return new Response("", { status: 302, headers: { Location: "/account" } });
+    if (token) {
+      return new Response("", { status: 302, headers: { Location: "/account" } });
+    }
+    return ctx.render();
   }
+});
 
+export default define.page(function LoginPage() {
   return (
     <div class="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 flex flex-col">
       <Head>

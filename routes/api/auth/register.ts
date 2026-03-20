@@ -28,9 +28,9 @@ export const handler = define.handlers({
         status: 200,
         headers,
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Registration error:", e);
-      return new Response(JSON.stringify({ error: e.message || "Failed to register" }), {
+      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Failed to register" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });

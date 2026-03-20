@@ -11,7 +11,7 @@ export const handler = define.handlers({
     const q = url.searchParams.get("q") || "";
 
     try {
-      const query: any = {
+      const query: Record<string, string | number> = {
         limit,
         offset: (page - 1) * limit,
         order: sort,
@@ -33,9 +33,9 @@ export const handler = define.handlers({
       return new Response(JSON.stringify({ products, count, isError: false, currencyCode }), {
         headers: { "Content-Type": "application/json" },
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("API Error fetching products:", e);
-      return new Response(JSON.stringify({ products: [], count: 0, isError: true, error: e.message, currencyCode: "USD" }), {
+      return new Response(JSON.stringify({ products: [], count: 0, isError: true, error: e instanceof Error ? e.message : "Unknown error", currencyCode: "USD" }), {
         status: 500,
         headers: { "Content-Type": "application/json" },
       });

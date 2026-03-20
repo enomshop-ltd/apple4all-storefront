@@ -1,7 +1,8 @@
 import { useState } from "preact/hooks";
 import { CreditCard, Truck, ShieldCheck, Loader2 } from "lucide-react";
+import { HttpTypes } from "@medusajs/types";
 
-export function Checkout({ initialCart }: { initialCart: any }) {
+export function Checkout({ initialCart }: { initialCart: HttpTypes.StoreCart | null }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
