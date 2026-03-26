@@ -22,6 +22,8 @@ export default defineConfig({
         warn(warning);
       },
       output: {
+        entryFileNames: `[name].mjs`,
+        chunkFileNames: `[name].mjs`,
         manualChunks: {
           "medusa-sdk": ["@medusajs/js-sdk"],
           "icons": ["lucide-preact"],
