@@ -22,11 +22,9 @@ export const handler = define.handlers({
       });
       ctx.state.customer = customer;
 
-      // 1. Set metadata in state (your _app.tsx handles this now)
       ctx.state.title = "Edit Profile - Apple4All";
       ctx.state.description = "Update your personal details and password.";
 
-      // 2. Pass data explicitly to the page component
       return page(customer);
     } catch {
       const headers = new Headers();
@@ -44,7 +42,8 @@ export const handler = define.handlers({
 });
 
 export default define.page(function ProfilePage(props) {
-  const customer = props.data as { customer: HttpTypes.StoreCustomer };
+  // FIXED: Cast directly to HttpTypes.StoreCustomer
+  const customer = props.data as HttpTypes.StoreCustomer;
 
   return (
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">

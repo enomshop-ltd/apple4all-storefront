@@ -18,12 +18,10 @@ export const handler = define.handlers({
         Authorization: `Bearer ${token}`,
       });
 
-      // 1. Set metadata in state (your _app.tsx handles this now)
       ctx.state.title = "Account Overview - Apple4All";
       ctx.state.description =
         "View your account overview and personal details.";
 
-      // 2. Pass data explicitly to the page component
       return page(customer);
     } catch {
       const headers = new Headers();
@@ -37,10 +35,9 @@ export const handler = define.handlers({
   },
 });
 
-// The parameter passed here is `props`, not the request context
 export default define.page(function AccountPage(props) {
-  // Read the data passed from your handler
-  const customer = props.data as { customer: HttpTypes.StoreCustomer };
+  // FIXED: Cast directly to the HttpTypes.StoreCustomer type
+  const customer = props.data as HttpTypes.StoreCustomer;
 
   return (
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">

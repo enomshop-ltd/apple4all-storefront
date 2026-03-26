@@ -23,7 +23,6 @@ export const handler = define.handlers({
       ctx.state.description =
         "Manage your saved shipping and billing addresses.";
 
-      // 2. Pass data explicitly to the page component
       return page(customer);
     } catch {
       const headers = new Headers();
@@ -41,7 +40,8 @@ export const handler = define.handlers({
 });
 
 export default define.page(function AddressesPage(props) {
-  const customer = props.data as { customer: HttpTypes.StoreCustomer };
+  // FIXED: Cast directly to HttpTypes.StoreCustomer
+  const customer = props.data as HttpTypes.StoreCustomer;
 
   return (
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">

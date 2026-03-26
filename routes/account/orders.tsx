@@ -22,13 +22,6 @@ export const handler = define.handlers({
       ctx.state.title = "Order History - Apple4All";
       ctx.state.description = "View your past orders and their status.";
 
-      // 1. debug data
-      //const { regions } = await medusa.store.region.list();
-      //const regionId = regions?.[0]?.id;
-      //const providers = regionId ? await medusa.store.payment.listPaymentProviders({ region_id: regionId }): [];
-      //console.log("Medusa SDK providers", providers);
-
-      // 2. Pass data explicitly to the page component
       return page(orders);
     } catch {
       const headers = new Headers();
@@ -46,7 +39,8 @@ export const handler = define.handlers({
 });
 
 export default define.page(function OrdersPage(props) {
-  const orders = props.data as { orders: HttpTypes.StoreOrder[] };
+  // FIXED: Cast directly to an array of StoreOrder
+  const orders = props.data as HttpTypes.StoreOrder[];
 
   return (
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">

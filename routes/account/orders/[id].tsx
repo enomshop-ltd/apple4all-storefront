@@ -60,13 +60,13 @@ export const handler = define.handlers({
     ctx.state.title = `Order #${order.display_id} - Apple4All`;
     ctx.state.description = `View details for order #${order.display_id}.`;
 
-    // Fresh 2.x: return null instead of ctx.render()
     return page(order);
   },
 });
 
 export default define.page(function OrderDetailsPage(props) {
-  const order = props.data as { order: HttpTypes.StoreOrder };
+  // FIXED: Cast directly to StoreOrder
+  const order = props.data as HttpTypes.StoreOrder;
 
   const subtotal = (order.subtotal || 0) / 100;
   const shipping = (order.shipping_total || 0) / 100;
