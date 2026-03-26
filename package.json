@@ -2,7 +2,6 @@
   "name": "apple4all-storefront",
   "private": true,
   "version": "0.0.1",
-  "type":"module",
   "scripts": {
     "dev": "npx deno-bin@2.1.7 run -A npm:vite",
     "build": "mv package.json package.json.bak && npx deno-bin@2.1.7 task build; mv package.json.bak package.json",
