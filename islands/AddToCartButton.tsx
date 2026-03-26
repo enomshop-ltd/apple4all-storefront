@@ -1,16 +1,18 @@
 import { useState } from "preact/hooks";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-preact";
 
-export function AddToCartButton({ variantId, regionId }: { variantId: string, regionId?: string }) {
+export function AddToCartButton(
+  { variantId, regionId }: { variantId: string; regionId?: string },
+) {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const handleAddToCart = async () => {
     if (!variantId) return;
-    
+
     setIsLoading(true);
     setSuccess(false);
-    
+
     try {
       const res = await fetch("/api/cart", {
         method: "POST",
@@ -18,16 +20,16 @@ export function AddToCartButton({ variantId, regionId }: { variantId: string, re
         body: JSON.stringify({
           variant_id: variantId,
           quantity: 1,
-          region_id: regionId
+          region_id: regionId,
         }),
       });
-      
+
       if (res.ok) {
         setSuccess(true);
         setTimeout(() => {
           setSuccess(false);
           // Optional: redirect to cart or show mini-cart
-          window.location.href = "/cart";
+          globalThis.location.href = "/cart";
         }, 1000);
       }
     } catch (e) {
@@ -38,21 +40,26 @@ export function AddToCartButton({ variantId, regionId }: { variantId: string, re
   };
 
   return (
-    <button 
+    <button
+      type="button"
       onClick={handleAddToCart}
       disabled={isLoading || !variantId}
       class="w-full bg-[#2B5C8F] hover:bg-[#1e4166] text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center gap-2"
     >
-      {isLoading ? (
-        <>
-          <Loader2 class="w-5 h-5 animate-spin" />
-          Adding...
-        </>
-      ) : success ? (
-        "Added to Cart!"
-      ) : (
-        "Add to Cart"
-      )}
+      {isLoading
+        ? (
+          <>
+            <Loader2 class="w-5 h-5 animate-spin" />
+            Adding...
+          </>
+        )
+        : success
+        ? (
+          "Added to Cart!"
+        )
+        : (
+          "Add to Cart"
+        )}
     </button>
   );
 }

@@ -7,16 +7,18 @@ export const handler = define.handlers({
     try {
       const cookies = getCookies(ctx.req.headers);
       const token = cookies["_medusa_jwt"];
-      
+
       if (!token) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+        });
       }
 
       const body = await ctx.req.json();
-      
+
       // Call Medusa API to update customer
       const { customer } = await medusa.store.customer.update(body, {}, {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       return new Response(JSON.stringify({ customer }), {
@@ -25,10 +27,15 @@ export const handler = define.handlers({
       });
     } catch (e: unknown) {
       console.error("Profile update error:", e);
-      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Update failed" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          error: e instanceof Error ? e.message : "Update failed",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
-  }
+  },
 });

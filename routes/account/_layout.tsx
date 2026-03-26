@@ -1,26 +1,61 @@
-import { Partial } from "fresh/runtime";
 import { define } from "../../utils.ts";
-import { Header } from "../../components/Header.tsx";
-import { Footer } from "../../components/Footer.tsx";
-import { AccountNav } from "../../islands/AccountNav.tsx";
+import { Head } from "fresh/runtime";
 
-export default define.layout(function AccountLayout({ Component, state, url }) {
+export default define.page(function AccountLayout({ Component, url, state }) {
+  const path = url.pathname;
+  let activeTab = "overview";
+  if (path.includes("/account/profile")) activeTab = "profile";
+  else if (path.includes("/account/addresses")) activeTab = "addresses";
+  else if (path.includes("/account/orders")) activeTab = "orders";
+
+  const tabs = [
+    { id: "overview", label: "Overview", href: "/account" },
+    { id: "profile", label: "Profile", href: "/account/profile" },
+    { id: "addresses", label: "Addresses", href: "/account/addresses" },
+    { id: "orders", label: "Orders", href: "/account/orders" },
+  ];
+
   return (
-    <div class="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 flex flex-col">
-      <Header />
-      
-      <Partial name="main">
-        <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
-          <div class="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
-            <AccountNav currentPath={url.pathname} />
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
-              <Component />
-            </div>
-          </div>
-        </main>
-      </Partial>
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+      <Head>
+        <title>{state.title as string || "My Account - Apple4All"}</title>
+        <meta
+          name="description"
+          content={state.description as string ||
+            "Manage your Apple4All account, orders, and preferences."}
+        />
+      </Head>
+      <h1 class="text-3xl font-bold mb-8">My Account</h1>
+      <div class="flex flex-col md:flex-row gap-8">
+        <aside class="w-full md:w-64">
+          <nav class="flex flex-col space-y-1">
+            {tabs.map((tab) => (
+              <a
+                key={tab.id}
+                href={tab.href}
+                f-client-nav
+                class={`px-4 py-2 text-sm font-medium rounded-md ${
+                  activeTab === tab.id
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                {tab.label}
+              </a>
+            ))}
+            <a
+              href="/api/auth/logout"
+              class="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md"
+            >
+              Logout
+            </a>
+          </nav>
+        </aside>
 
-      <Footer />
-    </div>
+        <section class="flex-1">
+          <Component />
+        </section>
+      </div>
+    </main>
   );
 });

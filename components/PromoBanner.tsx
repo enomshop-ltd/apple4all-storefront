@@ -5,7 +5,7 @@ export function PromoBanner() {
         {/* Concentric circles background */}
         <div class="absolute inset-0 flex items-center justify-center opacity-90">
           {[...Array(8)].map((_, i) => (
-            <div 
+            <div
               key={i}
               class="absolute rounded-full border-[16px] border-[#1a1a1a]"
               style={{
@@ -16,9 +16,9 @@ export function PromoBanner() {
           ))}
         </div>
         {/* iPhone Image */}
-        <img 
-          src="https://picsum.photos/seed/iphone-promo/300/400" 
-          alt="iPhone" 
+        <img
+          src="https://picsum.photos/seed/iphone-promo/300/400"
+          alt="iPhone"
           loading="lazy"
           decoding="async"
           class="relative z-10 h-24 object-contain transform -rotate-12 drop-shadow-2xl"
@@ -30,14 +30,21 @@ export function PromoBanner() {
           <div class="flex-1">
             <p class="text-xs text-gray-500 mb-1">iPhones</p>
             <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-2">
-              Best iPhone for photos in 2026: Ultimate buyer's guide | Back Market
+              Best iPhone for photos in 2026: Ultimate buyer's guide | Back
+              Market
             </h2>
             <p class="text-gray-600 text-xs md:text-sm leading-relaxed">
-              Expert-tested guide to the 7 best iPhones for photography in 2026. Compare camera quality, features, and value to find your perfect match—from flagship Pro models to an iPhone under $200.
+              Expert-tested guide to the 7 best iPhones for photography in 2026.
+              Compare camera quality, features, and value to find your perfect
+              match—from flagship Pro models to an iPhone under $200.
             </p>
           </div>
           <div class="flex-shrink-0">
-            <a href="/product/iphone" f-client-nav class="inline-block px-6 py-2.5 bg-white border border-gray-300 text-gray-900 font-medium rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
+            <a
+              href="/product/iphone"
+              f-client-nav
+              class="inline-block px-6 py-2.5 bg-white border border-gray-300 text-gray-900 font-medium rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+            >
               See more
             </a>
           </div>

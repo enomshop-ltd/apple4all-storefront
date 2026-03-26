@@ -1,5 +1,5 @@
 {
-  "nodeModulesDir": "manual",
+  "nodeModulesDir": "auto",
   "tasks": {
     "check": "deno fmt --check . && deno lint . && deno check",
     "dev": "vite",
@@ -11,7 +11,9 @@
   "exclude": ["**/_fresh/*"],
   "imports": {
     "@/": "./",
+    "@medusajs/js-sdk": "npm:@medusajs/js-sdk@^2.13.4",
     "fresh": "jsr:@fresh/core@^2.2.0",
+    "lucide-preact": "npm:lucide-preact@^1.6.0",
     "preact": "npm:preact@^10.27.2",
     "preact/hooks": "npm:preact@^10.27.2/hooks",
     "@preact/signals": "npm:@preact/signals@^2.5.0",

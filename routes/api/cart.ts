@@ -7,12 +7,18 @@ export const handler = define.handlers({
     try {
       const cookies = getCookies(ctx.req.headers);
       const cartId = cookies["_medusa_cart_id"];
-      
+      const token = cookies["_medusa_jwt"];
+
       if (!cartId) {
         return new Response(JSON.stringify({ cart: null }), { status: 200 });
       }
 
-      const { cart } = await medusa.store.cart.retrieve(cartId);
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const { cart } = await medusa.store.cart.retrieve(cartId, {}, headers);
 
       return new Response(JSON.stringify({ cart }), {
         status: 200,
@@ -20,21 +26,32 @@ export const handler = define.handlers({
       });
     } catch (e: unknown) {
       console.error("Cart retrieve error:", e);
-      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Failed to retrieve cart" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          error: e instanceof Error ? e.message : "Failed to retrieve cart",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
   },
   POST: async (ctx) => {
     try {
       const cookies = getCookies(ctx.req.headers);
       let cartId = cookies["_medusa_cart_id"];
+      const token = cookies["_medusa_jwt"];
       const body = await ctx.req.json();
-      
+
       let cart;
-      const headers = new Headers();
-      headers.set("Content-Type", "application/json");
+      const resHeaders = new Headers();
+      resHeaders.set("Content-Type", "application/json");
+
+      const reqHeaders: Record<string, string> = {};
+      if (token) {
+        reqHeaders.Authorization = `Bearer ${token}`;
+      }
 
       if (!cartId) {
         let region_id = body.region_id;
@@ -44,37 +61,58 @@ export const handler = define.handlers({
         }
 
         // Create new cart
-        const { cart: newCart } = await medusa.store.cart.create({
-          region_id,
-        });
+        const { cart: newCart } = await medusa.store.cart.create(
+          {
+            region_id,
+          },
+          {},
+          reqHeaders,
+        );
         cart = newCart;
         cartId = cart.id;
-        headers.set("Set-Cookie", `_medusa_cart_id=${cartId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+        resHeaders.set(
+          "Set-Cookie",
+          `_medusa_cart_id=${cartId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`,
+        );
       } else {
         // Retrieve existing cart
-        const { cart: existingCart } = await medusa.store.cart.retrieve(cartId);
+        const { cart: existingCart } = await medusa.store.cart.retrieve(
+          cartId,
+          {},
+          reqHeaders,
+        );
         cart = existingCart;
       }
 
       // Add item to cart
       if (body.variant_id && body.quantity) {
-        const { cart: updatedCart } = await medusa.store.cart.createLineItem(cartId, {
-          variant_id: body.variant_id,
-          quantity: body.quantity,
-        });
+        const { cart: updatedCart } = await medusa.store.cart.createLineItem(
+          cartId,
+          {
+            variant_id: body.variant_id,
+            quantity: body.quantity,
+          },
+          {},
+          reqHeaders,
+        );
         cart = updatedCart;
       }
 
       return new Response(JSON.stringify({ cart }), {
         status: 200,
-        headers,
+        headers: resHeaders,
       });
     } catch (e: unknown) {
       console.error("Cart update error:", e);
-      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Failed to update cart" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          error: e instanceof Error ? e.message : "Failed to update cart",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
-  }
+  },
 });

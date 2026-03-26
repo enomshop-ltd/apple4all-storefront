@@ -9,7 +9,7 @@ export function AccountNav({ currentPath }: { currentPath: string }) {
   const handleLogout = async () => {
     // Implement logout logic
     await fetch("/api/auth/logout", { method: "POST" });
-    window.location.href = "/login";
+    globalThis.location.href = "/login";
   };
 
   return (
@@ -24,8 +24,8 @@ export function AccountNav({ currentPath }: { currentPath: string }) {
               href={item.href}
               f-client-nav
               class={`text-base transition-colors ${
-                isActive 
-                  ? "text-gray-900 font-semibold" 
+                isActive
+                  ? "text-gray-900 font-semibold"
                   : "text-gray-500 hover:text-gray-900"
               }`}
             >
@@ -34,6 +34,7 @@ export function AccountNav({ currentPath }: { currentPath: string }) {
           );
         })}
         <button
+          type="button"
           onClick={handleLogout}
           class="text-base text-gray-500 hover:text-gray-900 transition-colors text-left"
         >

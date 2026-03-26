@@ -9,13 +9,13 @@ export default defineConfig({
     // OR specifically ignore the warnings:
     rollupOptions: {
       onwarn(warning, warn) {
-        if (warning.code === 'SOURCEMAP_ERROR') return;
+        if (warning.code === "SOURCEMAP_ERROR") return;
         warn(warning);
       },
       output: {
         manualChunks: {
-          'medusa-sdk': ['@medusajs/js-sdk'],
-          'icons': ['lucide-react'],
+          "medusa-sdk": ["@medusajs/js-sdk"],
+          "icons": ["lucide-preact"],
         },
       },
     },

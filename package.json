@@ -1,24 +1,9 @@
 {
-  "name": "",
-  "private": true,
+  "name": "fresh-app",
   "version": "0.0.0",
   "scripts": {
-    "dev": "npx deno-bin@2.1.7 run -A npm:vite",
-    "build": "mv package.json package.json.bak && npx deno-bin@2.1.7 task build; mv package.json.bak package.json",
-    "preview": "npx deno-bin@2.1.7 serve -A _fresh/server.js"
-  },
-  "dependencies": {
-    "@medusajs/js-sdk": "^2.13.4",
-    "@preact/signals": "^2.8.2",
-    "@tailwindcss/vite": "^4.2.1",
-    "lucide-react": "^0.577.0",
-    "preact": "^10.29.0",
-    "tailwindcss": "^4.2.1"
-  },
-  "devDependencies": {
-    "@medusajs/types": "^2.13.4",
-    "@types/node": "^22.14.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "dev": "npx deno task dev",
+    "build": "npx deno task build",
+    "start": "npx deno task start"
   }
 }

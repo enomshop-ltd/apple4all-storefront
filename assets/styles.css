@@ -1,9 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Rockybilly';
-  src: url('https://fonts.cdnfonts.com/s/114875/Rockybilly.woff') format('woff');
+  font-family: "Rockybilly";
+  src: url("https://fonts.cdnfonts.com/s/114875/Rockybilly.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }

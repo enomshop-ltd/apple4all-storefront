@@ -1,51 +1,151 @@
 import { useState } from "preact/hooks";
-import { CreditCard, Truck, ShieldCheck, Loader2 } from "lucide-react";
+import {
+  CreditCard,
+  Loader2,
+  Package,
+  ShieldCheck,
+  Truck,
+} from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
 
-export function Checkout({ initialCart }: { initialCart: HttpTypes.StoreCart | null }) {
+export function Checkout({
+  initialCart,
+  customer,
+  shippingOptions,
+}: {
+  initialCart: HttpTypes.StoreCart | null;
+  customer: HttpTypes.StoreCustomer | null;
+  shippingOptions: unknown[];
+}) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("credit_card");
+  const [paymentMethod, setPaymentMethod] = useState("paystack");
+
   const cart = initialCart;
+
+  const defaultAddress = customer?.addresses?.[0] || cart?.shipping_address;
+  const defaultEmail = customer?.email || cart?.email || "";
+  const defaultCountry = defaultAddress?.country_code ||
+    cart?.region?.countries?.[0]?.iso_2 || "ke";
+
+  const [formValues, setFormValues] = useState({
+    email: defaultEmail,
+    firstName: defaultAddress?.first_name || customer?.first_name || "",
+    lastName: defaultAddress?.last_name || customer?.last_name || "",
+    address: defaultAddress?.address_1 || "",
+    city: defaultAddress?.city || "",
+    zip: defaultAddress?.postal_code || "",
+    country: defaultCountry?.toLowerCase() || "us",
+  });
+
+  const handleInputChange = (e: Event) => {
+    const target = e.target as HTMLInputElement | HTMLSelectElement;
+    setFormValues((prev) => ({ ...prev, [target.name]: target.value }));
+  };
+
+  const [selectedShippingOption, setSelectedShippingOption] = useState<string>(
+    shippingOptions && shippingOptions.length > 0 ? shippingOptions[0].id : "",
+  );
 
   const handleCheckout = async (e: Event) => {
     e.preventDefault();
     setIsProcessing(true);
     setError("");
-    
-    const formData = new FormData(e.target as HTMLFormElement);
-    const shipping_address = {
-      first_name: formData.get("firstName"),
-      last_name: formData.get("lastName"),
-      address_1: formData.get("address"),
-      city: formData.get("city"),
-      postal_code: formData.get("zip"),
-      country_code: formData.get("country"),
-    };
-    const email = formData.get("email");
 
+    const formData = new FormData(e.target as HTMLFormElement);
+    // Explicitly convert FormDataEntryValues to strings and force lowercase on the country code
+    const shipping_address = {
+      first_name: formData.get("firstName")?.toString(),
+      last_name: formData.get("lastName")?.toString(),
+      address_1: formData.get("address")?.toString(),
+      city: formData.get("city")?.toString(),
+      postal_code: formData.get("zip")?.toString(),
+      country_code: formData.get("country")?.toString().toLowerCase(),
+    };
+    const email = formData.get("email")?.toString();
+
+    try {
+      // Step 1: Initialize Payment (updates cart and sets up Medusa Payment Session)
+      const initRes = await fetch("/api/cart/initialize-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          shipping_address,
+          payment_method: paymentMethod,
+          shipping_option_id: selectedShippingOption,
+        }),
+      });
+
+      if (!initRes.ok) {
+        const data = await initRes.json();
+        setError(data.error || "Failed to initialize checkout.");
+        setIsProcessing(false);
+        globalThis.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+
+      const initData = await initRes.json();
+
+      // Step 2: Trigger Payment Gateway or finalize directly
+      if (paymentMethod === "paystack") {
+        const accessCode = initData.paymentSession?.paystackTxAccessCode;
+        const publicKey = initData.publicKey;
+
+        if (!accessCode || !publicKey) {
+          setError("Failed to retrieve Paystack configuration.");
+          setIsProcessing(false);
+          return;
+        }
+
+        // Trigger Paystack Popup Inline iframe
+        const handler = (window as unknown as { PaystackPop: { setup: (config: unknown) => { openIframe: () => void } } }).PaystackPop.setup({
+          key: publicKey,
+          access_code: accessCode,
+          onClose: () => {
+            setError("Payment window closed. You can try again.");
+            setIsProcessing(false);
+          },
+          callback: async (_response: unknown) => {
+            // Payment successful, finalize on our backend
+            await finalizeCheckout();
+          },
+        });
+
+        handler.openIframe();
+      } else {
+        // Handle Pay on Delivery (Manual)
+        await finalizeCheckout();
+      }
+    } catch (_err) {
+      setError("An error occurred during checkout. Please try again.");
+      globalThis.scrollTo({ top: 0, behavior: "smooth" });
+      setIsProcessing(false);
+    }
+  };
+
+  const finalizeCheckout = async () => {
     try {
       const res = await fetch("/api/cart/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, shipping_address, payment_method: paymentMethod }),
       });
-      
+
       if (res.ok) {
         setSuccess(true);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        globalThis.scrollTo({ top: 0, behavior: "smooth" });
         setTimeout(() => {
-          window.location.href = "/account/orders";
+          globalThis.location.href = "/account/orders";
         }, 2000);
       } else {
         const data = await res.json();
         setError(data.error || "Failed to complete checkout.");
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        globalThis.scrollTo({ top: 0, behavior: "smooth" });
       }
-    } catch (err) {
-      setError("An error occurred during checkout. Please try again.");
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (_err) {
+      setError("An error occurred completing the order.");
+      globalThis.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setIsProcessing(false);
     }
@@ -58,7 +158,10 @@ export function Checkout({ initialCart }: { initialCart: HttpTypes.StoreCart | n
           <ShieldCheck class="w-8 h-8" />
         </div>
         <h2 class="text-2xl font-bold text-gray-900 mb-2">Order Confirmed!</h2>
-        <p class="text-gray-600 mb-8 max-w-md mx-auto">Thank you for your purchase. We've sent a confirmation email with your order details.</p>
+        <p class="text-gray-600 mb-8 max-w-md mx-auto">
+          Thank you for your purchase. We've sent a confirmation email with your
+          order details.
+        </p>
         <p class="text-sm text-gray-500">Redirecting to your orders...</p>
       </div>
     );
@@ -67,9 +170,15 @@ export function Checkout({ initialCart }: { initialCart: HttpTypes.StoreCart | n
   if (!cart || cart.items?.length === 0) {
     return (
       <div class="text-center py-16 bg-white rounded-2xl border border-gray-200 shadow-sm">
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">
+          Your cart is empty
+        </h2>
         <p class="text-gray-600 mb-8">Add some items before checking out.</p>
-        <a href="/" f-client-nav class="inline-flex items-center justify-center px-8 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors">
+        <a
+          href="/"
+          f-client-nav
+          class="inline-flex items-center justify-center px-8 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
+        >
           Start shopping
         </a>
       </div>
@@ -77,9 +186,16 @@ export function Checkout({ initialCart }: { initialCart: HttpTypes.StoreCart | n
   }
 
   const subtotal = (cart.subtotal || 0) / 100;
-  const shipping = (cart.shipping_total || 0) / 100;
   const taxes = (cart.tax_total || 0) / 100;
-  const total = (cart.total || 0) / 100;
+
+  const selectedOptionDetails = shippingOptions?.find((o) =>
+    o.id === selectedShippingOption
+  );
+  const shippingAmount = selectedOptionDetails
+    ? (selectedOptionDetails.amount || 0) / 100
+    : (cart.shipping_total || 0) / 100;
+
+  const displayedTotal = subtotal + taxes + shippingAmount;
 
   return (
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
@@ -93,52 +209,200 @@ export function Checkout({ initialCart }: { initialCart: HttpTypes.StoreCart | n
           {/* Contact Info */}
           <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
             <div class="flex items-center gap-3 mb-6">
-              <h2 class="text-xl font-bold text-gray-900">Contact Information</h2>
+              <h2 class="text-xl font-bold text-gray-900">
+                Contact Information
+              </h2>
             </div>
             <div class="space-y-2">
-              <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-              <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
+              <label
+                for="email"
+                class="block text-sm font-medium text-gray-700"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formValues.email}
+                onInput={handleInputChange}
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              />
             </div>
           </div>
+
           {/* Shipping Address */}
           <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
             <div class="flex items-center gap-3 mb-6">
               <Truck class="w-6 h-6 text-blue-600" />
               <h2 class="text-xl font-bold text-gray-900">Shipping Address</h2>
             </div>
-            
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <label for="firstName" class="block text-sm font-medium text-gray-700">First name</label>
-                <input type="text" id="firstName" name="firstName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
+                <label
+                  for="firstName"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  First name
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formValues.firstName}
+                  onInput={handleInputChange}
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                />
               </div>
               <div class="space-y-2">
-                <label for="lastName" class="block text-sm font-medium text-gray-700">Last name</label>
-                <input type="text" id="lastName" name="lastName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
+                <label
+                  for="lastName"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  Last name
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formValues.lastName}
+                  onInput={handleInputChange}
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                />
               </div>
               <div class="space-y-2 sm:col-span-2">
-                <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
-                <input type="text" id="address" name="address" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
+                <label
+                  for="address"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  Address
+                </label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  value={formValues.address}
+                  onInput={handleInputChange}
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                />
               </div>
               <div class="space-y-2">
-                <label for="city" class="block text-sm font-medium text-gray-700">City</label>
-                <input type="text" id="city" name="city" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
+                <label
+                  for="city"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  City
+                </label>
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  value={formValues.city}
+                  onInput={handleInputChange}
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                />
               </div>
               <div class="space-y-2">
-                <label for="zip" class="block text-sm font-medium text-gray-700">ZIP / Postal Code</label>
-                <input type="text" id="zip" name="zip" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
+                <label
+                  for="zip"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  ZIP / Postal Code
+                </label>
+                <input
+                  type="text"
+                  id="zip"
+                  name="zip"
+                  value={formValues.zip}
+                  onInput={handleInputChange}
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                />
               </div>
               <div class="space-y-2 sm:col-span-2">
-                <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
-                <select id="country" name="country" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors bg-white">
-                  <option value="us">United States</option>
-                  <option value="ca">Canada</option>
-                  <option value="gb">United Kingdom</option>
-                  <option value="de">Germany</option>
-                  <option value="fr">France</option>
+                <label
+                  for="country"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  Country
+                </label>
+                <select
+                  id="country"
+                  name="country"
+                  value={formValues.country.toLowerCase()}
+                  onChange={handleInputChange}
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors bg-white"
+                >
+                  {cart?.region?.countries && cart.region.countries.length > 0
+                    ? (
+                      cart.region.countries.map((c: { iso_2: string; display_name: string }) => (
+                        <option key={c.iso_2} value={c.iso_2}>
+                          {c.display_name}
+                        </option>
+                      ))
+                    )
+                    : (
+                      <>
+                        <option value="ke">Kenya</option>
+                      </>
+                    )}
                 </select>
               </div>
             </div>
+          </div>
+
+          {/* Delivery Method */}
+          <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+            <div class="flex items-center gap-3 mb-6">
+              <Package class="w-6 h-6 text-blue-600" />
+              <h2 class="text-xl font-bold text-gray-900">Delivery Method</h2>
+            </div>
+            {shippingOptions && shippingOptions.length > 0
+              ? (
+                <div class="space-y-4">
+                  {shippingOptions.map((option) => (
+                    <label
+                      key={option.id}
+                      class={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-colors ${
+                        selectedShippingOption === option.id
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <div class="flex items-center">
+                        <input
+                          type="radio"
+                          name="shipping_option"
+                          value={option.id}
+                          checked={selectedShippingOption === option.id}
+                          onChange={() => setSelectedShippingOption(option.id)}
+                          class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                        />
+                        <span class="ml-3 font-medium text-gray-900">
+                          {option.name}
+                        </span>
+                      </div>
+                      <span class="font-medium text-gray-900">
+                        {option.amount === 0
+                          ? "Free"
+                          : `$${(option.amount / 100).toFixed(2)}`}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )
+              : (
+                <p class="text-gray-500 text-sm">
+                  No delivery methods available for this region.
+                </p>
+              )}
           </div>
 
           {/* Payment Method */}
@@ -147,98 +411,99 @@ export function Checkout({ initialCart }: { initialCart: HttpTypes.StoreCart | n
               <CreditCard class="w-6 h-6 text-blue-600" />
               <h2 class="text-xl font-bold text-gray-900">Payment Method</h2>
             </div>
-            
+
             <div class="space-y-4 mb-6">
-              <label class={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${paymentMethod === 'credit_card' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                <input 
-                  type="radio" 
-                  name="payment_method" 
-                  value="credit_card" 
-                  checked={paymentMethod === 'credit_card'} 
-                  onChange={() => setPaymentMethod('credit_card')}
+              <label
+                class={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${
+                  paymentMethod === "paystack"
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="paystack"
+                  checked={paymentMethod === "paystack"}
+                  onChange={() => setPaymentMethod("paystack")}
                   class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                 />
-                <span class="ml-3 font-medium text-gray-900">Credit Card</span>
+                <span class="ml-3 font-medium text-gray-900">
+                  Credit Card / Debit Card (Paystack)
+                </span>
               </label>
-              
-              <label class={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${paymentMethod === 'manual' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                <input 
-                  type="radio" 
-                  name="payment_method" 
-                  value="manual" 
-                  checked={paymentMethod === 'manual'} 
-                  onChange={() => setPaymentMethod('manual')}
+
+              <label
+                class={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${
+                  paymentMethod === "manual"
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="manual"
+                  checked={paymentMethod === "manual"}
+                  onChange={() => setPaymentMethod("manual")}
                   class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                 />
-                <span class="ml-3 font-medium text-gray-900">Pay on Delivery (Manual)</span>
+                <span class="ml-3 font-medium text-gray-900">
+                  Pay on Delivery (Manual)
+                </span>
               </label>
             </div>
-
-            {paymentMethod === 'credit_card' && (
-              <div class="space-y-4 pt-4 border-t border-gray-100">
-                <div class="space-y-2">
-                  <label for="cardName" class="block text-sm font-medium text-gray-700">Name on card</label>
-                  <input type="text" id="cardName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
-                </div>
-                <div class="space-y-2">
-                  <label for="cardNumber" class="block text-sm font-medium text-gray-700">Card number</label>
-                  <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                  <div class="space-y-2">
-                    <label for="expDate" class="block text-sm font-medium text-gray-700">Expiration date</label>
-                    <input type="text" id="expDate" placeholder="MM/YY" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
-                  </div>
-                  <div class="space-y-2">
-                    <label for="cvc" class="block text-sm font-medium text-gray-700">CVC</label>
-                    <input type="text" id="cvc" placeholder="123" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </form>
       </div>
 
       <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm h-fit sticky top-6">
         <h2 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
-        
+
         <div class="space-y-4 mb-6">
           <div class="flex items-center justify-between text-gray-600">
             <span>Subtotal</span>
-            <span class="font-medium text-gray-900">${subtotal.toFixed(2)}</span>
+            <span class="font-medium text-gray-900">
+              ${subtotal.toFixed(2)}
+            </span>
           </div>
           <div class="flex items-center justify-between text-gray-600">
             <span>Shipping</span>
-            <span class="font-medium text-gray-900">{shipping === 0 ? "Free" : `${shipping.toFixed(2)}`}</span>
+            <span class="font-medium text-gray-900">
+              {shippingAmount === 0 ? "Free" : `$${shippingAmount.toFixed(2)}`}
+            </span>
           </div>
           <div class="flex items-center justify-between text-gray-600">
             <span>Estimated Taxes</span>
             <span class="font-medium text-gray-900">${taxes.toFixed(2)}</span>
           </div>
-          
+
           <div class="pt-4 border-t border-gray-200 flex items-center justify-between">
             <span class="text-lg font-bold text-gray-900">Total</span>
-            <span class="text-xl font-bold text-gray-900">${total.toFixed(2)}</span>
+            <span class="text-xl font-bold text-gray-900">
+              ${displayedTotal.toFixed(2)}
+            </span>
           </div>
         </div>
 
-        <button 
+        <button
           type="submit"
           form="checkout-form"
           disabled={isProcessing}
           class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors shadow-sm disabled:opacity-70"
         >
-          {isProcessing ? (
-            <>
-              <Loader2 class="w-5 h-5 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            "Place Order"
-          )}
+          {isProcessing
+            ? (
+              <>
+                <Loader2 class="w-5 h-5 animate-spin" />
+                Processing...
+              </>
+            )
+            : (
+              "Place Order"
+            )}
         </button>
-        
+
         <div class="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
           <ShieldCheck class="w-4 h-4" />
           <span>Secure checkout</span>

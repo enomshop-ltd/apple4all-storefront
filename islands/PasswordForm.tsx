@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-preact";
 
 export function PasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +11,7 @@ export function PasswordForm() {
     setIsLoading(true);
     setSuccess(false);
     setError("");
-    
+
     const formData = new FormData(e.target as HTMLFormElement);
     const oldPassword = formData.get("oldPassword") as string;
     const newPassword = formData.get("newPassword") as string;
@@ -40,11 +40,11 @@ export function PasswordForm() {
       } else {
         const errData = await res.json();
         setError(errData.error || "Failed to update password.");
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        globalThis.scrollTo({ top: 0, behavior: "smooth" });
       }
-    } catch (err) {
+    } catch (_err) {
       setError("An error occurred. Please try again.");
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      globalThis.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setIsLoading(false);
     }
@@ -57,36 +57,51 @@ export function PasswordForm() {
           {error}
         </div>
       )}
-      
+
       <div class="space-y-4">
         <div class="space-y-2">
-          <label for="oldPassword" class="block text-sm font-medium text-gray-700">Current password</label>
-          <input 
-            type="password" 
-            id="oldPassword" 
-            name="oldPassword" 
-            required
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-          />
-        </div>
-        
-        <div class="space-y-2">
-          <label for="newPassword" class="block text-sm font-medium text-gray-700">New password</label>
-          <input 
-            type="password" 
-            id="newPassword" 
-            name="newPassword" 
+          <label
+            for="oldPassword"
+            class="block text-sm font-medium text-gray-700"
+          >
+            Current password
+          </label>
+          <input
+            type="password"
+            id="oldPassword"
+            name="oldPassword"
             required
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
           />
         </div>
 
         <div class="space-y-2">
-          <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm new password</label>
-          <input 
-            type="password" 
-            id="confirmPassword" 
-            name="confirmPassword" 
+          <label
+            for="newPassword"
+            class="block text-sm font-medium text-gray-700"
+          >
+            New password
+          </label>
+          <input
+            type="password"
+            id="newPassword"
+            name="newPassword"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="confirmPassword"
+            class="block text-sm font-medium text-gray-700"
+          >
+            Confirm new password
+          </label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
             required
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
           />
@@ -94,15 +109,19 @@ export function PasswordForm() {
       </div>
 
       <div class="pt-4 flex items-center gap-4">
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={isLoading}
           class="px-6 py-2.5 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-70 flex items-center gap-2"
         >
           {isLoading && <Loader2 class="w-4 h-4 animate-spin" />}
           Update password
         </button>
-        {success && <span class="text-sm text-green-600 font-medium">Password updated successfully!</span>}
+        {success && (
+          <span class="text-sm text-green-600 font-medium">
+            Password updated successfully!
+          </span>
+        )}
       </div>
     </form>
   );

@@ -1,0 +1,72 @@
+import { define } from "../../utils.ts";
+import { page } from "fresh";
+import { Head } from "fresh/runtime";
+
+export const handler = define.handlers({
+  GET(ctx) {
+    ctx.state.title = "Terms of Service - Apple4All";
+    ctx.state.description =
+      "Read our Terms of Service to understand the rules and guidelines for using Apple4All.";
+    return page();
+  },
+});
+
+export default define.page(function TermsPage(props) {
+  return (
+    <div class="prose prose-blue max-w-none">
+      <Head>
+        <title>{props.state.title as string}</title>
+        <meta name="description" content={props.state.description as string} />
+      </Head>
+      <h1 class="text-3xl font-bold mb-6">Terms of Service</h1>
+      <p class="text-gray-600 mb-4">Last updated: March 25, 2026</p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-4">1. Introduction</h2>
+      <p class="text-gray-700 mb-4">
+        Welcome to Apple4All. By accessing our website and purchasing our
+        products or services, you agree to be bound by these Terms of Service.
+        Apple4All is a tech shop located in Westlands, Nairobi, Kenya,
+        specializing in Mac sales, repairs, and replacement parts.
+      </p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-4">2. Products and Services</h2>
+      <p class="text-gray-700 mb-4">
+        We offer both new and certified refurbished Apple devices. All
+        refurbished devices undergo rigorous testing to ensure quality. We also
+        provide repair services and sell replacement parts. Prices and
+        availability are subject to change without notice.
+      </p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-4">3. Warranty and Returns</h2>
+      <p class="text-gray-700 mb-4">
+        Our refurbished devices come with a standard 1-year warranty covering
+        hardware defects. Physical damage, liquid damage, and unauthorized
+        modifications void this warranty. Returns are accepted within 14 days of
+        purchase, provided the item is in its original condition.
+      </p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-4">4. Repairs</h2>
+      <p class="text-gray-700 mb-4">
+        When you submit a device for repair, you authorize us to perform the
+        necessary diagnostics and repairs. While we take utmost care, we are not
+        liable for any data loss. We strongly recommend backing up your data
+        before bringing in your device.
+      </p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-4">
+        5. Limitation of Liability
+      </h2>
+      <p class="text-gray-700 mb-4">
+        Apple4All shall not be liable for any indirect, incidental, special,
+        consequential, or punitive damages resulting from your use of our
+        services or products.
+      </p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-4">6. Contact Information</h2>
+      <p class="text-gray-700 mb-4">
+        If you have any questions about these Terms, please contact us at
+        support@apple4all.co.ke or visit our store in Westlands, Nairobi.
+      </p>
+    </div>
+  );
+});

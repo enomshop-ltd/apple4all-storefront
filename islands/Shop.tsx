@@ -1,11 +1,16 @@
-import { useState, useEffect, useRef, useCallback } from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { ProductCard } from "../components/ProductCard.tsx";
 import { PromoBanner } from "../components/PromoBanner.tsx";
 import { CustomBox } from "./CustomBox.tsx";
-import { Search, SlidersHorizontal, Loader2, AlertTriangle } from "lucide-react";
+import {
+  AlertTriangle,
+  Loader2,
+  Search,
+  SlidersHorizontal,
+} from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
 
-export default function Shop() {
+export default function Shop({ category }: { category?: string }) {
   const [products, setProducts] = useState<HttpTypes.StoreProduct[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -15,14 +20,14 @@ export default function Shop() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isError, setIsError] = useState(false);
   const [currencyCode, setCurrencyCode] = useState("USD");
-  
+
   const observer = useRef<IntersectionObserver | null>(null);
   const lastElementRef = useCallback((node: HTMLDivElement | null) => {
     if (loading) return;
     if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver(entries => {
+    observer.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && hasMore) {
-        setPage(prev => prev + 1);
+        setPage((prev) => prev + 1);
       }
     });
     if (node) observer.current.observe(node);
@@ -44,20 +49,29 @@ export default function Shop() {
   // Fetch products
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/products?page=${page}&limit=12&sort=${sort}&q=${encodeURIComponent(debouncedSearch)}`);
+        const categoryParam = category
+          ? `&category=${encodeURIComponent(category)}`
+          : "";
+        const res = await fetch(
+          `/api/products?page=${page}&limit=12&sort=${sort}&q=${
+            encodeURIComponent(debouncedSearch)
+          }${categoryParam}`,
+        );
         const data = await res.json();
-        
+
         if (isMounted) {
           if (data.isError) {
             setIsError(true);
             setProducts([]);
             setHasMore(false);
           } else {
-            setProducts(prev => page === 1 ? data.products : [...prev, ...data.products]);
+            setProducts((prev) =>
+              page === 1 ? data.products : [...prev, ...data.products]
+            );
             setHasMore(data.products.length === 12); // Assuming limit is 12
             setIsError(false);
           }
@@ -78,11 +92,17 @@ export default function Shop() {
       fetchProducts();
     }
 
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, [page, debouncedSearch, sort]);
 
   return (
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div
+      class={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${
+        category ? "pb-16 pt-4" : "py-16"
+      }`}
+    >
       {isError && (
         <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-8 rounded-md shadow-sm">
           <div class="flex items-center">
@@ -91,31 +111,37 @@ export default function Shop() {
             </div>
             <div class="ml-3">
               <p class="text-sm text-red-700">
-                <strong>Store Unavailable:</strong> We are currently experiencing technical difficulties connecting to the store backend. Please try again later.
+                <strong>Store Unavailable:</strong>{" "}
+                We are currently experiencing technical difficulties connecting
+                to the store backend. Please try again later.
               </p>
             </div>
           </div>
         </div>
       )}
 
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <h1 class="text-3xl font-bold">All Products</h1>
-        
+      <div
+        class={`flex flex-col md:flex-row ${
+          category ? "justify-end" : "justify-between"
+        } items-start md:items-center mb-8 gap-4`}
+      >
+        {!category && <h1 class="text-3xl font-bold">All Products</h1>}
+
         <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <div class="relative w-full sm:w-64 flex items-center">
             <Search class="absolute left-3 w-5 h-5 text-gray-400 pointer-events-none" />
-            <input 
-              type="text" 
-              placeholder="Search products..." 
+            <input
+              type="text"
+              placeholder="Search products..."
               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={search}
               onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
             />
           </div>
-          
+
           <div class="flex items-center gap-2 w-full sm:w-auto">
             <SlidersHorizontal class="w-5 h-5 text-gray-500 shrink-0" />
-            <select 
+            <select
               class="w-full sm:w-auto border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               value={sort}
               onChange={(e) => setSort((e.target as HTMLSelectElement).value)}
@@ -138,17 +164,20 @@ export default function Shop() {
               <ProductCard product={product} currencyCode={currencyCode} />
             </div>
           );
-          
+
           // Insert PromoBanner after every 15 products (since CustomBox takes 1 slot, this makes it after 4 rows)
           if ((index + 1) % 15 === 0) {
             return [
               card,
-              <div key={`promo-${index}`} class="col-span-1 sm:col-span-2 lg:col-span-4 my-4">
+              <div
+                key={`promo-${index}`}
+                class="col-span-1 sm:col-span-2 lg:col-span-4 my-4"
+              >
                 <PromoBanner />
-              </div>
+              </div>,
             ];
           }
-          
+
           return card;
         })}
       </div>
@@ -165,7 +194,7 @@ export default function Shop() {
           <p>Try adjusting your search or filters.</p>
         </div>
       )}
-      
+
       {!loading && !hasMore && products.length > 0 && (
         <div class="text-center py-12 text-gray-500">
           <p>You've reached the end of the list.</p>
