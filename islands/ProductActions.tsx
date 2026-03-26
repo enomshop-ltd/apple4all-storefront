@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
 
 export function ProductActions({ product }: { product: HttpTypes.StoreProduct }) {
