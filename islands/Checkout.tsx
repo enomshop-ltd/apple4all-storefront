@@ -91,19 +91,20 @@ export function Checkout({
       // Step 2: Trigger Payment Gateway or finalize directly
       if (paymentMethod === "paystack") {
         const accessCode = initData.paymentSession?.paystackTxAccessCode;
+        const reference = initData.paymentSession?.paystackTxRef; // <-- 1. Extract the secure backend reference
         const publicKey = initData.publicKey;
-
-        // --- ADDED LOGIC FOR PAYSTACK AMOUNT & CURRENCY ---
+        
         const cartCurrency = initData.cart?.region?.currency_code?.toUpperCase() || "USD";
+        const isZeroDecimal =["JPY", "KRW", "VND", "CLP", "PYG", "KES"].includes(cartCurrency);
+        const paystackAmount = isZeroDecimal ? (initData.cart.total * 100) : initData.cart.total;
+        const amountToPass = initData.paymentSession?.amount || paystackAmount;
 
-        if (!accessCode || !publicKey) {
+        if (!accessCode || !publicKey || !reference) {
           setError("Failed to retrieve Paystack configuration.");
           setIsProcessing(false);
           return;
         }
-
-        // --- FIX: Safely check for and load the Paystack inline script ---
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        
         const paystackWindow = window as any;
 
         const openPaystackPopup = () => {
@@ -111,11 +112,17 @@ export function Checkout({
             const paystack = new paystackWindow.PaystackPop();
             paystack.newTransaction({
               key: publicKey,
+              email: email,
+              amount: amountToPass,
+              currency: cartCurrency,
+              ref: reference,           // <-- 2. CRITICAL: Tie the popup to the backend's transaction!
               access_code: accessCode,
+              
               onSuccess: () => {
+                // A short 1.5s delay just to ensure Paystack's database reflects the success globally
                 setTimeout(() => {
                   finalizeCheckout().catch(console.error);
-                }, 2500);
+                }, 1500);
               },
               onCancel: () => {
                 setError("Payment window closed. You can try again.");
@@ -136,8 +143,7 @@ export function Checkout({
 
         if (typeof paystackWindow.PaystackPop === "undefined") {
           const script = document.createElement("script");
-          // 3. Ensure the dynamic fallback also points to v2
-          script.src = "https://js.paystack.co/v2/inline.js"; 
+          script.src = "https://js.paystack.co/v2/inline.js";
           script.onload = () => openPaystackPopup();
           script.onerror = () => {
             setError("Failed to load Paystack securely. Check your connection.");
@@ -147,9 +153,7 @@ export function Checkout({
         } else {
           openPaystackPopup();
         }
-
       } else {
-        // Handle Pay on Delivery (Manual)
         await finalizeCheckout();
       }
     } catch (err) {
