@@ -123,9 +123,9 @@ export function Checkout({
               currency: cartCurrency,     // <-- FIX: Pass local currency
               access_code: accessCode,
               onSuccess: (transaction: any) => {
-+                setTimeout(() => {
-+                  finalizeCheckout(transaction).catch(console.error);
-+                }, 1500);
+                setTimeout(() => {
+                  finalizeCheckout(transaction).catch(console.error);
+                }, 1500);
                },
               onCancel: () => {
                 setError("Payment window closed. You can try again.");
