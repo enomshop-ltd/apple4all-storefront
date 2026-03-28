@@ -90,7 +90,8 @@ export const handler = define.handlers({
         ? "pp_paystack"
         : "pp_system_default";
 
-      const { cart: cartWithPayment } = await medusa.store.payment
+      // FIX: Destructure `payment_collection` directly from the response
+      const { payment_collection } = await medusa.store.payment
         .initiatePaymentSession(
           currentCart,
           {
@@ -101,16 +102,19 @@ export const handler = define.handlers({
           reqHeaders,
         );
 
+      // Attach the returned payment collection to the cart object 
+      // so the frontend still receives the complete cart state
+      currentCart.payment_collection = payment_collection;
+
       // Extract the initialized Paystack session data
-      const paymentCollection = cartWithPayment.payment_collection;
-      const paymentSession = paymentCollection?.payment_sessions?.find((
+      const paymentSession = payment_collection?.payment_sessions?.find((
         s: { provider_id: string; data: unknown },
       ) => s.provider_id === providerId);
 
       return new Response(
         JSON.stringify({
           success: true,
-          cart: cartWithPayment,
+          cart: currentCart, // <-- Return currentCart instead of cartWithPayment
           paymentSession: paymentSession?.data || {},
           publicKey: Deno.env.get("PAYSTACK_PUBLIC_KEY") || "",
         }),
