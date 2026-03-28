@@ -4,7 +4,7 @@ import {
   getOrderStatusTheme,
   getUnifiedOrderStatus,
   UnifiedOrderStatus,
-} from "../utils.ts";
+} from "../lib/order-utils.ts";
 
 interface OrderStatusBadgeProps {
   initialOrder: HttpTypes.StoreOrder;
