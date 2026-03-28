@@ -20,6 +20,38 @@ export const handler = define.handlers({
         reqHeaders.Authorization = `Bearer ${token}`;
       }
 
+      let body: any = {};
+      const text = await ctx.req.text();
+      if (text) {
+        try { body = JSON.parse(text); } catch (e) {}
+      }
+
+      // If we received transaction data, update the payment session to guarantee the backend has the reference
+      if (body.transaction && body.transaction.reference) {
+        try {
+          const { cart } = await medusa.store.cart.retrieve(cartId, { fields: "*payment_collection,*payment_collection.payment_sessions" }, reqHeaders);
+          const session = cart.payment_collection?.payment_sessions?.find((s: any) => s.provider_id.includes("paystack"));
+          
+          if (session) {
+            await medusa.store.payment.initiatePaymentSession(
+              cart,
+              {
+                provider_id: session.provider_id,
+                data: {
+                  ...session.data,
+                  reference: body.transaction.reference,
+                  transaction: body.transaction
+                }
+              },
+              {},
+              reqHeaders
+            );
+          }
+        } catch (err) {
+          console.warn("Could not update session before complete:", err);
+        }
+      }
+
       // Complete cart to create order (Initialization is now handled by /initialize-payment API)
       const result = await medusa.store.cart.complete(cartId, {}, reqHeaders);
 
