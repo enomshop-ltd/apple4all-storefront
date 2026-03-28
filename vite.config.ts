@@ -26,8 +26,8 @@ export default defineConfig({
         "preact-render-to-string"
       ],
       output: {
-        entryFileNames: `[name].js`,
-        chunkFileNames: `[name].js`,
+        entryFileNames: `[name].mjs`,
+        chunkFileNames: `[name].mjs`,
         manualChunks: {
           "medusa-sdk": ["@medusajs/js-sdk"],
           "icons": ["lucide-preact"],
