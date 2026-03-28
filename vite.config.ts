@@ -21,6 +21,10 @@ export default defineConfig({
         if (warning.code === "SOURCEMAP_ERROR") return;
         warn(warning);
       },
+      external:[
+        "npm:preact-render-to-string@^6.6.3",
+        "preact-render-to-string"
+      ],
       output: {
         entryFileNames: `[name].mjs`,
         chunkFileNames: `[name].mjs`,
