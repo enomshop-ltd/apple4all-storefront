@@ -54,7 +54,6 @@ export function Checkout({
     setError("");
 
     const formData = new FormData(e.target as HTMLFormElement);
-    // Explicitly convert FormDataEntryValues to strings and force lowercase on the country code
     const shipping_address = {
       first_name: formData.get("firstName")?.toString(),
       last_name: formData.get("lastName")?.toString(),
@@ -63,7 +62,7 @@ export function Checkout({
       postal_code: formData.get("zip")?.toString(),
       country_code: formData.get("country")?.toString().toLowerCase(),
     };
-    const email = formData.get("email")?.toString();
+    const email = formData.get("email")?.toString() || "";
 
     try {
       // Step 1: Initialize Payment (updates cart and sets up Medusa Payment Session)
@@ -99,26 +98,55 @@ export function Checkout({
           return;
         }
 
-        // Trigger Paystack Popup Inline iframe
-        const handler = (window as unknown as { PaystackPop: { setup: (config: unknown) => { openIframe: () => void } } }).PaystackPop.setup({
-          key: publicKey,
-          access_code: accessCode,
-          onClose: () => {
-            setError("Payment window closed. You can try again.");
-            setIsProcessing(false);
-          },
-          callback: async (_response: unknown) => {
-            // Payment successful, finalize on our backend
-            await finalizeCheckout();
-          },
-        });
+        // --- FIX: Safely check for and load the Paystack inline script ---
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const paystackWindow = window as any;
 
-        handler.openIframe();
+        const openPaystackPopup = () => {
+          try {
+            const handler = paystackWindow.PaystackPop.setup({
+              key: publicKey,
+              email: email, 
+              access_code: accessCode,
+              onClose: () => {
+                setError("Payment window closed. You can try again.");
+                setIsProcessing(false);
+              },
+              callback: async (_response: unknown) => {
+                // Payment successful, finalize on our backend
+                await finalizeCheckout();
+              },
+            });
+            handler.openIframe();
+          } catch (err) {
+            console.error("Paystack iframe error:", err);
+            setError("Failed to open payment gateway. Please try again.");
+            setIsProcessing(false);
+          }
+        };
+
+        if (typeof paystackWindow.PaystackPop === "undefined") {
+          // Script isn't loaded yet. Inject it into the page dynamically.
+          const script = document.createElement("script");
+          script.src = "https://js.paystack.co/v1/inline.js";
+          script.onload = () => openPaystackPopup();
+          script.onerror = () => {
+            setError("Failed to load Paystack securely. Check your connection.");
+            setIsProcessing(false);
+          };
+          document.head.appendChild(script);
+        } else {
+          // Script is already loaded, just open it!
+          openPaystackPopup();
+        }
+
       } else {
         // Handle Pay on Delivery (Manual)
         await finalizeCheckout();
       }
-    } catch (_err) {
+    } catch (err) {
+      // FIX: Log the actual error to the console so it's not hidden next time!
+      console.error("Checkout crash:", err);
       setError("An error occurred during checkout. Please try again.");
       globalThis.scrollTo({ top: 0, behavior: "smooth" });
       setIsProcessing(false);
