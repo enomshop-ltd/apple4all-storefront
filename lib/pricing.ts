@@ -1,5 +1,18 @@
 import { HttpTypes } from "@medusajs/types";
 
+export function formatAmount(amount: number, currencyCode: string = "USD"): string {
+  const zeroDecimalCurrencies =["JPY", "KRW", "VND", "CLP", "PYG", "KES"];
+  const isZeroDecimal = zeroDecimalCurrencies.includes(currencyCode.toUpperCase());
+  const divisor = isZeroDecimal ? 1 : 100;
+  
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currencyCode.toUpperCase(),
+    minimumFractionDigits: isZeroDecimal ? 0 : 2,
+    maximumFractionDigits: isZeroDecimal ? 0 : 2,
+  }).format(amount / divisor);
+}
+
 export function getPriceInfo(
   product: HttpTypes.StoreProduct,
   currencyCode: string = "USD",
@@ -17,26 +30,9 @@ export function getPriceInfo(
     originalPrice = variant.original_price || currentPrice;
   }
 
-  // MedusaJS returns prices in the smallest currency unit (e.g., cents for USD)
-  const zeroDecimalCurrencies = ["JPY", "KRW", "VND", "CLP", "PYG", "KES"];
-  const isZeroDecimal = zeroDecimalCurrencies.includes(
-    currencyCode.toUpperCase(),
-  );
-  const divisor = isZeroDecimal ? 1 : 100;
-
-  currentPrice = currentPrice / divisor;
-  originalPrice = originalPrice / divisor;
-
-  const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currencyCode.toUpperCase(),
-    minimumFractionDigits: isZeroDecimal ? 0 : 2,
-    maximumFractionDigits: isZeroDecimal ? 0 : 2,
-  });
-
   return {
-    currentPrice: formatter.format(currentPrice),
-    originalPrice: formatter.format(originalPrice),
+    currentPrice: formatAmount(currentPrice, currencyCode),
+    originalPrice: formatAmount(originalPrice, currencyCode),
     hasDiscount: originalPrice > currentPrice,
   };
 }

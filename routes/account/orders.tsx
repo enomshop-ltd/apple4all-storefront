@@ -4,6 +4,7 @@ import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 import { HttpTypes } from "@medusajs/types";
 import { page } from "fresh";
 import OrderStatusBadge from "@/islands/OrderStatusBadge.tsx";
+import { formatAmount } from "../../lib/pricing.ts";
 
 export const handler = define.handlers({
   async GET(ctx) {
@@ -68,7 +69,7 @@ export default define.page(function OrdersPage(props) {
                   <div class="text-right">
                     <OrderStatusBadge initialOrder={order} />
                     <p class="text-sm font-medium text-gray-900">
-                      ${(order.total / 100).toFixed(2)}
+                      ${formatAmount(order.total, order.currency_code || "USD")}
                     </p>
                   </div>
                 </div>

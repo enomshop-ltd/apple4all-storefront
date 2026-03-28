@@ -1,6 +1,7 @@
 import { useState } from "preact/hooks";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
+import { formatAmount } from "../lib/pricing.ts";
 
 export function Cart(
   { initialCart }: { initialCart: HttpTypes.StoreCart | null },
@@ -43,10 +44,11 @@ export function Cart(
     }
   };
 
-  const subtotal = (cart?.subtotal || 0) / 100;
-  const shipping = (cart?.shipping_total || 0) / 100;
-  const taxes = (cart?.tax_total || 0) / 100;
-  const total = (cart?.total || 0) / 100;
+  const currencyCode = cart?.region?.currency_code || "USD";
+  const subtotal = formatAmount(cart?.subtotal || 0, currencyCode);
+  const shipping = cart?.shipping_total === 0 ? "Free" : formatAmount(cart?.shipping_total || 0, currencyCode);
+  const taxes = formatAmount(cart?.tax_total || 0, currencyCode);
+  const total = formatAmount(cart?.total || 0, currencyCode);
 
   if (items.length === 0) {
     return (
@@ -92,7 +94,7 @@ export function Cart(
                 {item.title}
               </h3>
               <p class="text-gray-600 font-medium">
-                ${(item.unit_price / 100).toFixed(2)}
+                ${formatAmount(item.unit_price, currencyCode)}
               </p>
             </div>
 
@@ -144,24 +146,24 @@ export function Cart(
           <div class="flex items-center justify-between text-gray-600">
             <span>Subtotal</span>
             <span class="font-medium text-gray-900">
-              ${subtotal.toFixed(2)}
+              ${subtotal}
             </span>
           </div>
           <div class="flex items-center justify-between text-gray-600">
             <span>Shipping</span>
             <span class="font-medium text-gray-900">
-              {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+              {shipping === 0 ? "Free" : `$${shipping}`}
             </span>
           </div>
           <div class="flex items-center justify-between text-gray-600">
             <span>Estimated Taxes</span>
-            <span class="font-medium text-gray-900">${taxes.toFixed(2)}</span>
+            <span class="font-medium text-gray-900">${taxes}</span>
           </div>
 
           <div class="pt-4 border-t border-gray-200 flex items-center justify-between">
             <span class="text-lg font-bold text-gray-900">Total</span>
             <span class="text-xl font-bold text-gray-900">
-              ${total.toFixed(2)}
+              ${total}
             </span>
           </div>
         </div>

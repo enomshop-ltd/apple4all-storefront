@@ -92,6 +92,13 @@ export function Checkout({
         const accessCode = initData.paymentSession?.paystackTxAccessCode;
         const publicKey = initData.publicKey;
 
+        // --- ADDED LOGIC FOR PAYSTACK AMOUNT & CURRENCY ---
+        const cartCurrency = initData.cart?.region?.currency_code?.toUpperCase() || "USD";
+        const isZeroDecimal =["JPY", "KRW", "VND", "CLP", "PYG", "KES"].includes(cartCurrency);
+        // Paystack always expects subunits. For KES, we must multiply by 100.
+        const paystackAmount = isZeroDecimal ? (initData.cart.total * 100) : initData.cart.total;
+        const amountToPass = initData.paymentSession?.amount || paystackAmount;
+
         if (!accessCode || !publicKey) {
           setError("Failed to retrieve Paystack configuration.");
           setIsProcessing(false);
@@ -110,15 +117,13 @@ export function Checkout({
             // 2. Call newTransaction (replaces setup + openIframe)
             paystack.newTransaction({
               key: publicKey,
-              email: email, 
+              email: email,
+              amount: amountToPass,       // <-- FIX: Pass calculated amount
+              currency: cartCurrency,     // <-- FIX: Pass local currency
               access_code: accessCode,
-              // 'callback' is now 'onSuccess'
               onSuccess: (_transaction: unknown) => {
-                // You can safely use async logic here in v2, 
-                // but keeping the .catch() pattern is still best practice
                 finalizeCheckout().catch(console.error);
               },
-              // 'onClose' is now 'onCancel'
               onCancel: () => {
                 setError("Payment window closed. You can try again.");
                 setIsProcessing(false);
@@ -224,17 +229,20 @@ export function Checkout({
     );
   }
 
-  const subtotal = (cart.subtotal || 0) / 100;
-  const taxes = (cart.tax_total || 0) / 100;
+  const currencyCode = cart?.region?.currency_code || "USD";
 
-  const selectedOptionDetails = shippingOptions?.find((o) =>
-    o.id === selectedShippingOption
-  );
-  const shippingAmount = selectedOptionDetails
-    ? (selectedOptionDetails.amount || 0) / 100
-    : (cart.shipping_total || 0) / 100;
+  const subtotalRaw = cart.subtotal || 0;
+  const taxesRaw = cart.tax_total || 0;
+  const shippingAmountRaw = selectedOptionDetails
+    ? selectedOptionDetails.amount || 0
+    : cart.shipping_total || 0;
+  const displayedTotalRaw = subtotalRaw + taxesRaw + shippingAmountRaw;
 
-  const displayedTotal = subtotal + taxes + shippingAmount;
+  // Format safely utilizing local currency
+  const subtotal = formatAmount(subtotalRaw, currencyCode);
+  const taxes = formatAmount(taxesRaw, currencyCode);
+  const shippingAmount = shippingAmountRaw === 0 ? "Free" : formatAmount(shippingAmountRaw, currencyCode);
+  const displayedTotal = formatAmount(displayedTotalRaw, currencyCode);
 
   return (
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
@@ -503,7 +511,7 @@ export function Checkout({
           <div class="flex items-center justify-between text-gray-600">
             <span>Subtotal</span>
             <span class="font-medium text-gray-900">
-              ${subtotal.toFixed(2)}
+              ${subtotal}
             </span>
           </div>
           <div class="flex items-center justify-between text-gray-600">
@@ -514,13 +522,13 @@ export function Checkout({
           </div>
           <div class="flex items-center justify-between text-gray-600">
             <span>Estimated Taxes</span>
-            <span class="font-medium text-gray-900">${taxes.toFixed(2)}</span>
+            <span class="font-medium text-gray-900">${taxes}</span>
           </div>
 
           <div class="pt-4 border-t border-gray-200 flex items-center justify-between">
             <span class="text-lg font-bold text-gray-900">Total</span>
             <span class="text-xl font-bold text-gray-900">
-              ${displayedTotal.toFixed(2)}
+              ${displayedTotal}
             </span>
           </div>
         </div>

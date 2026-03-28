@@ -5,6 +5,7 @@ import Image from "../../../islands/Image.tsx";
 import { HttpTypes } from "@medusajs/types";
 import { page } from "fresh";
 import OrderStatusBadge from "@/islands/OrderStatusBadge.tsx";
+import { formatAmount } from "../../../lib/pricing.ts";
 
 export const handler = define.handlers({
   async GET(ctx) {
@@ -68,10 +69,11 @@ export default define.page(function OrderDetailsPage(props) {
   // FIXED: Cast directly to StoreOrder
   const order = props.data as HttpTypes.StoreOrder;
 
-  const subtotal = (order.subtotal || 0) / 100;
-  const shipping = (order.shipping_total || 0) / 100;
-  const taxes = (order.tax_total || 0) / 100;
-  const total = (order.total || 0) / 100;
+  const currencyCode = order.currency_code || "USD";
+  const subtotal = formatAmount(order.subtotal || 0, currencyCode);
+  const shipping = (order.shipping_total || 0) === 0 ? "Free" : formatAmount(order.shipping_total || 0, currencyCode);
+  const taxes = formatAmount(order.tax_total || 0, currencyCode);
+  const total = formatAmount(order.total || 0, currencyCode);
 
   return (
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -116,7 +118,7 @@ export default define.page(function OrderDetailsPage(props) {
             </div>
             <div class="text-right">
               <p class="font-medium text-gray-900">
-                ${(item.unit_price / 100).toFixed(2)}
+                ${formatAmount(item.unit_price, currencyCode)}
               </p>
             </div>
           </div>
@@ -150,23 +152,23 @@ export default define.page(function OrderDetailsPage(props) {
             <div class="flex justify-between text-gray-600">
               <span>Subtotal</span>
               <span class="font-medium text-gray-900">
-                ${subtotal.toFixed(2)}
+                ${subtotal}
               </span>
             </div>
             <div class="flex justify-between text-gray-600">
               <span>Shipping</span>
               <span class="font-medium text-gray-900">
-                {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                {shipping === 0 ? "Free" : `$${shipping}`}
               </span>
             </div>
             <div class="flex justify-between text-gray-600">
               <span>Taxes</span>
-              <span class="font-medium text-gray-900">${taxes.toFixed(2)}</span>
+              <span class="font-medium text-gray-900">${taxes}</span>
             </div>
             <div class="pt-3 border-t border-gray-200 flex justify-between">
               <span class="font-bold text-gray-900">Total</span>
               <span class="font-bold text-gray-900 text-lg">
-                ${total.toFixed(2)}
+                ${total}
               </span>
             </div>
           </div>
