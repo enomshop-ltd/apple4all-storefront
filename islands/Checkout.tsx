@@ -110,16 +110,9 @@ export function Checkout({
         const openPaystackPopup = () => {
           try {
             const paystack = new paystackWindow.PaystackPop();
-            paystack.newTransaction({
-              key: publicKey,
-              email: email,
-              amount: amountToPass,
-              currency: cartCurrency,
-              ref: reference,           // <-- 2. CRITICAL: Tie the popup to the backend's transaction!
-              access_code: accessCode,
-              
+
+            paystack.resumeTransaction(accessCode, {
               onSuccess: () => {
-                // A short 1.5s delay just to ensure Paystack's database reflects the success globally
                 setTimeout(() => {
                   finalizeCheckout().catch(console.error);
                 }, 1500);
