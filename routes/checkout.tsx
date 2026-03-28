@@ -11,7 +11,7 @@ export const handler = define.handlers({
     let cart = null;
     let customer = null;
     let shippingOptions = [];
-    const cookies = getCookies(ctx.req.headers || "");
+    const cookies = getCookies(ctx.req.headers);
     const cartId = cookies["_medusa_cart_id"];
     const token = cookies["_medusa_jwt"];
 

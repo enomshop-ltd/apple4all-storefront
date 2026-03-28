@@ -118,7 +118,7 @@ export default define.page(function OrderDetailsPage(props) {
             </div>
             <div class="text-right">
               <p class="font-medium text-gray-900">
-                ${formatAmount(item.unit_price, currencyCode)}
+                {formatAmount(item.unit_price, currencyCode)}
               </p>
             </div>
           </div>
@@ -152,23 +152,23 @@ export default define.page(function OrderDetailsPage(props) {
             <div class="flex justify-between text-gray-600">
               <span>Subtotal</span>
               <span class="font-medium text-gray-900">
-                ${subtotal}
+                {subtotal}
               </span>
             </div>
             <div class="flex justify-between text-gray-600">
               <span>Shipping</span>
               <span class="font-medium text-gray-900">
-                {shipping === 0 ? "Free" : `$${shipping}`}
+                {shipping}
               </span>
             </div>
             <div class="flex justify-between text-gray-600">
               <span>Taxes</span>
-              <span class="font-medium text-gray-900">${taxes}</span>
+              <span class="font-medium text-gray-900">{taxes}</span>
             </div>
             <div class="pt-3 border-t border-gray-200 flex justify-between">
               <span class="font-bold text-gray-900">Total</span>
               <span class="font-bold text-gray-900 text-lg">
-                ${total}
+                {total}
               </span>
             </div>
           </div>

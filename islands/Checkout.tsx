@@ -7,6 +7,7 @@ import {
   Truck,
 } from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
+import { formatAmount } from "../lib/pricing.ts";
 
 export function Checkout({
   initialCart,
@@ -15,7 +16,7 @@ export function Checkout({
 }: {
   initialCart: HttpTypes.StoreCart | null;
   customer: HttpTypes.StoreCustomer | null;
-  shippingOptions: unknown[];
+  shippingOptions: any[];
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -233,6 +234,7 @@ export function Checkout({
 
   const subtotalRaw = cart.subtotal || 0;
   const taxesRaw = cart.tax_total || 0;
+  const selectedOptionDetails = (shippingOptions ||[]).find((o: any) => o.id === selectedShippingOption  );
   const shippingAmountRaw = selectedOptionDetails
     ? selectedOptionDetails.amount || 0
     : cart.shipping_total || 0;
@@ -439,7 +441,7 @@ export function Checkout({
                       <span class="font-medium text-gray-900">
                         {option.amount === 0
                           ? "Free"
-                          : `$${(option.amount / 100).toFixed(2)}`}
+                          : formatAmount(option.amount || 0, currencyCode)}
                       </span>
                     </label>
                   ))}
@@ -511,24 +513,24 @@ export function Checkout({
           <div class="flex items-center justify-between text-gray-600">
             <span>Subtotal</span>
             <span class="font-medium text-gray-900">
-              ${subtotal}
+              {subtotal}
             </span>
           </div>
           <div class="flex items-center justify-between text-gray-600">
             <span>Shipping</span>
             <span class="font-medium text-gray-900">
-              {shippingAmount === 0 ? "Free" : `$${shippingAmount.toFixed(2)}`}
+              {shippingAmount}
             </span>
           </div>
           <div class="flex items-center justify-between text-gray-600">
             <span>Estimated Taxes</span>
-            <span class="font-medium text-gray-900">${taxes}</span>
+            <span class="font-medium text-gray-900">{taxes}</span>
           </div>
 
           <div class="pt-4 border-t border-gray-200 flex items-center justify-between">
             <span class="text-lg font-bold text-gray-900">Total</span>
             <span class="text-xl font-bold text-gray-900">
-              ${displayedTotal}
+              {displayedTotal}
             </span>
           </div>
         </div>

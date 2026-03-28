@@ -94,7 +94,7 @@ export function Cart(
                 {item.title}
               </h3>
               <p class="text-gray-600 font-medium">
-                ${formatAmount(item.unit_price, currencyCode)}
+                {formatAmount(item.unit_price, currencyCode)}
               </p>
             </div>
 
@@ -146,24 +146,24 @@ export function Cart(
           <div class="flex items-center justify-between text-gray-600">
             <span>Subtotal</span>
             <span class="font-medium text-gray-900">
-              ${subtotal}
+              {subtotal}
             </span>
           </div>
           <div class="flex items-center justify-between text-gray-600">
             <span>Shipping</span>
             <span class="font-medium text-gray-900">
-              {shipping === 0 ? "Free" : `$${shipping}`}
+              {shipping}
             </span>
           </div>
           <div class="flex items-center justify-between text-gray-600">
             <span>Estimated Taxes</span>
-            <span class="font-medium text-gray-900">${taxes}</span>
+            <span class="font-medium text-gray-900">{taxes}</span>
           </div>
 
           <div class="pt-4 border-t border-gray-200 flex items-center justify-between">
             <span class="text-lg font-bold text-gray-900">Total</span>
             <span class="text-xl font-bold text-gray-900">
-              ${total}
+              {total}
             </span>
           </div>
         </div>
