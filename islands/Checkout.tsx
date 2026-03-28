@@ -95,10 +95,6 @@ export function Checkout({
 
         // --- ADDED LOGIC FOR PAYSTACK AMOUNT & CURRENCY ---
         const cartCurrency = initData.cart?.region?.currency_code?.toUpperCase() || "USD";
-        const isZeroDecimal =["JPY", "KRW", "VND", "CLP", "PYG", "KES"].includes(cartCurrency);
-        // Paystack always expects subunits. For KES, we must multiply by 100.
-        const paystackAmount = isZeroDecimal ? (initData.cart.total * 100) : initData.cart.total;
-        const amountToPass = initData.paymentSession?.amount || paystackAmount;
 
         if (!accessCode || !publicKey) {
           setError("Failed to retrieve Paystack configuration.");
@@ -112,26 +108,19 @@ export function Checkout({
 
         const openPaystackPopup = () => {
           try {
-            // 1. Initialize the new v2 class
             const paystack = new paystackWindow.PaystackPop();
-            
-            // 2. Call newTransaction (replaces setup + openIframe)
             paystack.newTransaction({
               key: publicKey,
-              email: email,
-              amount: amountToPass,       // <-- FIX: Pass calculated amount
-              currency: cartCurrency,     // <-- FIX: Pass local currency
               access_code: accessCode,
               onSuccess: () => {
                 setTimeout(() => {
                   finalizeCheckout().catch(console.error);
                 }, 2500);
-               },
+              },
               onCancel: () => {
                 setError("Payment window closed. You can try again.");
                 setIsProcessing(false);
               },
-              // v2 gives you a dedicated error handler
               onError: (err: any) => {
                 console.error("Paystack transaction error:", err);
                 setError(`Payment failed: ${err.message}`);
