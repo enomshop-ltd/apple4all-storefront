@@ -112,9 +112,9 @@ export function Checkout({
                 setError("Payment window closed. You can try again.");
                 setIsProcessing(false);
               },
-              callback: async (_response: unknown) => {
+              callback: (_response: unknown) => {
                 // Payment successful, finalize on our backend
-                await finalizeCheckout();
+                finalizeCheckout().catch(console.error);
               },
             });
             handler.openIframe();
