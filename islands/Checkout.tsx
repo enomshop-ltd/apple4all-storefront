@@ -122,10 +122,10 @@ export function Checkout({
               amount: amountToPass,       // <-- FIX: Pass calculated amount
               currency: cartCurrency,     // <-- FIX: Pass local currency
               access_code: accessCode,
-              onSuccess: (transaction: any) => {
+              onSuccess: () => {
                 setTimeout(() => {
-                  finalizeCheckout(transaction).catch(console.error);
-                }, 1500);
+                  finalizeCheckout().catch(console.error);
+                }, 2500);
                },
               onCancel: () => {
                 setError("Payment window closed. You can try again.");
@@ -172,12 +172,11 @@ export function Checkout({
     }
   };
 
-  const finalizeCheckout = async (transactionData?: any) => {
+  const finalizeCheckout = async () => {
      try {
        const res = await fetch("/api/cart/complete", {
          method: "POST",
          headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({ transaction: transactionData }),
        });
        if (res.ok) {
          setSuccess(true);
