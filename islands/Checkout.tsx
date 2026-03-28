@@ -104,20 +104,32 @@ export function Checkout({
 
         const openPaystackPopup = () => {
           try {
-            const handler = paystackWindow.PaystackPop.setup({
+            // 1. Initialize the new v2 class
+            const paystack = new paystackWindow.PaystackPop();
+            
+            // 2. Call newTransaction (replaces setup + openIframe)
+            paystack.newTransaction({
               key: publicKey,
               email: email, 
               access_code: accessCode,
-              onClose: () => {
+              // 'callback' is now 'onSuccess'
+              onSuccess: (_transaction: unknown) => {
+                // You can safely use async logic here in v2, 
+                // but keeping the .catch() pattern is still best practice
+                finalizeCheckout().catch(console.error);
+              },
+              // 'onClose' is now 'onCancel'
+              onCancel: () => {
                 setError("Payment window closed. You can try again.");
                 setIsProcessing(false);
               },
-              callback: (_response: unknown) => {
-                // Payment successful, finalize on our backend
-                finalizeCheckout().catch(console.error);
-              },
+              // v2 gives you a dedicated error handler
+              onError: (err: any) => {
+                console.error("Paystack transaction error:", err);
+                setError(`Payment failed: ${err.message}`);
+                setIsProcessing(false);
+              }
             });
-            handler.openIframe();
           } catch (err) {
             console.error("Paystack iframe error:", err);
             setError("Failed to open payment gateway. Please try again.");
@@ -126,9 +138,9 @@ export function Checkout({
         };
 
         if (typeof paystackWindow.PaystackPop === "undefined") {
-          // Script isn't loaded yet. Inject it into the page dynamically.
           const script = document.createElement("script");
-          script.src = "https://js.paystack.co/v1/inline.js";
+          // 3. Ensure the dynamic fallback also points to v2
+          script.src = "https://js.paystack.co/v2/inline.js"; 
           script.onload = () => openPaystackPopup();
           script.onerror = () => {
             setError("Failed to load Paystack securely. Check your connection.");
@@ -136,7 +148,6 @@ export function Checkout({
           };
           document.head.appendChild(script);
         } else {
-          // Script is already loaded, just open it!
           openPaystackPopup();
         }
 

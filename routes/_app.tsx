@@ -23,7 +23,7 @@ export default define.page(function App({ Component, state }) {
         />
         <meta property="og:type" content="website" />
         {/* Paystack Inline Script */}
-        <script src="https://js.paystack.co/v1/inline.js"></script>
+        <script src="https://js.paystack.co/v2/inline.js"></script>
       </head>
       <body
         f-client-nav
