@@ -6,6 +6,7 @@ import { HttpTypes } from "@medusajs/types";
 import { page } from "fresh";
 import OrderStatusBadge from "@/islands/OrderStatusBadge.tsx";
 import { formatAmount } from "../../../lib/pricing.ts";
+import InstallmentPayment from "../../../islands/InstallmentPayment.tsx";
 
 export const handler = define.handlers({
   async GET(ctx) {
@@ -66,14 +67,22 @@ export const handler = define.handlers({
 });
 
 export default define.page(function OrderDetailsPage(props) {
-  // FIXED: Cast directly to StoreOrder
   const order = props.data as HttpTypes.StoreOrder;
-
   const currencyCode = order.currency_code || "USD";
   const subtotal = formatAmount(order.subtotal || 0, currencyCode);
   const shipping = (order.shipping_total || 0) === 0 ? "Free" : formatAmount(order.shipping_total || 0, currencyCode);
   const taxes = formatAmount(order.tax_total || 0, currencyCode);
   const total = formatAmount(order.total || 0, currencyCode);
+  const paymentCollection = order.payment_collections?.[0];
+  let capturedAmountRaw = 0;
+  
+  if (paymentCollection?.payments) {
+    capturedAmountRaw = paymentCollection.payments.reduce((acc: number, p: any) => {
+      return acc + (p.captured_at ? Number(p.amount) : 0);
+    }, 0);
+  }
+  
+  const remainingBalanceRaw = (order.total || 0) - capturedAmountRaw;
 
   return (
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -171,9 +180,29 @@ export default define.page(function OrderDetailsPage(props) {
                 {total}
               </span>
             </div>
+            <div class="flex justify-between text-green-600 pt-2">
+              <span>Amount Paid</span>
+              <span class="font-medium">
+                {formatAmount(capturedAmountRaw, currencyCode)}
+              </span>
+            </div>
+            <div class="flex justify-between text-red-600">
+              <span class="font-bold">Remaining Balance</span>
+              <span class="font-bold">
+                {formatAmount(remainingBalanceRaw, currencyCode)}
+              </span>
+            </div>
           </div>
         </div>
       </div>
+      {remainingBalanceRaw > 0 && (
+        <InstallmentPayment 
+          orderId={order.id} 
+          remainingBalanceRaw={remainingBalanceRaw} 
+          customerEmail={order.email || ""} 
+          currencyCode={currencyCode}
+        />
+      )}
     </div>
   );
 });
