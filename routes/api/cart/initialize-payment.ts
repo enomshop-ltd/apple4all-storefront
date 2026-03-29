@@ -96,7 +96,7 @@ export const handler = define.handlers({
           currentCart,
           {
             provider_id: providerId,
-            data: { email: body.email },
+            data: { email: body.email, cart_id: currentCart.id },
           },
           {},
           reqHeaders,

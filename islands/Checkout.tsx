@@ -93,11 +93,6 @@ export function Checkout({
         const accessCode = initData.paymentSession?.paystackTxAccessCode;
         const reference = initData.paymentSession?.paystackTxRef; // <-- 1. Extract the secure backend reference
         const publicKey = initData.publicKey;
-        
-        const cartCurrency = initData.cart?.region?.currency_code?.toUpperCase() || "USD";
-        const isZeroDecimal =["JPY", "KRW", "VND", "CLP", "PYG", "KES"].includes(cartCurrency);
-        const paystackAmount = isZeroDecimal ? (initData.cart.total * 100) : initData.cart.total;
-        const amountToPass = initData.paymentSession?.amount || paystackAmount;
 
         if (!accessCode || !publicKey || !reference) {
           setError("Failed to retrieve Paystack configuration.");
