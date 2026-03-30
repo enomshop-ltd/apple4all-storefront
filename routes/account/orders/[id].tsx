@@ -24,18 +24,8 @@ export const handler = define.handlers({
     try {
       const { order: fetchedOrder } = await medusa.store.order.retrieve(
         orderId,
-<<<<<<< HEAD
         { fields: "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address,*payment_collections,*payment_collections.payments,*payment_collections.payment_sessions" },
         { Authorization: `Bearer ${token}` }
-=======
-        {
-          fields:
-            "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address,*payment_collections,*payment_collections.payments,*payment_collections.payment_sessions",
-        },
-        {
-          Authorization: `Bearer ${token}`,
-        },
->>>>>>> cc942ef070bfd5887e039615d900064d999b5390
       );
       order = fetchedOrder;
       console.log(`Successfully fetched order #${order?.display_id}`);
