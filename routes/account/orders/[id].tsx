@@ -8,7 +8,12 @@ import OrderStatusBadge from "../../../islands/OrderStatusBadge.tsx";
 import { formatAmount } from "../../../lib/pricing.ts";
 import InstallmentPayment from "../../../islands/InstallmentPayment.tsx";
 import { getUnifiedOrderNumber } from "../../../lib/order-utils.ts";
+<<<<<<< HEAD
 import DownloadInvoiceButton from "../../../islands/DownloadInvoiceButton.tsx";
+=======
+import DownloadInvoiceButton from "@/islands/DownloadInvoiceButton.tsx";
+
+>>>>>>> cc942ef070bfd5887e039615d900064d999b5390
 export const handler = define.handlers({
   async GET(ctx) {
     console.log("Fetching order details for ID:", ctx.params.id);
@@ -23,8 +28,18 @@ export const handler = define.handlers({
     try {
       const { order: fetchedOrder } = await medusa.store.order.retrieve(
         orderId,
+<<<<<<< HEAD
         { fields: "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address,*payment_collections,*payment_collections.payments,*payment_collections.payment_sessions" },
         { Authorization: `Bearer ${token}` }
+=======
+        {
+          fields:
+            "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address,*payment_collections,*payment_collections.payments,*payment_collections.payment_sessions",
+        },
+        {
+          Authorization: `Bearer ${token}`,
+        },
+>>>>>>> cc942ef070bfd5887e039615d900064d999b5390
       );
       order = fetchedOrder;
       console.log(`Successfully fetched order #${order?.display_id}`);
@@ -41,9 +56,19 @@ export const handler = define.handlers({
     if (!order) {
       return new Response("", { status: 302, headers: { Location: "/account" } });
     }
+<<<<<<< HEAD
     ctx.state.order = order;
     ctx.state.title = `Order #${getUnifiedOrderNumber(order)} - Apple4All`;
     ctx.state.description = `View details for order #${getUnifiedOrderNumber(order)}.`;
+=======
+
+    console.log("Order Payment Collections:", JSON.stringify(order.payment_collections, null, 2));
+
+    ctx.state.order = order;
+    ctx.state.title = `Order #${getUnifiedOrderNumber(order)} - Apple4All`;
+    ctx.state.description = `View details for order #${getUnifiedOrderNumber(order)}.`;
+
+>>>>>>> cc942ef070bfd5887e039615d900064d999b5390
     return page(order);
   }
 });
@@ -55,10 +80,25 @@ export default define.page(function OrderDetailsPage(props) {
   const taxes = formatAmount(order.tax_total || 0, currencyCode);
   const total = formatAmount(order.total || 0, currencyCode);
   let capturedAmountRaw = 0;
+<<<<<<< HEAD
   if (order.payment_collections) {
     for (const pc of order.payment_collections) {
       if (pc.payments) {
         capturedAmountRaw += pc.payments.reduce((acc: number, p: any) => {
+=======
+  let hasManualPayment = false;
+  
+  if (order.payment_collections) {
+    for (const pc of order.payment_collections) {
+      if (pc.payment_sessions?.some((s: any) => s.provider_id?.includes('manual') || s.provider_id?.includes('delivery') || s.provider_id?.includes('cash')) || 
+          pc.payments?.some((p: any) => p.provider_id?.includes('manual') || p.provider_id?.includes('delivery') || p.provider_id?.includes('cash'))) {
+        hasManualPayment = true;
+      }
+      
+      if (pc.payments) {
+        capturedAmountRaw += pc.payments.reduce((acc: number, p: any) => {
+          // Count if it's captured OR if it's a paystack payment (assuming paystack payments are direct captures)
+>>>>>>> cc942ef070bfd5887e039615d900064d999b5390
           const isPaid = p.captured_at || (p.provider_id && p.provider_id.includes('paystack') && !p.canceled_at);
           return acc + (isPaid ? Number(p.amount) : 0);
         }, 0);
@@ -70,7 +110,13 @@ export default define.page(function OrderDetailsPage(props) {
   return (
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <div class="flex items-center justify-between mb-6">
+<<<<<<< HEAD
         <h2 class="text-2xl font-bold text-gray-900">Order #{getUnifiedOrderNumber(order)}</h2>
+=======
+        <h2 class="text-2xl font-bold text-gray-900">
+          Order #{getUnifiedOrderNumber(order)}
+        </h2>
+>>>>>>> cc942ef070bfd5887e039615d900064d999b5390
         <div class="flex items-center gap-4">
           <DownloadInvoiceButton orderId={order.id} variant="button" />
           <OrderStatusBadge initialOrder={order} />
@@ -139,12 +185,20 @@ export default define.page(function OrderDetailsPage(props) {
           </div>
         </div>
       </div>
+<<<<<<< HEAD
       {remainingBalanceRaw > 0 && (
         <InstallmentPayment
           orderId={order.id}
           displayId={order.display_id as number}
           remainingBalanceRaw={remainingBalanceRaw}
           customerEmail={order.email || ""}
+=======
+      {hasManualPayment && remainingBalanceRaw > 0 && (
+        <InstallmentPayment 
+          orderId={order.id} 
+          remainingBalanceRaw={remainingBalanceRaw} 
+          customerEmail={order.email || ""} 
+>>>>>>> cc942ef070bfd5887e039615d900064d999b5390
           currencyCode={currencyCode}
         />
       )}

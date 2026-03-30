@@ -44,6 +44,7 @@ export function getOrderStatusTheme(status: UnifiedOrderStatus): string {
       return "bg-gray-100 text-gray-600 border-gray-200";
   }
 }
+<<<<<<< HEAD
 export function getUnifiedOrderNumber(order: HttpTypes.StoreOrder): string {
   const displayId = order.display_id || "";
   const rawId = order.id || (order as any).cart_id || "";
@@ -51,4 +52,27 @@ export function getUnifiedOrderNumber(order: HttpTypes.StoreOrder): string {
   const unifiedNumber = displayId ? `${displayId}-${cleanId}` : cleanId;
   console.log(`Generated unified order number: ${unifiedNumber} (Raw ID: ${rawId})`);
   return unifiedNumber;
+=======
+
+export function getUnifiedOrderNumber(order: HttpTypes.StoreOrder): string {
+  if (order.payment_collections) {
+    for (const pc of order.payment_collections) {
+      if (pc.payment_sessions) {
+        for (const ps of pc.payment_sessions) {
+          if (ps.data?.paystackTxRef) {
+            return ps.data.paystackTxRef as string;
+          }
+        }
+      }
+      if (pc.payments) {
+        for (const p of pc.payments) {
+          if (p.data?.paystackTxRef) {
+            return p.data.paystackTxRef as string;
+          }
+        }
+      }
+    }
+  }
+  return order.display_id?.toString() || order.id;
+>>>>>>> cc942ef070bfd5887e039615d900064d999b5390
 }
