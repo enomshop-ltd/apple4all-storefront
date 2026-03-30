@@ -7,6 +7,8 @@ import { page } from "fresh";
 import OrderStatusBadge from "@/islands/OrderStatusBadge.tsx";
 import { formatAmount } from "../../../lib/pricing.ts";
 import InstallmentPayment from "../../../islands/InstallmentPayment.tsx";
+import { getUnifiedOrderNumber } from "../../../lib/order-utils.ts";
+import DownloadInvoiceButton from "@/islands/DownloadInvoiceButton.tsx";
 
 export const handler = define.handlers({
   async GET(ctx) {
@@ -24,7 +26,7 @@ export const handler = define.handlers({
         orderId,
         {
           fields:
-            "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address",
+            "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address,*payment_collections,*payment_collections.payments,*payment_collections.payment_sessions",
         },
         {
           Authorization: `Bearer ${token}`,
@@ -58,9 +60,11 @@ export const handler = define.handlers({
       });
     }
 
+    console.log("Order Payment Collections:", JSON.stringify(order.payment_collections, null, 2));
+
     ctx.state.order = order;
-    ctx.state.title = `Order #${order.display_id} - Apple4All`;
-    ctx.state.description = `View details for order #${order.display_id}.`;
+    ctx.state.title = `Order #${getUnifiedOrderNumber(order)} - Apple4All`;
+    ctx.state.description = `View details for order #${getUnifiedOrderNumber(order)}.`;
 
     return page(order);
   },
@@ -73,13 +77,24 @@ export default define.page(function OrderDetailsPage(props) {
   const shipping = (order.shipping_total || 0) === 0 ? "Free" : formatAmount(order.shipping_total || 0, currencyCode);
   const taxes = formatAmount(order.tax_total || 0, currencyCode);
   const total = formatAmount(order.total || 0, currencyCode);
-  const paymentCollection = order.payment_collections?.[0];
   let capturedAmountRaw = 0;
+  let hasManualPayment = false;
   
-  if (paymentCollection?.payments) {
-    capturedAmountRaw = paymentCollection.payments.reduce((acc: number, p: any) => {
-      return acc + (p.captured_at ? Number(p.amount) : 0);
-    }, 0);
+  if (order.payment_collections) {
+    for (const pc of order.payment_collections) {
+      if (pc.payment_sessions?.some((s: any) => s.provider_id?.includes('manual') || s.provider_id?.includes('delivery') || s.provider_id?.includes('cash')) || 
+          pc.payments?.some((p: any) => p.provider_id?.includes('manual') || p.provider_id?.includes('delivery') || p.provider_id?.includes('cash'))) {
+        hasManualPayment = true;
+      }
+      
+      if (pc.payments) {
+        capturedAmountRaw += pc.payments.reduce((acc: number, p: any) => {
+          // Count if it's captured OR if it's a paystack payment (assuming paystack payments are direct captures)
+          const isPaid = p.captured_at || (p.provider_id && p.provider_id.includes('paystack') && !p.canceled_at);
+          return acc + (isPaid ? Number(p.amount) : 0);
+        }, 0);
+      }
+    }
   }
   
   const remainingBalanceRaw = (order.total || 0) - capturedAmountRaw;
@@ -88,9 +103,12 @@ export default define.page(function OrderDetailsPage(props) {
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold text-gray-900">
-          Order #{order.display_id}
+          Order #{getUnifiedOrderNumber(order)}
         </h2>
-        <OrderStatusBadge initialOrder={order} />
+        <div class="flex items-center gap-4">
+          <DownloadInvoiceButton orderId={order.id} variant="button" />
+          <OrderStatusBadge initialOrder={order} />
+        </div>
       </div>
 
       <p class="text-sm text-gray-500 mb-8">
@@ -195,7 +213,7 @@ export default define.page(function OrderDetailsPage(props) {
           </div>
         </div>
       </div>
-      {remainingBalanceRaw > 0 && (
+      {hasManualPayment && remainingBalanceRaw > 0 && (
         <InstallmentPayment 
           orderId={order.id} 
           remainingBalanceRaw={remainingBalanceRaw} 

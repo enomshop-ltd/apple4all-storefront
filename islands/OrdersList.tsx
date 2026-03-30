@@ -1,6 +1,8 @@
 import { useState } from "preact/hooks";
 import { ChevronRight, Package } from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
+import { getUnifiedOrderNumber } from "../lib/order-utils.ts";
+import DownloadInvoiceButton from "./DownloadInvoiceButton.tsx";
 
 export function OrdersList(
   { initialOrders }: { initialOrders: HttpTypes.StoreOrder[] },
@@ -62,7 +64,7 @@ export function OrdersList(
                   {order.status}
                 </span>
                 <span class="text-sm text-gray-500">
-                  Order #{order.display_id || order.id.split("_")[1]}
+                  Order #{getUnifiedOrderNumber(order)}
                 </span>
               </div>
             </div>
@@ -99,10 +101,13 @@ export function OrdersList(
                   </div>
                 </div>
 
-                <button type="button" class="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
-                  View details
-                  <ChevronRight class="w-4 h-4" />
-                </button>
+                <div class="flex items-center gap-4">
+                  <DownloadInvoiceButton orderId={order.id} variant="button" />
+                  <button type="button" class="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
+                    View details
+                    <ChevronRight class="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>

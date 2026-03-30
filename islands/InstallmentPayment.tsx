@@ -4,11 +4,13 @@ import { formatAmount } from "../lib/pricing.ts";
 
 export default function InstallmentPayment({
   orderId,
+  displayId,
   remainingBalanceRaw,
   customerEmail,
   currencyCode,
 }: {
   orderId: string;
+  displayId: number;
   remainingBalanceRaw: number;
   customerEmail: string;
   currencyCode: string;
@@ -44,6 +46,7 @@ export default function InstallmentPayment({
         body: JSON.stringify({
           amount: rawAmountToPay,
           email: customerEmail,
+          display_id: displayId,
           // Fallback URL in case Paystack forces a redirect (e.g. certain bank authentications)
           callback_url: `${globalThis.location.origin}/account/orders/${orderId}`,
         }),
