@@ -1,3 +1,13 @@
+## 2026 Update: Account Dashboard Overhaul
+
+The customer account interface has been merged into a single, comprehensive dashboard located at `/account`.
+
+### Features Added
+- **Unified Overview:** Combines Profile information, saved Delivery Addresses, and Order History into a single Flowbite-style dashboard view.
+- **Inline Editing:** To edit profile information (Name, Phone Number), hover over the fields. The inputs are seamless and outline only on focus. Edits securely push changes to Medusa natively when you hit "Enter" or click away (blur event).
+- **Consolidated API usage:** Eliminates redundant data fetches by grouping customer, address, and orders logic in a single `Promise.all` loader inside `routes/account/index.tsx`.
+- **Deprecated Routes:** The previously redundant sub-pages (`/profile`, `/orders`, `/addresses`) have been replaced with redirects back to the main `/account` dashboard. Debug logs are placed in the endpoints to trace API actions easily.
+
 # Deno Fresh + Medusa v2 Storefront
 
 A blazing-fast, modern e-commerce storefront built with

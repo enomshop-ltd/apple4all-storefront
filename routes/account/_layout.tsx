@@ -10,9 +10,6 @@ export default define.page(function AccountLayout({ Component, url, state }) {
 
   const tabs = [
     { id: "overview", label: "Overview", href: "/account" },
-    { id: "profile", label: "Profile", href: "/account/profile" },
-    { id: "addresses", label: "Addresses", href: "/account/addresses" },
-    { id: "orders", label: "Orders", href: "/account/orders" },
   ];
 
   return (

@@ -1,17 +1,6 @@
 import { HttpTypes } from "@medusajs/types";
-
-export type UnifiedOrderStatus =
-  | "Canceled"
-  | "Refunded"
-  | "Delivered"
-  | "Shipped"
-  | "Processing"
-  | "Pending Payment"
-  | "Pending";
-
-export function getUnifiedOrderStatus(
-  order: HttpTypes.StoreOrder,
-): UnifiedOrderStatus {
+export type UnifiedOrderStatus = "Canceled" | "Refunded" | "Delivered" | "Shipped" | "Processing" | "Pending Payment" | "Pending";
+export function getUnifiedOrderStatus(order: HttpTypes.StoreOrder): UnifiedOrderStatus {
   if (order.status === "canceled") return "Canceled";
   if (order.payment_status === "refunded") return "Refunded";
   switch (order.fulfillment_status) {
@@ -28,6 +17,8 @@ export function getUnifiedOrderStatus(
   switch (order.payment_status) {
     case "captured":
     case "authorized":
+    case "partially_captured":
+    case "partially_authorized":
       return "Processing";
     case "not_paid":
     case "awaiting":
@@ -36,7 +27,6 @@ export function getUnifiedOrderStatus(
   }
   return "Pending";
 }
-
 export function getOrderStatusTheme(status: UnifiedOrderStatus): string {
   switch (status) {
     case "Delivered":
@@ -53,4 +43,12 @@ export function getOrderStatusTheme(status: UnifiedOrderStatus): string {
     default:
       return "bg-gray-100 text-gray-600 border-gray-200";
   }
+}
+export function getUnifiedOrderNumber(order: HttpTypes.StoreOrder): string {
+  const displayId = order.display_id || "";
+  const rawId = order.id || (order as any).cart_id || "";
+  const cleanId = rawId.replace(/^(order_|cart_)/, "");
+  const unifiedNumber = displayId ? `${displayId}-${cleanId}` : cleanId;
+  console.log(`Generated unified order number: ${unifiedNumber} (Raw ID: ${rawId})`);
+  return unifiedNumber;
 }
