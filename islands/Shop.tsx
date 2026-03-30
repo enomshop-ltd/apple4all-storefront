@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { ProductCard } from "../components/ProductCard.tsx";
 import { PromoBanner } from "../components/PromoBanner.tsx";
 import { CustomBox } from "./CustomBox.tsx";
-import {
+import { 
   AlertTriangle,
   Loader2,
   Search,
