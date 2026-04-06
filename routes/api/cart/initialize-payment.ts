@@ -85,7 +85,10 @@ export const handler = define.handlers({
         }
       }
 
-      const providerId = body.payment_method === "paystack" ? "pp_paystack" : "pp_system_default";
+      const providerId = body.payment_method === "paystack" ||
+          body.payment_method === "pp_paystack"
+        ? "pp_paystack"
+        : "pp_system_default";
 
       // FIX: Destructure `payment_collection` directly from the response
       const { payment_collection } = await medusa.store.payment
@@ -93,7 +96,11 @@ export const handler = define.handlers({
           currentCart,
           {
             provider_id: providerId,
-            data: { email: body.email, cart_id: currentCart.id },
+            data: { 
+              email: body.email, 
+              cart_id: currentCart.id,
+              callback_url: body.callback_url
+            },
           },
           {},
           reqHeaders,

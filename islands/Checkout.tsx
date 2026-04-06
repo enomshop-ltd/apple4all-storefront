@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import {
   CreditCard,
   Loader2,
@@ -23,6 +23,16 @@ export function Checkout({
   const [error, setError] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("paystack");
 
+    useEffect(() => {
+    // Handle Paystack redirect fallback
+    const urlParams = new URLSearchParams(globalThis.location?.search);
+    const reference = urlParams.get("reference") || urlParams.get("trxref");
+    if (reference && initialCart?.items?.length) {
+      setIsProcessing(true);
+      finalizeCheckout().catch(console.error);
+    }
+  }, []);
+  
   const cart = initialCart;
 
   const defaultAddress = customer?.addresses?.[0] || cart?.shipping_address;
