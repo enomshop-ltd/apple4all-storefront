@@ -85,10 +85,7 @@ export const handler = define.handlers({
         }
       }
 
-      const providerId = body.payment_method === "paystack" ||
-          body.payment_method === "pp_paystack"
-        ? "paystack"
-        : "pp_system_default";
+      const providerId = body.payment_method === "paystack" ? "pp_paystack" : "pp_system_default";
 
       // FIX: Destructure `payment_collection` directly from the response
       const { payment_collection } = await medusa.store.payment
