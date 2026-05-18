@@ -1,10 +1,7 @@
 import { FreshContext } from "fresh";
 import { getCategories } from "../lib/data.ts";
 
-export async function handler(
-  _req: Request,
-  ctx: FreshContext,
-) {
+export async function handler(ctx: FreshContext) {
   try {
     const categories = await getCategories();
     ctx.state.categories = categories;
