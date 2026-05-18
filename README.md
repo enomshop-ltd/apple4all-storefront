@@ -16,6 +16,11 @@ A blazing-fast, modern e-commerce storefront built with [Deno Fresh](https://fre
 
 ## Changelog
 
+- **Backend Security Note Recorded:** Created a `TODO.md` outlining the required changes to the `enomshop-ltd/medusajs-repair-module` API to securely gate sensitive data conditionally behind Medusa Customer ID Authentication, allowing safe public tracking.
+- **Dynamic Active Orders:** Adjusted the `AccountDashboard.tsx` view to only display the "Active orders" widget if the customer genuinely has an active order (status is not completed, canceled, or archived).
+- **Account Dashboard Polish:** Removed the placeholder "Flowbite PRO" subscription section from the account dashboard, and replaced the read-only Delivery Address field with an inline-editable grid linked to a new internal API wrapper (`/api/account/address`) that calls MedusaJS V2's `createAddress`/`updateAddress` SDK.
+- **Improved Registration UX:** Refactored the MedusaJS `/api/auth/register` route token extraction so newly created sessions correctly populate valid auth cookies, preventing unexpected logouts. Added a visual success banner ("Account created successfully! Redirecting you to your dashboard...") inside the `LoginForm` island with a 2-second delay to give clear feedback instead of instantly redirecting to the login portal.
+- **Dynamic Repairs Menu:** Added an intelligent `Repairs` tab under the Customer Account Overview. It natively checks the customer's previous or active order items via Medusa API in the route middleware, and only reveals the nested tracking page (complete with native chat, workflow approvals, and cost breakdown capabilities mapped to `TrackRepairIsland`) if valid repair line-items exist.
 - **SEO Dynamic Sitemap:** Switched from a static file to a dedicated Deno Fresh API route (`/routes/sitemap.xml.ts`) that dynamically generates the `sitemap.xml` response by querying Medusa.js for the latest products.
 - **SEO Update:** Added a `robots.txt` file in the static directory to ensure valid search engine crawling and indexation.
 - **Smooth Page Transitions:** Implemented the browser-native View Transitions API natively via Fresh 2.3's `f-view-transition` attribute for partials, and the `<meta name="view-transition" content="same-origin" />` tag for full cross-document navigations.
@@ -24,6 +29,7 @@ A blazing-fast, modern e-commerce storefront built with [Deno Fresh](https://fre
 - **Add to Cart Button:** Changed the background color of the 'Add to Cart' buttons to a sleek dark grey/black shade for a more modern look.
 - **Product Details Polish:** Redesigned the "Read More" / "Show Less" button for product descriptions. It is now centered, styled as a pill button for higher visibility, and uses a solid top-border line separator instead of a fade-out gradient.
 - **Track Repair Form Update:** Removed the "Track Repair Status" primary button and converted the YouTube link into a sleek, text-based "Track repair status" submit button underneath the input field.
+- **Account Dashboard:** Removed statically-mocked "Favorite products" and "Reviews added" fields replacing them with dynamically calculated "Unpaid" ammounts, "Credits", and "Returns" fetched from real order data.
 - **Store Sort UI Update:** Reduced the width of the product list sort drop-down and shortened the copy (removed "arrivals" and "name:") for a cleaner look.
 - **UX Polish (Progress Bar):** Fixed the GitHub-style Top Loading Progress Bar so that it reliably triggers and completes during Fresh client-side (partial) navigation by hooking natively into `fetch`, `click` (capture phase), and `pushState` events.
 - **Header & API Fixes:** Resolved an issue causing the header to disappear by moving Medusa category fetching out of the asynchronous component and into a route middleware (`_middleware.ts`). Fixed duplicate header/footer issues on error pages.

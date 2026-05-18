@@ -7,11 +7,15 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setSuccess("");
+
+    let isSuccess = false;
 
     try {
       const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
@@ -22,7 +26,17 @@ export function LoginForm() {
       });
 
       if (res.ok) {
-        globalThis.location.href = "/account";
+        isSuccess = true;
+        if (!isLogin) {
+          setSuccess(
+            "Account created successfully! Redirecting you to your dashboard...",
+          );
+          setTimeout(() => {
+            globalThis.location.href = "/account";
+          }, 2000);
+        } else {
+          globalThis.location.href = "/account";
+        }
       } else {
         const data = await res.json();
         setError(
@@ -39,7 +53,10 @@ export function LoginForm() {
       );
       globalThis.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
-      setIsLoading(false);
+      // Keep loading spinner if successful registration to prevent double-clicks during redirect delay
+      if (!(isSuccess && !isLogin)) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -48,6 +65,11 @@ export function LoginForm() {
       {error && (
         <div class="bg-red-50 text-red-600 p-4 rounded-lg text-sm font-medium">
           {error}
+        </div>
+      )}
+      {success && (
+        <div class="bg-green-50 text-green-700 p-4 rounded-lg text-sm font-medium">
+          {success}
         </div>
       )}
 
@@ -102,31 +124,29 @@ export function LoginForm() {
       </button>
 
       <div class="text-center text-sm text-gray-600">
-        {isLogin
-          ? (
-            <>
-              Don't have an account?{" "}
-              <button
-                type="button"
-                onClick={() => setIsLogin(false)}
-                class="font-medium text-blue-600 hover:text-blue-800 transition-colors"
-              >
-                Sign up
-              </button>
-            </>
-          )
-          : (
-            <>
-              Already have an account?{" "}
-              <button
-                type="button"
-                onClick={() => setIsLogin(true)}
-                class="font-medium text-blue-600 hover:text-blue-800 transition-colors"
-              >
-                Sign in
-              </button>
-            </>
-          )}
+        {isLogin ? (
+          <>
+            Don't have an account?{" "}
+            <button
+              type="button"
+              onClick={() => setIsLogin(false)}
+              class="font-medium text-blue-600 hover:text-blue-800 transition-colors"
+            >
+              Sign up
+            </button>
+          </>
+        ) : (
+          <>
+            Already have an account?{" "}
+            <button
+              type="button"
+              onClick={() => setIsLogin(true)}
+              class="font-medium text-blue-600 hover:text-blue-800 transition-colors"
+            >
+              Sign in
+            </button>
+          </>
+        )}
       </div>
     </form>
   );

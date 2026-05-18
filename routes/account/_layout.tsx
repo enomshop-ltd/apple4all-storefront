@@ -7,19 +7,24 @@ export default define.page(function AccountLayout({ Component, url, state }) {
   if (path.includes("/account/profile")) activeTab = "profile";
   else if (path.includes("/account/addresses")) activeTab = "addresses";
   else if (path.includes("/account/orders")) activeTab = "orders";
+  else if (path.includes("/account/repairs")) activeTab = "repairs";
 
-  const tabs = [
-    { id: "overview", label: "Overview", href: "/account" },
-  ];
+  const tabs = [{ id: "overview", label: "Overview", href: "/account" }];
+
+  if (state.hasRepairs) {
+    tabs.push({ id: "repairs", label: "Repairs", href: "/account/repairs" });
+  }
 
   return (
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
       <Head>
-        <title>{state.title as string || "My Account - Apple4All"}</title>
+        <title>{(state.title as string) || "My Account - Apple4All"}</title>
         <meta
           name="description"
-          content={state.description as string ||
-            "Manage your Apple4All account, orders, and preferences."}
+          content={
+            (state.description as string) ||
+            "Manage your Apple4All account, orders, and preferences."
+          }
         />
       </Head>
       <h1 class="text-3xl font-bold mb-8">My Account</h1>

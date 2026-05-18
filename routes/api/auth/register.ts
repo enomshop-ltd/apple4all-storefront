@@ -6,10 +6,17 @@ export const handler = define.handlers({
     try {
       const body = await ctx.req.json();
 
-      const token = await medusa.auth.register("customer", "emailpass", {
+      const regResult = await medusa.auth.register("customer", "emailpass", {
         email: body.email,
         password: body.password,
       });
+
+      const token =
+        typeof regResult === "string" ? regResult : (regResult as any).token;
+
+      if (!token) {
+        throw new Error("Registration failed - no token returned");
+      }
 
       // Create the customer record using the registration token
       await medusa.store.customer.create(
