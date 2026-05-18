@@ -9,7 +9,10 @@ export default define.page(function AccountLayout({ Component, url, state }) {
   else if (path.includes("/account/orders")) activeTab = "orders";
   else if (path.includes("/account/repairs")) activeTab = "repairs";
 
-  const tabs = [{ id: "overview", label: "Overview", href: "/account" }];
+  const tabs = [
+    { id: "overview", label: "Overview", href: "/account" },
+    { id: "orders", label: "My Orders", href: "/account/orders" }
+  ];
 
   if (state.hasRepairs) {
     tabs.push({ id: "repairs", label: "Repairs", href: "/account/repairs" });
@@ -47,7 +50,7 @@ export default define.page(function AccountLayout({ Component, url, state }) {
             ))}
             <a
               href="/api/auth/logout"
-              f-client-nav={false}
+              f-client-nav="false"
               class="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md"
             >
               Logout

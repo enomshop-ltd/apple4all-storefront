@@ -21,6 +21,32 @@ export const handler = define.handlers({
 
       const token = result;
 
+      const cookies = ctx.req.headers.get("cookie");
+      let cartId = null;
+      if (cookies) {
+        const matches = cookies.match(/_medusa_cart_id=([^;]+)/);
+        if (matches) cartId = matches[1];
+      }
+
+      if (cartId) {
+        try {
+          const { customer } = await medusa.store.customer.retrieve(
+            {},
+            { Authorization: `Bearer ${token}` },
+          );
+
+          if (customer?.id) {
+            await medusa.store.cart.update(
+              cartId,
+              { customer_id: customer.id, email: customer.email },
+              { Authorization: `Bearer ${token}` },
+            );
+          }
+        } catch (err) {
+          console.error("Failed to associate cart with customer:", err);
+        }
+      }
+
       // Set cookie
       const headers = new Headers();
       headers.set("Content-Type", "application/json");

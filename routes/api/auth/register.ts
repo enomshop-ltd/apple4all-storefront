@@ -19,7 +19,7 @@ export const handler = define.handlers({
       }
 
       // Create the customer record using the registration token
-      await medusa.store.customer.create(
+      const { customer } = await medusa.store.customer.create(
         {
           email: body.email,
           first_name: body.first_name,
@@ -30,6 +30,25 @@ export const handler = define.handlers({
           Authorization: `Bearer ${token}`,
         },
       );
+
+      const cookiesStr = ctx.req.headers.get("cookie");
+      let cartId = null;
+      if (cookiesStr) {
+        const matches = cookiesStr.match(/_medusa_cart_id=([^;]+)/);
+        if (matches) cartId = matches[1];
+      }
+
+      if (cartId && customer?.id) {
+        try {
+          await medusa.store.cart.update(
+            cartId,
+            { customer_id: customer.id, email: customer.email },
+            { Authorization: `Bearer ${token}` },
+          );
+        } catch (err) {
+          console.error("Failed to associate cart with new customer:", err);
+        }
+      }
 
       const headers = new Headers();
       headers.set("Content-Type", "application/json");
