@@ -1,6 +1,4 @@
 import { Head } from "fresh/runtime";
-import { Header } from "../components/Header.tsx";
-import { Footer } from "../components/Footer.tsx";
 
 export default function Error404() {
   return (
@@ -12,8 +10,7 @@ export default function Error404() {
           content="The page you are looking for does not exist."
         />
       </Head>
-      <Header />
-      <main class="flex-1 flex items-center justify-center px-4">
+      <main class="flex-1 flex items-center justify-center px-4 py-24">
         <div class="text-center max-w-md">
           <h1 class="text-6xl font-bold text-gray-900 mb-4">404</h1>
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
@@ -31,7 +28,6 @@ export default function Error404() {
           </a>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

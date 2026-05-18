@@ -8,10 +8,12 @@ export async function getCategories() {
     return cachedCategories;
   }
   try {
-    const { product_categories } = await medusa.store.category.list({ parent_category_id: "null" }, { next: { revalidate: 300 } });
+    const { product_categories } = await medusa.store.category.list({ limit: 100 }, { next: { revalidate: 300 } });
     if (product_categories) {
+      // Filter root categories
+      const roots = product_categories.filter((c: any) => !c.parent_category_id);
       // Sort by rank, then take top 4
-      const sorted = product_categories.sort((a: any, b: any) => (a.rank || 0) - (b.rank || 0));
+      const sorted = roots.sort((a: any, b: any) => (a.rank || 0) - (b.rank || 0));
       cachedCategories = sorted;
       categoriesCacheTime = Date.now();
       return sorted;

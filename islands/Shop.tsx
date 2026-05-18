@@ -120,23 +120,23 @@ export default function Shop({ category }: { category?: string }) {
         </div>
       )}
 
-      <div class="flex flex-col md:flex-row justify-end items-start md:items-center mb-8 gap-3">
-        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div class="relative w-full sm:w-56 flex items-center group">
-            <Search class="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none group-focus-within:text-blue-500 transition-colors" />
+      <div class="flex flex-col md:flex-row justify-end items-start md:items-center mb-8 gap-4">
+        <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <div class="relative w-full sm:w-auto flex items-center">
+            <Search class="absolute left-3 w-5 h-5 text-gray-400 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search..."
-              class="w-full pl-9 pr-3 py-1.5 text-sm bg-gray-50 placeholder-gray-400 border border-transparent rounded-full hover:bg-gray-100 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium text-gray-700"
+              placeholder="Search products..."
+              class="w-full sm:w-56 pl-10 pr-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-900"
               value={search}
               onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
             />
           </div>
 
-          <div class="flex items-center gap-2 w-full sm:w-auto relative group">
-            <SlidersHorizontal class="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none group-hover:text-blue-500 transition-colors shrink-0 z-10" />
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <SlidersHorizontal class="w-5 h-5 text-gray-500 shrink-0" />
             <select
-              class="w-full sm:w-auto py-1.5 pl-9 pr-8 text-sm bg-gray-50 border border-transparent rounded-full hover:bg-gray-100 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium text-gray-700 cursor-pointer appearance-none bg-no-repeat bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[position:right_0.5rem_center] bg-[length:1em_1em]"
+              class="w-full sm:w-auto border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 cursor-pointer"
               value={sort}
               onChange={(e) => setSort((e.target as HTMLSelectElement).value)}
             >

@@ -1,6 +1,4 @@
 import { ComponentChildren } from "preact";
-import { Header } from "./Header.tsx";
-import { Footer } from "./Footer.tsx";
 import { Head, Partial } from "fresh/runtime";
 
 interface AccountLayoutProps {
@@ -21,7 +19,6 @@ export function AccountLayout({ children, activeTab }: AccountLayoutProps) {
       <Head>
         <title>My Account - Apple4All</title>
       </Head>
-      <Header />
       <Partial name="main">
         <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
           <h1 class="text-3xl font-bold mb-8">My Account</h1>
@@ -54,7 +51,6 @@ export function AccountLayout({ children, activeTab }: AccountLayoutProps) {
           </div>
         </main>
       </Partial>
-      <Footer />
     </div>
   );
 }

@@ -107,8 +107,8 @@ export function ProductDetails(
             </div>
             <div class="relative w-full">
               <div 
-                class={`w-full text-gray-600 text-sm leading-relaxed prose prose-sm prose-gray max-w-none prose-p:my-2 prose-headings:mb-2 prose-headings:mt-4 prose-a:text-[#2B5C8F] ${!isDescriptionExpanded ? "max-h-[8rem] overflow-hidden" : ""}`}
-                dangerouslySetInnerHTML={{ __html: product.description ? marked.parse(product.description) as string : '' }}
+                class={`w-full text-gray-700 text-sm leading-relaxed prose prose-sm prose-gray max-w-none prose-p:my-2 prose-headings:font-semibold prose-headings:text-sm prose-headings:mb-1 prose-headings:mt-3 prose-a:text-[#2B5C8F] prose-li:my-0.5 ${!isDescriptionExpanded ? "max-h-[8rem] overflow-hidden" : ""}`}
+                dangerouslySetInnerHTML={{ __html: product.description ? marked.parse(product.description.replace(/\\n/g, '\n'), { breaks: true }) as string : '' }}
               />
               {!isDescriptionExpanded && (product.description && product.description.length > 200) && (
                 <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />

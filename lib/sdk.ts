@@ -18,6 +18,6 @@ if (isProd && (!PUBLISHABLE_KEY || !BACKEND_URL)) {
 export const medusa = new Medusa({
   baseUrl: BACKEND_URL || "http://localhost:9000",
   publishableKey: PUBLISHABLE_KEY ||
-    "pk_18a6d80c3b15f3c67c33a0cec589d3865dc023f338da36463d3b72205290870c",
+    "pk_",
   debug: false,
 });

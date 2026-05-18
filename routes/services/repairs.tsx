@@ -1,6 +1,6 @@
 import { define } from "../../utils.ts";
 import { page } from "fresh";
-import { Head, Partial } from "fresh/runtime";
+import { Head } from "fresh/runtime";
 import { Battery, Cpu, MonitorSmartphone, Wrench, Search, ShieldCheck, BookOpen } from "lucide-preact";
 import TrackRepairIsland from "../repairs/(_islands)/TrackRepairIsland.tsx";
 

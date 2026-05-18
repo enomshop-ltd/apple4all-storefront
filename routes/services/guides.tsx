@@ -4,32 +4,29 @@ import { Head } from "fresh/runtime";
 import { BookOpen, ExternalLink, AlertTriangle } from "lucide-preact";
 
 export const handler = define.handlers({
-  async GET(ctx) {
+  GET(ctx) {
     ctx.state.title = "DIY Repair Guides - Apple4All";
     ctx.state.description = "Free Apple repair guides powered by iFixit.";
     
-    let macGuides = [];
-    let iphoneGuides = [];
+    // We statically define these as the iFixit categories API for specific devices 
+    // does not output a simple child array anymore.
+    const macGuides = [
+      { name: "MacBook Pro 13\"", image: "https://valkyrie.cdn.ifixit.com/media/2021/04/13010531/MacBook_Pro_13_inch.jpg" },
+      { name: "MacBook Pro 14\"", image: "https://valkyrie.cdn.ifixit.com/media/2021/11/02123517/Macbook_Pro_14_Inch.jpg" },
+      { name: "MacBook Pro 16\"", image: "https://valkyrie.cdn.ifixit.com/media/2020/09/24102927/MacBook_Pro_16.jpg" },
+      { name: "MacBook Air 13\"", image: "https://valkyrie.cdn.ifixit.com/media/2020/09/24102925/MacBook_Air_13.jpg" },
+      { name: "iMac", image: "https://valkyrie.cdn.ifixit.com/media/2021/05/21151624/iMac_24-Inch.jpg" },
+      { name: "Mac mini", image: "https://valkyrie.cdn.ifixit.com/media/2020/09/24102924/Mac_Mini.jpg" }
+    ];
     
-    try {
-      const [macRes, iphoneRes] = await Promise.all([
-        fetch("https://www.ifixit.com/api/2.0/categories/Mac"),
-        fetch("https://www.ifixit.com/api/2.0/categories/iPhone")
-      ]);
-      
-      const macData = await macRes.json();
-      const iphoneData = await iphoneRes.json();
-      
-      // We grab sub-categories/devices for display
-      if (macData && macData.children) {
-        macGuides = macData.children.filter((c: any) => c.name);
-      }
-      if (iphoneData && iphoneData.children) {
-        iphoneGuides = iphoneData.children.filter((c: any) => c.name);
-      }
-    } catch (e) {
-      console.warn("Could not fetch iFixit guides", e);
-    }
+    const iphoneGuides = [
+      { name: "iPhone 15 Pro Max", image: "https://valkyrie.cdn.ifixit.com/media/2023/10/02141505/iPhone-15-Pro-Max.jpg" },
+      { name: "iPhone 15 Pro", image: "https://valkyrie.cdn.ifixit.com/media/2023/10/02141512/iPhone-15-Pro.jpg" },
+      { name: "iPhone 15", image: "https://valkyrie.cdn.ifixit.com/media/2023/10/02141520/iPhone-15.jpg" },
+      { name: "iPhone 14 Pro Max", image: "https://valkyrie.cdn.ifixit.com/media/2022/09/20120023/iPhone_14_Pro_Max.jpg" },
+      { name: "iPhone 14 Pro", image: "https://valkyrie.cdn.ifixit.com/media/2022/09/20120125/iPhone_14_Pro.jpg" },
+      { name: "iPhone 13", image: "https://valkyrie.cdn.ifixit.com/media/2021/10/04113224/iPhone_13.jpg" }
+    ];
     
     return page({ macGuides, iphoneGuides });
   },

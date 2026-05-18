@@ -1,6 +1,4 @@
 import { Head } from "fresh/runtime";
-import { Header } from "../components/Header.tsx";
-import { Footer } from "../components/Footer.tsx";
 import { ErrorPageProps } from "fresh/runtime";
 
 export default function Error500({ error: _error }: ErrorPageProps) {
@@ -10,8 +8,7 @@ export default function Error500({ error: _error }: ErrorPageProps) {
         <title>Server Error - Apple4All</title>
         <meta name="description" content="An unexpected error occurred." />
       </Head>
-      <Header />
-      <main class="flex-1 flex items-center justify-center px-4">
+      <main class="flex-1 flex items-center justify-center px-4 py-24">
         <div class="text-center max-w-md">
           <h1 class="text-6xl font-bold text-gray-900 mb-4">500</h1>
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
@@ -29,7 +26,6 @@ export default function Error500({ error: _error }: ErrorPageProps) {
           </a>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

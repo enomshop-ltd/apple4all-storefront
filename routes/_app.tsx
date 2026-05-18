@@ -9,6 +9,8 @@ export default define.page(function App({ Component, state }) {
   const description = (state.description as string) ||
     "Discover certified refurbished devices and unbeatable prices on both new and pre-owned Apple products.";
 
+  console.log("App state categories:", state?.categories);
+
   return (
     <html lang="en">
       <head>
@@ -29,7 +31,7 @@ export default define.page(function App({ Component, state }) {
         class="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 flex flex-col"
       >
         <TopProgressBarIsland />
-        <Header />
+        <Header categories={state?.categories as any[] || []} />
         <Partial name="main">
           <Component />
         </Partial>

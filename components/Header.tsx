@@ -1,9 +1,6 @@
 import { ShoppingCart, User } from "lucide-preact";
 
-import { getCategories } from "../lib/data.ts";
-
-export async function Header() {
-  const categories = await getCategories();
+export function Header({ categories = [] }: { categories?: any[] }) {
   const maxCategories = categories.slice(0, 4); // Limit to 4 dynamic + "Store" = 5 items.
 
   return (
