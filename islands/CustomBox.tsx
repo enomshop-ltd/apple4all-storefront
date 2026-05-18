@@ -15,7 +15,7 @@ export function CustomBox() {
       description:
         "Check the status of your repair and get real-time updates with our unified tracking system.",
       buttonText: "Track Repair",
-      linkText: "View our repair videos",
+      linkText: "Track repair status",
     });
 
     // Simulate fetching data
@@ -59,31 +59,21 @@ export function CustomBox() {
       <h3 class="text-xl font-bold text-gray-900 mb-2">{data.title}</h3>
       <p class="text-sm text-gray-700 mb-8 flex-1">{data.description}</p>
 
-      <form action="/repairs/track" method="get" class="mb-4">
-        <div class="flex gap-2">
-          <input
-            type="text"
-            name="serial"
-            placeholder="Enter serial number..."
-            class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            required
-          />
-          <button
-            type="submit"
-            class="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors whitespace-nowrap"
-          >
-            {data.buttonText}
-          </button>
-        </div>
+      <form action="/repairs/track" method="get" class="flex flex-col gap-4">
+        <input
+          type="text"
+          name="serial"
+          placeholder="Enter serial number..."
+          class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          required
+        />
+        <button
+          type="submit"
+          class="text-sm text-center font-medium text-gray-900 underline hover:text-gray-600 transition-colors"
+        >
+          {data.linkText}
+        </button>
       </form>
-      <a
-        href="https://www.youtube.com/@UrbanDeviceCare"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-sm text-center text-gray-900 underline hover:text-gray-600 transition-colors"
-      >
-        {data.linkText}
-      </a>
     </div>
   );
 }

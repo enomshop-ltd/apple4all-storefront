@@ -16,12 +16,14 @@ A blazing-fast, modern e-commerce storefront built with [Deno Fresh](https://fre
 
 ## Changelog
 
+- **SEO Dynamic Sitemap:** Switched from a static file to a dedicated Deno Fresh API route (`/routes/sitemap.xml.ts`) that dynamically generates the `sitemap.xml` response by querying Medusa.js for the latest products.
+- **SEO Update:** Added a `robots.txt` file in the static directory to ensure valid search engine crawling and indexation.
 - **Smooth Page Transitions:** Implemented the browser-native View Transitions API natively via Fresh 2.3's `f-view-transition` attribute for partials, and the `<meta name="view-transition" content="same-origin" />` tag for full cross-document navigations.
 - **Footer Update:** Made the copyright year in the footer dynamically update to the current year.
 - **Product Details Fix:** Reverted the "Read More" and "Show Less" pills back to normal text per design request.
 - **Add to Cart Button:** Changed the background color of the 'Add to Cart' buttons to a sleek dark grey/black shade for a more modern look.
 - **Product Details Polish:** Redesigned the "Read More" / "Show Less" button for product descriptions. It is now centered, styled as a pill button for higher visibility, and uses a solid top-border line separator instead of a fade-out gradient.
-- **Track Repair Box:** Updated the `CustomBox` component on the Store page to be an interactive repair tracking form, allowing users to enter their serial number directly on the store page to jump into tracking their device.
+- **Track Repair Form Update:** Removed the "Track Repair Status" primary button and converted the YouTube link into a sleek, text-based "Track repair status" submit button underneath the input field.
 - **Store Sort UI Update:** Reduced the width of the product list sort drop-down and shortened the copy (removed "arrivals" and "name:") for a cleaner look.
 - **UX Polish (Progress Bar):** Fixed the GitHub-style Top Loading Progress Bar so that it reliably triggers and completes during Fresh client-side (partial) navigation by hooking natively into `fetch`, `click` (capture phase), and `pushState` events.
 - **Header & API Fixes:** Resolved an issue causing the header to disappear by moving Medusa category fetching out of the asynchronous component and into a route middleware (`_middleware.ts`). Fixed duplicate header/footer issues on error pages.
