@@ -16,6 +16,7 @@ A blazing-fast, modern e-commerce storefront built with [Deno Fresh](https://fre
 
 ## Changelog
 
+- **Smooth Page Transitions:** Implemented the browser-native View Transitions API natively via Fresh 2.3's `f-view-transition` attribute for partials, and the `<meta name="view-transition" content="same-origin" />` tag for full cross-document navigations.
 - **Footer Update:** Made the copyright year in the footer dynamically update to the current year.
 - **Product Details Fix:** Reverted the "Read More" and "Show Less" pills back to normal text per design request.
 - **Add to Cart Button:** Changed the background color of the 'Add to Cart' buttons to a sleek dark grey/black shade for a more modern look.
