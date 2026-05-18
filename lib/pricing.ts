@@ -1,10 +1,15 @@
 import { HttpTypes } from "@medusajs/types";
 
-export function formatAmount(amount: number, currencyCode: string = "USD"): string {
-  const zeroDecimalCurrencies =["JPY", "KRW", "VND", "CLP", "PYG", "KES"];
-  const isZeroDecimal = zeroDecimalCurrencies.includes(currencyCode.toUpperCase());
+export function formatAmount(
+  amount: number,
+  currencyCode: string = "USD",
+): string {
+  const zeroDecimalCurrencies = ["JPY", "KRW", "VND", "CLP", "PYG", "KES"];
+  const isZeroDecimal = zeroDecimalCurrencies.includes(
+    currencyCode.toUpperCase(),
+  );
   const divisor = isZeroDecimal ? 1 : 100;
-  
+
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: currencyCode.toUpperCase(),

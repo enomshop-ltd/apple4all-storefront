@@ -1,8 +1,13 @@
 import { ShoppingCart, User } from "lucide-preact";
 
-export function Header() {
+import { getCategories } from "../lib/data.ts";
+
+export async function Header() {
+  const categories = await getCategories();
+  const maxCategories = categories.slice(0, 4); // Limit to 4 dynamic + "Store" = 5 items.
+
   return (
-    <header class="w-full border-b border-gray-200 bg-white sticky top-0 z-50">
+    <header class="w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-md sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex-shrink-0 flex items-center gap-2">
@@ -23,34 +28,15 @@ export function Header() {
             >
               Store
             </a>
-            <a
-              href="/devices"
-              f-client-nav
-              class="text-gray-900 font-medium hover:text-blue-600"
-            >
-              Devices
-            </a>
-            <a
-              href="/accessories"
-              f-client-nav
-              class="text-gray-900 font-medium hover:text-blue-600"
-            >
-              Accessories
-            </a>
-            <a
-              href="/cables"
-              f-client-nav
-              class="text-gray-900 font-medium hover:text-blue-600"
-            >
-              Cables
-            </a>
-            <a
-              href="/track-service"
-              f-client-nav
-              class="text-gray-900 font-medium hover:text-blue-600"
-            >
-              Track Service Status
-            </a>
+            {maxCategories.map((category: any) => (
+              <a
+                href={`/shop/${category.handle}`}
+                f-client-nav
+                class="text-gray-900 font-medium hover:text-blue-600 capitalize"
+              >
+                {category.name}
+              </a>
+            ))}
           </nav>
           <div class="flex items-center space-x-4">
             <a

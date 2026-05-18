@@ -2,6 +2,7 @@ import { define } from "../utils.ts";
 import { Header } from "../components/Header.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Partial } from "fresh/runtime";
+import TopProgressBarIsland from "../islands/TopProgressBarIsland.tsx";
 
 export default define.page(function App({ Component, state }) {
   const title = (state.title as string) || "Apple4All - Refurbished Tech";
@@ -22,13 +23,12 @@ export default define.page(function App({ Component, state }) {
           content="Discover certified refurbished devices and unbeatable prices on both new and pre-owned Apple products."
         />
         <meta property="og:type" content="website" />
-        {/* Paystack Inline Script */}
-        <script src="https://js.paystack.co/v2/inline.js"></script>
       </head>
       <body
         f-client-nav
         class="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 flex flex-col"
       >
+        <TopProgressBarIsland />
         <Header />
         <Partial name="main">
           <Component />

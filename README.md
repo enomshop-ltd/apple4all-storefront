@@ -1,3 +1,18 @@
+## Changelog
+- **DIY Repair Guides:** Added a new `/services/guides` directory that fetches dynamically from the public `iFixit` API, offering free repair guides to users with legal disclaimers about CC BY-NC-SA usage. Integrated into the main repairs page.
+- **Terms of Service Update:** Updated `/legal/terms` to clarify warranty (90 days limit), refund policies (store credit only), screen return policies (no returns, 48hr defect report), job cards requirement, and payment channels compliance.
+- **Header UI Polish:** Applied a glassy, translucent effect (backdrop-blur) to the top navigation bar for a more modern aesthetic.
+- **Search UI Refinement:** Made the search bar and filter dropdown more minimalistic, reducing their size, applying a pill-shaped rounded design, and utilizing subtle hover/focus background effects instead of harsh borders.
+- **Social links added:** Added a funny YouTube channel link in the footer to showcase some of our more *adventurous* repair attempts.
+- **Repairs Page Redesign:** Overhauled the `/services/repairs` page to be more interactive by directly embedding the Repair Tracker. Split the layout thoughtfully between the repair form and available services to maintain a minimalist but lively aesthetic.
+- **Dynamic Storefront Navigation:** Revamped the primary navigation menu to dynamically fetch and display product categories directly from the MedusaJS backend. Restricts the menu to 5 total items (Store + top 4 highest-ranking root categories) while retaining a clean UI.
+- **Search UI Polish:** Removed the redundant "All Products" title to simplify the shop interface layout.
+- **Product Details Polish:** Improved the rendering of product descriptions by parsing Markdown natively and adding a clean, expandable "Read More / Show Less" toggle for longer descriptions, ensuring no content is awkwardly cut off.
+- **Global Loading Indicator:** Added a slim, GitHub-style loading progress bar at the top of the viewport (`TopProgressBarIsland.tsx`). This UI enhancement intercepts all client-side anchor clicks, form submissions, and partial updates to provide instant visual feedback during loading transitions.
+- **Repair Tracking module introduced:** Integrated the MedusaJS Repair module tracking UI (TrackRepairIsland & respective route) to allow users to verify ticket statuses via serial numbers and interact natively with mechanics.
+- **Custom Box Update:** Switched the "Trade in" box on the storefront to "Track Repair Status", and its button links properly to the tracking portal.
+- **Payment Methods Update:** Removed Paystack as a payment option for checkout and installments per user request. "Manual (Pay on Delivery)" is now the default checkout payment mode.
+
 ## 2026 Update: Account Dashboard Overhaul
 
 The customer account interface has been merged into a single, comprehensive dashboard located at `/account`.

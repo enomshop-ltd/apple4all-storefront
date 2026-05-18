@@ -103,7 +103,10 @@ export function OrdersList(
 
                 <div class="flex items-center gap-4">
                   <DownloadInvoiceButton orderId={order.id} variant="button" />
-                  <button type="button" class="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
+                  <button
+                    type="button"
+                    class="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                  >
                     View details
                     <ChevronRight class="w-4 h-4" />
                   </button>

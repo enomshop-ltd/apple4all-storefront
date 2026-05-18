@@ -38,20 +38,18 @@ export default define.page(function TermsPage(props) {
       </p>
 
       <h2 class="text-xl font-semibold mt-8 mb-4">3. Warranty and Returns</h2>
-      <p class="text-gray-700 mb-4">
-        Our refurbished devices come with a standard 1-year warranty covering
-        hardware defects. Physical damage, liquid damage, and unauthorized
-        modifications void this warranty. Returns are accepted within 14 days of
-        purchase, provided the item is in its original condition.
-      </p>
+      <ul class="text-gray-700 mb-4 list-disc pl-5 space-y-2">
+        <li><strong>Warranty Period:</strong> All repairs, refurbished items, used items, and accessories only come with a 90-day warranty covering hardware defects. Physical damage, liquid damage, and unauthorized modifications void this warranty.</li>
+        <li><strong>Refunds:</strong> Refunds are only made in the form of store credit, and only if all other means have been exhausted (i.e., the item cannot be exchanged or repaired).</li>
+        <li><strong>Screens:</strong> Screens once sold cannot be returned. Any defects must be reported within 48 hours of purchase or installation.</li>
+      </ul>
 
-      <h2 class="text-xl font-semibold mt-8 mb-4">4. Repairs</h2>
-      <p class="text-gray-700 mb-4">
-        When you submit a device for repair, you authorize us to perform the
-        necessary diagnostics and repairs. While we take utmost care, we are not
-        liable for any data loss. We strongly recommend backing up your data
-        before bringing in your device.
-      </p>
+      <h2 class="text-xl font-semibold mt-8 mb-4">4. Repairs, Services & Payments</h2>
+      <ul class="text-gray-700 mb-4 list-disc pl-5 space-y-2">
+        <li><strong>Data Loss:</strong> When you submit a device for repair, you authorize us to perform necessary diagnostics. We are not liable for any data loss; please back up your data before service.</li>
+        <li><strong>Job Cards & Receipts:</strong> Any work done or any item sold without an official job card or a receipt will not be acknowledged.</li>
+        <li><strong>Payments:</strong> Any money paid elsewhere other than directly to the company accounts or its official branches/affiliates will not be recognized.</li>
+      </ul>
 
       <h2 class="text-xl font-semibold mt-8 mb-4">
         5. Limitation of Liability

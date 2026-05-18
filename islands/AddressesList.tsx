@@ -16,10 +16,16 @@ export function AddressesList(
             class="border border-gray-200 rounded-xl p-6 flex flex-col h-full relative group"
           >
             <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button type="button" class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+              <button
+                type="button"
+                class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
                 <Edit2 class="w-4 h-4" />
               </button>
-              <button type="button" class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+              <button
+                type="button"
+                class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              >
                 <Trash2 class="w-4 h-4" />
               </button>
             </div>
@@ -38,7 +44,10 @@ export function AddressesList(
           </div>
         ))}
 
-        <button type="button" class="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-gray-500 hover:text-gray-900 hover:border-gray-300 hover:bg-gray-50 transition-colors min-h-[200px] gap-3">
+        <button
+          type="button"
+          class="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-gray-500 hover:text-gray-900 hover:border-gray-300 hover:bg-gray-50 transition-colors min-h-[200px] gap-3"
+        >
           <div class="bg-white w-10 h-10 rounded-full flex items-center justify-center shadow-sm border border-gray-100">
             <Plus class="w-5 h-5" />
           </div>

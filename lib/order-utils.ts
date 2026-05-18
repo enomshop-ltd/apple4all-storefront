@@ -1,6 +1,15 @@
 import { HttpTypes } from "@medusajs/types";
-export type UnifiedOrderStatus = "Canceled" | "Refunded" | "Delivered" | "Shipped" | "Processing" | "Pending Payment" | "Pending";
-export function getUnifiedOrderStatus(order: HttpTypes.StoreOrder): UnifiedOrderStatus {
+export type UnifiedOrderStatus =
+  | "Canceled"
+  | "Refunded"
+  | "Delivered"
+  | "Shipped"
+  | "Processing"
+  | "Pending Payment"
+  | "Pending";
+export function getUnifiedOrderStatus(
+  order: HttpTypes.StoreOrder,
+): UnifiedOrderStatus {
   if (order.status === "canceled") return "Canceled";
   if (order.payment_status === "refunded") return "Refunded";
   switch (order.fulfillment_status) {
@@ -49,6 +58,8 @@ export function getUnifiedOrderNumber(order: HttpTypes.StoreOrder): string {
   const rawId = order.id || (order as any).cart_id || "";
   const cleanId = rawId.replace(/^(order_|cart_)/, "");
   const unifiedNumber = displayId ? `${displayId}-${cleanId}` : cleanId;
-  console.log(`Generated unified order number: ${unifiedNumber} (Raw ID: ${rawId})`);
+  console.log(
+    `Generated unified order number: ${unifiedNumber} (Raw ID: ${rawId})`,
+  );
   return unifiedNumber;
 }

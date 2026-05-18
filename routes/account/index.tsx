@@ -15,16 +15,19 @@ export const handler = define.handlers({
     }
     try {
       console.log("Fetching customer, orders, and currency concurrently");
-      const[{ customer }, { orders }, currencyCode] = await Promise.all([
+      const [{ customer }, { orders }, currencyCode] = await Promise.all([
         medusa.store.customer.retrieve(
           { fields: "*addresses" },
-          { Authorization: `Bearer ${token}` }
+          { Authorization: `Bearer ${token}` },
         ),
         medusa.store.order.list(
-          { fields: "*payment_collections,*payment_collections.payment_sessions,*payment_collections.payments" },
-          { Authorization: `Bearer ${token}` }
+          {
+            fields:
+              "*payment_collections,*payment_collections.payment_sessions,*payment_collections.payments",
+          },
+          { Authorization: `Bearer ${token}` },
         ),
-        getStoreCurrency()
+        getStoreCurrency(),
       ]);
       ctx.state.title = "Account Overview - Apple4All";
       return page({ customer, orders, currencyCode });
@@ -34,11 +37,12 @@ export const handler = define.handlers({
         status: 302,
         headers: {
           Location: "/login",
-          "Set-Cookie": `_medusa_jwt=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`
-        }
+          "Set-Cookie":
+            `_medusa_jwt=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`,
+        },
       });
     }
-  }
+  },
 });
 export default define.page(function AccountPage(props) {
   const { customer, orders, currencyCode } = props.data as {
@@ -46,5 +50,11 @@ export default define.page(function AccountPage(props) {
     orders: HttpTypes.StoreOrder[];
     currencyCode: string;
   };
-  return <AccountDashboard customer={customer} orders={orders} currencyCode={currencyCode} />;
+  return (
+    <AccountDashboard
+      customer={customer}
+      orders={orders}
+      currencyCode={currencyCode}
+    />
+  );
 });

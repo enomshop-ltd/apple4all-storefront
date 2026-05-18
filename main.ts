@@ -12,13 +12,6 @@ app.use(async (ctx) => {
   // 1. Await the response from the server
   const resp = await ctx.next();
 
-  // 2. Remove the strict CSP header specifically on the checkout route
-  // so Paystack's dynamic inline scripts and blobs can execute. Please sort this out. Its a security risk but Paystack doesn't work without it. I've tried everything else.
-  const url = new URL(ctx.req.url);
-  if (url.pathname === "/checkout") {
-    resp.headers.delete("Content-Security-Policy");
-  }
-
   return resp;
 });
 

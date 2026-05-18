@@ -1,5 +1,27 @@
 import { medusa } from "./sdk.ts";
 
+let cachedCategories: any[] | null = null;
+let categoriesCacheTime = 0;
+
+export async function getCategories() {
+  if (cachedCategories && Date.now() - categoriesCacheTime < 1000 * 60 * 5) {
+    return cachedCategories;
+  }
+  try {
+    const { product_categories } = await medusa.store.category.list({ parent_category_id: "null" }, { next: { revalidate: 300 } });
+    if (product_categories) {
+      // Sort by rank, then take top 4
+      const sorted = product_categories.sort((a: any, b: any) => (a.rank || 0) - (b.rank || 0));
+      cachedCategories = sorted;
+      categoriesCacheTime = Date.now();
+      return sorted;
+    }
+  } catch (e) {
+    console.warn("Failed to fetch product categories", e);
+  }
+  return [];
+}
+
 export async function getStoreRegion() {
   try {
     const { regions } = await medusa.store.region.list();

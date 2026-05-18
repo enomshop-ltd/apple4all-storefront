@@ -3,7 +3,7 @@ import { fresh } from "@fresh/plugin-vite";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins:[fresh(), tailwindcss()],
+  plugins: [fresh(), tailwindcss()],
   resolve: {
     alias: {
       "npm:preact@^10.27.2": "preact",
@@ -18,6 +18,6 @@ export default defineConfig({
       "npm:/preact-render-to-string@^6.6.3": "preact-render-to-string",
     },
   },
-  // We completely remove the `build.rollupOptions` block 
+  // We completely remove the `build.rollupOptions` block
   // so Fresh can handle the chunking and CSS injection naturally.
 });

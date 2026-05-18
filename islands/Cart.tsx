@@ -46,7 +46,9 @@ export function Cart(
 
   const currencyCode = cart?.region?.currency_code || "USD";
   const subtotal = formatAmount(cart?.subtotal || 0, currencyCode);
-  const shipping = cart?.shipping_total === 0 ? "Free" : formatAmount(cart?.shipping_total || 0, currencyCode);
+  const shipping = cart?.shipping_total === 0
+    ? "Free"
+    : formatAmount(cart?.shipping_total || 0, currencyCode);
   const taxes = formatAmount(cart?.tax_total || 0, currencyCode);
   const total = formatAmount(cart?.total || 0, currencyCode);
 

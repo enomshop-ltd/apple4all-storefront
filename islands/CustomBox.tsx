@@ -13,11 +13,11 @@ export function CustomBox() {
   useEffect(() => {
     // Mock data from a JSON string
     const mockJson = JSON.stringify({
-      title: "Trade in to get it for less",
+      title: "Track Repair Status",
       description:
-        "Today's purchase could set you back a lot less when you trade in an old device at the same time.",
-      buttonText: "Get an offer",
-      linkText: "See how Trade-in works",
+        "Check the status of your repair and get real-time updates with our unified tracking system.",
+      buttonText: "Track Repair",
+      linkText: "View our repair videos",
     });
 
     // Simulate fetching data
@@ -61,11 +61,16 @@ export function CustomBox() {
       <h3 class="text-xl font-bold text-gray-900 mb-2">{data.title}</h3>
       <p class="text-sm text-gray-700 mb-8 flex-1">{data.description}</p>
 
-      <button type="button" class="w-full py-3 px-4 bg-white border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 transition-colors mb-4">
-        {data.buttonText}
-      </button>
       <a
-        href="#"
+        href="/repairs/track"
+        class="block w-full text-center py-3 px-4 bg-white border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 transition-colors mb-4"
+      >
+        {data.buttonText}
+      </a>
+      <a
+        href="https://www.youtube.com/@UrbanDeviceCare"
+        target="_blank"
+        rel="noopener noreferrer"
         class="text-sm text-center text-gray-900 underline hover:text-gray-600 transition-colors"
       >
         {data.linkText}

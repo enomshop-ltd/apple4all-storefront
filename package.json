@@ -11,13 +11,18 @@
   "dependencies": {
     "@medusajs/js-sdk": "^2.13.4",
     "@preact/signals": "^2.8.2",
+    "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.1",
+    "isomorphic-dompurify": "^3.13.0",
     "lucide-preact": "^1.6.0",
+    "marked": "^18.0.3",
     "preact": "^10.29.0",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
     "@medusajs/types": "^2.13.4",
+    "@types/dompurify": "^3.0.5",
+    "@types/marked": "^5.0.2",
     "@types/node": "^22.14.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"

@@ -1,7 +1,8 @@
 import { useState } from "preact/hooks";
-import { Loader2 } from "lucide-preact";
+import { Loader2, ChevronDown, ChevronUp } from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
 import { getPriceInfo } from "../lib/pricing.ts";
+import { marked } from "marked";
 
 export function ProductDetails(
   { product, currencyCode }: {
@@ -17,6 +18,7 @@ export function ProductDetails(
   );
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState("");
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const selectedVariant = product.variants?.find((v) =>
     v.id === selectedVariantId
@@ -103,9 +105,28 @@ export function ProductDetails(
                 </span>
               )}
             </div>
-            <p class="text-gray-600 text-sm leading-relaxed line-clamp-4">
-              {product.description}
-            </p>
+            <div class="relative w-full">
+              <div 
+                class={`w-full text-gray-600 text-sm leading-relaxed prose prose-sm prose-gray max-w-none prose-p:my-2 prose-headings:mb-2 prose-headings:mt-4 prose-a:text-[#2B5C8F] ${!isDescriptionExpanded ? "max-h-[8rem] overflow-hidden" : ""}`}
+                dangerouslySetInnerHTML={{ __html: product.description ? marked.parse(product.description) as string : '' }}
+              />
+              {!isDescriptionExpanded && (product.description && product.description.length > 200) && (
+                <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+              )}
+              {product.description && product.description.length > 200 && (
+                <button
+                  type="button"
+                  onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                  class="mt-2 text-[#2B5C8F] font-medium text-sm flex items-center gap-1 hover:text-[#1e4166] focus:outline-none transition-colors"
+                >
+                  {isDescriptionExpanded ? (
+                    <>Show Less <ChevronUp class="w-4 h-4" /></>
+                  ) : (
+                    <>Read More <ChevronDown class="w-4 h-4" /></>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Variants and Actions */}

@@ -1,117 +1,139 @@
 import { define } from "../../utils.ts";
 import { page } from "fresh";
-import { Head } from "fresh/runtime";
-import { Battery, Cpu, MonitorSmartphone, Wrench } from "lucide-preact";
+import { Head, Partial } from "fresh/runtime";
+import { Battery, Cpu, MonitorSmartphone, Wrench, Search, ShieldCheck, BookOpen } from "lucide-preact";
+import TrackRepairIsland from "../repairs/(_islands)/TrackRepairIsland.tsx";
 
 export const handler = define.handlers({
   GET(ctx) {
     ctx.state.title = "Mac Repairs & Services - Apple4All";
     ctx.state.description =
-      "Expert Mac repair services in Westlands, Nairobi. From screen replacements to logic board repairs.";
-    return page();
+      "Expert Mac repair services in Westlands, Nairobi. From screen replacements to logic board repairs. Track your ongoing repair live.";
+    return page({ backendUrl: Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000" });
   },
 });
 
-export default define.page(function RepairsPage(props) {
+export default define.page(function RepairsPage({ state, data }) {
+  const { backendUrl } = data;
+
   return (
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-6xl mx-auto px-4 py-8">
       <Head>
-        <title>{props.state.title as string}</title>
-        <meta name="description" content={props.state.description as string} />
+        <title>{state.title as string}</title>
+        <meta name="description" content={state.description as string} />
       </Head>
-      <div class="text-center mb-16">
-        <h1 class="text-4xl font-bold mb-6 text-gray-900">
-          Expert Mac Repairs in Nairobi
+
+      <div class="text-center mb-16 space-y-6">
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900">
+          Expert Mac Repairs.
         </h1>
-        <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          At Apple4All in Westlands, our certified technicians provide fast,
-          reliable, and affordable repair services for all Mac models. We use
-          high-quality replacement parts to bring your device back to life.
+        <p class="text-xl md:text-2xl text-gray-500 max-w-3xl mx-auto font-light">
+          Fast, reliable, and affordable repair services for all Mac models in Nairobi.
+          Track your repair live in our portal.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-        <div class="p-8 bg-gray-50 rounded-2xl border border-gray-100 hover:shadow-md transition-shadow">
-          <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-            <MonitorSmartphone class="w-6 h-6" />
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20 items-start">
+        {/* Left Column: Track Repair (Interactive) */}
+        <div class="lg:col-span-7 bg-white rounded-3xl border border-gray-100 shadow-sm p-2 md:p-8 relative overflow-hidden group hover:shadow-md transition-shadow">
+          <div class="absolute top-0 right-0 p-8 opacity-5">
+            <Search class="w-48 h-48" />
           </div>
-          <h3 class="text-2xl font-bold text-gray-900 mb-3">
-            Screen Replacement
-          </h3>
-          <p class="text-gray-600 leading-relaxed mb-4">
-            Cracked or malfunctioning display? We offer premium screen
-            replacements for MacBooks, iMacs, and iPads, restoring your device's
-            visual clarity.
-          </p>
-          <p class="text-sm font-medium text-blue-600">From KES 15,000</p>
+          <div class="relative z-10">
+            <TrackRepairIsland backendUrl={backendUrl} />
+          </div>
         </div>
 
-        <div class="p-8 bg-gray-50 rounded-2xl border border-gray-100 hover:shadow-md transition-shadow">
-          <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-            <Battery class="w-6 h-6" />
+        {/* Right Column: Services list */}
+        <div class="lg:col-span-5 flex flex-col gap-6">
+          <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:bg-gray-100 transition-colors">
+            <div class="flex items-center gap-4 mb-3">
+              <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                <MonitorSmartphone class="w-5 h-5" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900">Screen Replacement</h3>
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-3">Premium screen replacements for MacBooks, iMacs, and iPads restoring visual clarity.</p>
+            <p class="text-sm font-semibold text-blue-600">From KES 15,000</p>
           </div>
-          <h3 class="text-2xl font-bold text-gray-900 mb-3">
-            Battery Replacement
-          </h3>
-          <p class="text-gray-600 leading-relaxed mb-4">
-            Is your Mac not holding a charge? We replace old, swollen, or
-            degraded batteries with high-capacity alternatives to keep you
-            powered up.
-          </p>
-          <p class="text-sm font-medium text-blue-600">From KES 8,000</p>
-        </div>
 
-        <div class="p-8 bg-gray-50 rounded-2xl border border-gray-100 hover:shadow-md transition-shadow">
-          <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-            <Cpu class="w-6 h-6" />
+          <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:bg-gray-100 transition-colors">
+            <div class="flex items-center gap-4 mb-3">
+              <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+                <Battery class="w-5 h-5" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900">Battery Replacement</h3>
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-3">High-capacity alternatives to keep you powered up all day.</p>
+            <p class="text-sm font-semibold text-green-600">From KES 8,000</p>
           </div>
-          <h3 class="text-2xl font-bold text-gray-900 mb-3">
-            Logic Board Repair
-          </h3>
-          <p class="text-gray-600 leading-relaxed mb-4">
-            Liquid damage or power issues? Our advanced micro-soldering
-            technicians can diagnose and repair complex logic board failures,
-            saving you from a costly replacement.
-          </p>
-          <p class="text-sm font-medium text-blue-600">Quote upon diagnosis</p>
-        </div>
 
-        <div class="p-8 bg-gray-50 rounded-2xl border border-gray-100 hover:shadow-md transition-shadow">
-          <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-            <Wrench class="w-6 h-6" />
+          <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:bg-gray-100 transition-colors">
+            <div class="flex items-center gap-4 mb-3">
+              <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
+                <Cpu class="w-5 h-5" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900">Logic Board Repair</h3>
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-3">Advanced micro-soldering to diagnose and repair complex failures.</p>
+            <p class="text-sm font-semibold text-purple-600">Quote upon diagnosis</p>
           </div>
-          <h3 class="text-2xl font-bold text-gray-900 mb-3">
-            Upgrades & Maintenance
-          </h3>
-          <p class="text-gray-600 leading-relaxed mb-4">
-            Speed up your older Mac with SSD upgrades, RAM expansions, macOS
-            installations, and deep cleaning services to prevent overheating.
-          </p>
-          <p class="text-sm font-medium text-blue-600">From KES 5,000</p>
+
+          <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:bg-gray-100 transition-colors">
+            <div class="flex items-center gap-4 mb-3">
+              <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center">
+                <Wrench class="w-5 h-5" />
+              </div>
+              <h3 class="text-xl font-bold text-gray-900">Upgrades & Maintenance</h3>
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-3">SSD upgrades, RAM expansions, and deep cleaning for optimal cooling.</p>
+            <p class="text-sm font-semibold text-orange-600">From KES 5,000</p>
+          </div>
+
+          <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100 hover:bg-blue-100 transition-colors">
+            <a href="/services/guides" f-client-nav class="block">
+              <div class="flex items-center gap-4 mb-3">
+                <div class="w-10 h-10 bg-blue-200 text-blue-700 rounded-lg flex items-center justify-center">
+                  <BookOpen class="w-5 h-5" />
+                </div>
+                <h3 class="text-xl font-bold text-gray-900">DIY Repair Guides</h3>
+              </div>
+              <p class="text-gray-600 text-sm leading-relaxed mb-3">Feeling adventurous? Access free, open-source repair guides powered by iFixit for your Apple devices.</p>
+              <p class="text-sm font-semibold text-blue-600 flex items-center gap-1">Browse Guides &rarr;</p>
+            </a>
+          </div>
         </div>
       </div>
 
-      <div class="bg-blue-600 text-white p-10 rounded-2xl text-center">
-        <h2 class="text-3xl font-bold mb-4">Need a Repair?</h2>
-        <p class="text-blue-100 mb-8 max-w-xl mx-auto text-lg">
-          Bring your device to our Westlands store for a free initial
-          diagnostic, or contact us to get an estimated quote.
-        </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <a
-            href="/about/contact"
-            class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-          >
-            Contact Us
-          </a>
+      {/* Footer Banner */}
+      <div class="bg-black text-white p-10 md:p-14 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="max-w-xl">
+          <div class="flex items-center gap-2 mb-4 text-blue-400">
+            <ShieldCheck class="w-6 h-6" />
+            <span class="font-semibold uppercase tracking-wider text-sm">Certified Repair Center</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4">Quality Service Guaranteed</h2>
+          <p class="text-gray-400 text-lg">
+            Bring your device to our Westlands store for a free initial diagnostic, or contact us to get an estimated quote. We handle every device with the utmost care.
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <a
             href="tel:+254700000000"
-            class="bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors border border-blue-500"
+            class="bg-white text-black px-8 py-4 rounded-xl font-bold text-center hover:bg-gray-200 transition-colors flex-1"
           >
             Call Now
+          </a>
+          <a
+            href="/about/contact"
+            f-client-nav
+            class="bg-gray-800 text-white px-8 py-4 rounded-xl font-bold text-center hover:bg-gray-700 transition-colors border border-gray-700 flex-1"
+          >
+            Find Our Store
           </a>
         </div>
       </div>
     </div>
   );
 });
+

@@ -2,8 +2,12 @@ import { useState } from "preact/hooks";
 import { Loader2 } from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
 
-export function ProductActions({ product }: { product: HttpTypes.StoreProduct }) {
-  const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0]?.id);
+export function ProductActions(
+  { product }: { product: HttpTypes.StoreProduct },
+) {
+  const [selectedVariant, setSelectedVariant] = useState(
+    product.variants?.[0]?.id,
+  );
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState("");
 
@@ -40,14 +44,15 @@ export function ProductActions({ product }: { product: HttpTypes.StoreProduct })
           <h3 id="variant-label" class="font-medium mb-3">Select Variant</h3>
           <div class="flex flex-wrap gap-3">
             {product.variants.map((variant: HttpTypes.StoreProductVariant) => (
-              <button 
+              <button
                 key={variant.id}
                 role="radio"
                 aria-checked={selectedVariant === variant.id}
-                onClick={() => setSelectedVariant(variant.id)}
+                onClick={() =>
+                  setSelectedVariant(variant.id)}
                 class={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition-colors ${
-                  selectedVariant === variant.id 
-                    ? "border-black bg-black text-white" 
+                  selectedVariant === variant.id
+                    ? "border-black bg-black text-white"
                     : "border-gray-300 hover:border-black text-gray-900"
                 }`}
               >
@@ -65,7 +70,7 @@ export function ProductActions({ product }: { product: HttpTypes.StoreProduct })
       )}
 
       <div class="mt-auto pt-8 border-t border-gray-200">
-        <button 
+        <button
           onClick={handleAddToCart}
           disabled={isAdding || !selectedVariant}
           class="w-full flex items-center justify-center gap-2 bg-[#2B5C8F] hover:bg-[#1e4166] text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-sm disabled:opacity-70"
@@ -74,11 +79,37 @@ export function ProductActions({ product }: { product: HttpTypes.StoreProduct })
         </button>
         <div class="mt-4 flex items-center justify-center gap-6 text-sm text-gray-500">
           <span class="flex items-center gap-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              >
+              </path>
+            </svg>
             In Stock
           </span>
           <span class="flex items-center gap-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              >
+              </path>
+            </svg>
             1-Year Warranty
           </span>
         </div>

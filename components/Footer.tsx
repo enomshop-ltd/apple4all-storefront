@@ -27,6 +27,9 @@ export function Footer() {
                 <a href="/services/repairs" f-client-nav>Repairs</a>
               </li>
               <li>
+                <a href="/services/guides" f-client-nav>DIY Guides (iFixit)</a>
+              </li>
+              <li>
                 <a href="/services/trade-in" f-client-nav>Trade-in</a>
               </li>
               <li>
@@ -46,6 +49,11 @@ export function Footer() {
               <li>
                 <a href="/about/contact" f-client-nav>Contact</a>
               </li>
+              <li>
+                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="hover:text-red-600 transition-colors" title="Watch us attempt repairs and cry">
+                  Our YouTube (We Break Things) 💥
+                </a>
+              </li>
             </ul>
           </div>
           <div class="col-span-2 md:col-span-2">
@@ -59,7 +67,10 @@ export function Footer() {
                 placeholder="Email address"
                 class="flex-1 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <button type="submit" class="bg-black text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors">
+              <button
+                type="submit"
+                class="bg-black text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
+              >
                 Sign Up
               </button>
             </form>

@@ -85,10 +85,7 @@ export const handler = define.handlers({
         }
       }
 
-      const providerId = body.payment_method === "paystack" ||
-          body.payment_method === "pp_paystack"
-        ? "pp_paystack"
-        : "pp_system_default";
+      const providerId = "pp_system_default";
 
       // FIX: Destructure `payment_collection` directly from the response
       const { payment_collection } = await medusa.store.payment
@@ -96,21 +93,21 @@ export const handler = define.handlers({
           currentCart,
           {
             provider_id: providerId,
-            data: { 
-              email: body.email, 
+            data: {
+              email: body.email,
               cart_id: currentCart.id,
-              callback_url: body.callback_url
+              callback_url: body.callback_url,
             },
           },
           {},
           reqHeaders,
         );
 
-      // Attach the returned payment collection to the cart object 
+      // Attach the returned payment collection to the cart object
       // so the frontend still receives the complete cart state
       currentCart.payment_collection = payment_collection;
 
-      // Extract the initialized Paystack session data
+      // Extract the initialized payment session data if needed
       const paymentSession = payment_collection?.payment_sessions?.find((
         s: { provider_id: string; data: unknown },
       ) => s.provider_id === providerId);
@@ -120,7 +117,6 @@ export const handler = define.handlers({
           success: true,
           cart: currentCart, // <-- Return currentCart instead of cartWithPayment
           paymentSession: paymentSession?.data || {},
-          publicKey: Deno.env.get("PAYSTACK_PUBLIC_KEY") || "",
         }),
         {
           status: 200,
@@ -130,7 +126,10 @@ export const handler = define.handlers({
     } catch (e: unknown) {
       console.error("Initialize payment error:", e);
       // Safely unwrap the error message if it's an API wrapper error
-      const errMsg = (e as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message || (e as { message?: string })?.message ||
+      const errMsg =
+        (e as { response?: { data?: { message?: string } }; message?: string })
+          ?.response?.data?.message ||
+        (e as { message?: string })?.message ||
         "Failed to initialize payment";
       return new Response(JSON.stringify({ error: errMsg }), {
         status: 400,

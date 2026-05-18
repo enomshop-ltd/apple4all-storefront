@@ -1,4 +1,4 @@
-import { useState, useEffect } from "preact/hooks";
+import { useState } from "preact/hooks";
 import {
   CreditCard,
   Loader2,
@@ -21,18 +21,8 @@ export function Checkout({
   const [isProcessing, setIsProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("paystack");
+  const [paymentMethod, setPaymentMethod] = useState("manual");
 
-    useEffect(() => {
-    // Handle Paystack redirect fallback
-    const urlParams = new URLSearchParams(globalThis.location?.search);
-    const reference = urlParams.get("reference") || urlParams.get("trxref");
-    if (reference && initialCart?.items?.length) {
-      setIsProcessing(true);
-      finalizeCheckout().catch(console.error);
-    }
-  }, []);
-  
   const cart = initialCart;
 
   const defaultAddress = customer?.addresses?.[0] || cart?.shipping_address;
@@ -96,64 +86,7 @@ export function Checkout({
         return;
       }
 
-      const initData = await initRes.json();
-
-      // Step 2: Trigger Payment Gateway or finalize directly
-      if (paymentMethod === "paystack") {
-        const accessCode = initData.paymentSession?.paystackTxAccessCode;
-        const reference = initData.paymentSession?.paystackTxRef; // <-- 1. Extract the secure backend reference
-        const publicKey = initData.publicKey;
-
-        if (!accessCode || !publicKey || !reference) {
-          setError("Failed to retrieve Paystack configuration.");
-          setIsProcessing(false);
-          return;
-        }
-        
-        const paystackWindow = window as any;
-
-        const openPaystackPopup = () => {
-          try {
-            const paystack = new paystackWindow.PaystackPop();
-
-            paystack.resumeTransaction(accessCode, {
-              onSuccess: () => {
-                setTimeout(() => {
-                  finalizeCheckout().catch(console.error);
-                }, 1500);
-              },
-              onCancel: () => {
-                setError("Payment window closed. You can try again.");
-                setIsProcessing(false);
-              },
-              onError: (err: any) => {
-                console.error("Paystack transaction error:", err);
-                setError(`Payment failed: ${err.message}`);
-                setIsProcessing(false);
-              }
-            });
-          } catch (err) {
-            console.error("Paystack iframe error:", err);
-            setError("Failed to open payment gateway. Please try again.");
-            setIsProcessing(false);
-          }
-        };
-
-        if (typeof paystackWindow.PaystackPop === "undefined") {
-          const script = document.createElement("script");
-          script.src = "https://js.paystack.co/v2/inline.js";
-          script.onload = () => openPaystackPopup();
-          script.onerror = () => {
-            setError("Failed to load Paystack securely. Check your connection.");
-            setIsProcessing(false);
-          };
-          document.head.appendChild(script);
-        } else {
-          openPaystackPopup();
-        }
-      } else {
-        await finalizeCheckout();
-      }
+      await finalizeCheckout();
     } catch (err) {
       // FIX: Log the actual error to the console so it's not hidden next time!
       console.error("Checkout crash:", err);
@@ -164,13 +97,13 @@ export function Checkout({
   };
 
   const finalizeCheckout = async () => {
-     try {
-       const res = await fetch("/api/cart/complete", {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-       });
-       if (res.ok) {
-         setSuccess(true);
+    try {
+      const res = await fetch("/api/cart/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (res.ok) {
+        setSuccess(true);
         globalThis.scrollTo({ top: 0, behavior: "smooth" });
         setTimeout(() => {
           globalThis.location.href = "/account/orders";
@@ -226,7 +159,9 @@ export function Checkout({
 
   const subtotalRaw = cart.subtotal || 0;
   const taxesRaw = cart.tax_total || 0;
-  const selectedOptionDetails = (shippingOptions ||[]).find((o: any) => o.id === selectedShippingOption  );
+  const selectedOptionDetails = (shippingOptions || []).find((o: any) =>
+    o.id === selectedShippingOption
+  );
   const shippingAmountRaw = selectedOptionDetails
     ? selectedOptionDetails.amount || 0
     : cart.shipping_total || 0;
@@ -235,7 +170,9 @@ export function Checkout({
   // Format safely utilizing local currency
   const subtotal = formatAmount(subtotalRaw, currencyCode);
   const taxes = formatAmount(taxesRaw, currencyCode);
-  const shippingAmount = shippingAmountRaw === 0 ? "Free" : formatAmount(shippingAmountRaw, currencyCode);
+  const shippingAmount = shippingAmountRaw === 0
+    ? "Free"
+    : formatAmount(shippingAmountRaw, currencyCode);
   const displayedTotal = formatAmount(displayedTotalRaw, currencyCode);
 
   return (
@@ -383,7 +320,9 @@ export function Checkout({
                 >
                   {cart?.region?.countries && cart.region.countries.length > 0
                     ? (
-                      cart.region.countries.map((c: { iso_2: string; display_name: string }) => (
+                      cart.region.countries.map((
+                        c: { iso_2: string; display_name: string },
+                      ) => (
                         <option key={c.iso_2} value={c.iso_2}>
                           {c.display_name}
                         </option>
@@ -454,26 +393,6 @@ export function Checkout({
             </div>
 
             <div class="space-y-4 mb-6">
-              <label
-                class={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${
-                  paymentMethod === "paystack"
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment_method"
-                  value="paystack"
-                  checked={paymentMethod === "paystack"}
-                  onChange={() => setPaymentMethod("paystack")}
-                  class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                />
-                <span class="ml-3 font-medium text-gray-900">
-                  Credit Card / Debit Card (Paystack)
-                </span>
-              </label>
-
               <label
                 class={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${
                   paymentMethod === "manual"
