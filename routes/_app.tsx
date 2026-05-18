@@ -34,7 +34,10 @@ export default define.page(function App({ Component, state }) {
         class="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 flex flex-col"
       >
         <TopProgressBarIsland />
-        <Header categories={(state?.categories as any[]) || []} />
+        <Header 
+          categories={(state?.categories as any[]) || []} 
+          isLoggedIn={!!state?.isLoggedIn}
+        />
         <Partial name="main">
           <Component />
         </Partial>

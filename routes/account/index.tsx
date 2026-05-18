@@ -17,7 +17,7 @@ export const handler = define.handlers({
       console.log("Fetching customer, orders, and currency concurrently");
       const [{ customer }, { orders }, currencyCode] = await Promise.all([
         medusa.store.customer.retrieve(
-          { fields: "*addresses" },
+          { fields: "*addresses,*groups" },
           { Authorization: `Bearer ${token}` },
         ),
         medusa.store.order.list(

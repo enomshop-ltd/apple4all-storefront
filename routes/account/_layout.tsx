@@ -47,6 +47,7 @@ export default define.page(function AccountLayout({ Component, url, state }) {
             ))}
             <a
               href="/api/auth/logout"
+              f-client-nav={false}
               class="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md"
             >
               Logout

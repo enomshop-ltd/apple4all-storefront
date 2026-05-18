@@ -181,8 +181,8 @@ export default function AccountDashboard({
                 />
               </div>
               <div>
-                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded mb-1 inline-block">
-                  Essentials
+                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded mb-1 inline-block uppercase">
+                  {((cust as unknown) as { groups?: { name: string }[] })?.groups?.[0]?.name || "Customer"}
                 </span>
                 <h3 class="text-xl font-bold text-gray-900">
                   {cust.first_name} {cust.last_name}
