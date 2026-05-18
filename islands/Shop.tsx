@@ -122,28 +122,28 @@ export default function Shop({ category }: { category?: string }) {
 
       <div class="flex flex-col md:flex-row justify-end items-start md:items-center mb-8 gap-4">
         <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-          <div class="relative w-full sm:w-auto flex items-center">
-            <Search class="absolute left-3 w-5 h-5 text-gray-400 pointer-events-none" />
+          <div class="relative w-full sm:w-56 flex items-center group">
+            <Search class="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none transition-colors group-focus-within:text-blue-500" />
             <input
               type="text"
-              placeholder="Search products..."
-              class="w-full sm:w-56 pl-10 pr-4 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-900"
+              placeholder="Search..."
+              class="w-full pl-9 pr-3 py-1.5 text-sm bg-white placeholder-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium text-gray-700"
               value={search}
               onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
             />
           </div>
 
-          <div class="flex items-center gap-2 w-full sm:w-auto">
-            <SlidersHorizontal class="w-5 h-5 text-gray-500 shrink-0" />
+          <div class="flex items-center gap-2 w-full sm:w-auto relative group">
+            <SlidersHorizontal class="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none transition-colors group-focus-within:text-blue-500 shrink-0 z-10" />
             <select
-              class="w-full sm:w-auto border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 cursor-pointer"
+              class="w-full sm:w-auto py-1.5 pl-9 pr-8 text-sm bg-white border border-gray-300 rounded-lg hover:border-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium text-gray-700 cursor-pointer appearance-none bg-no-repeat bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[position:right_0.5rem_center] bg-[length:1em_1em]"
               value={sort}
               onChange={(e) => setSort((e.target as HTMLSelectElement).value)}
             >
-              <option value="-created_at">Newest</option>
-              <option value="created_at">Oldest</option>
-              <option value="title">A to Z</option>
-              <option value="-title">Z to A</option>
+              <option value="-created_at">Newest Arrivals</option>
+              <option value="created_at">Oldest Arrivals</option>
+              <option value="title">Name: A to Z</option>
+              <option value="-title">Name: Z to A</option>
             </select>
           </div>
         </div>

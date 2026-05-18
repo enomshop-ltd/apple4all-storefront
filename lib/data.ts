@@ -10,10 +10,9 @@ export async function getCategories() {
   try {
     const { product_categories } = await medusa.store.category.list({ limit: 100 }, { next: { revalidate: 300 } });
     if (product_categories) {
-      // Filter root categories
-      const roots = product_categories.filter((c: any) => !c.parent_category_id);
+      console.log("Fetched categories from medusa:", product_categories.map(c => ({ id: c.id, handle: c.handle })));
       // Sort by rank, then take top 4
-      const sorted = roots.sort((a: any, b: any) => (a.rank || 0) - (b.rank || 0));
+      const sorted = product_categories.sort((a: any, b: any) => (a.rank || 0) - (b.rank || 0));
       cachedCategories = sorted;
       categoriesCacheTime = Date.now();
       return sorted;
