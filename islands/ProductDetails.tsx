@@ -4,12 +4,13 @@ import { HttpTypes } from "@medusajs/types";
 import { getPriceInfo } from "../lib/pricing.ts";
 import { marked } from "marked";
 
-export function ProductDetails(
-  { product, currencyCode }: {
-    product: HttpTypes.StoreProduct;
-    currencyCode: string;
-  },
-) {
+export function ProductDetails({
+  product,
+  currencyCode,
+}: {
+  product: HttpTypes.StoreProduct;
+  currencyCode: string;
+}) {
   const [selectedVariantId, setSelectedVariantId] = useState(
     product.variants?.[0]?.id,
   );
@@ -20,8 +21,8 @@ export function ProductDetails(
   const [error, setError] = useState("");
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
-  const selectedVariant = product.variants?.find((v) =>
-    v.id === selectedVariantId
+  const selectedVariant = product.variants?.find(
+    (v) => v.id === selectedVariantId,
   );
   const { currentPrice, originalPrice, hasDiscount } = getPriceInfo(
     product,
@@ -106,25 +107,38 @@ export function ProductDetails(
               )}
             </div>
             <div class="relative w-full">
-              <div 
+              <div
                 class={`w-full text-gray-700 text-sm leading-relaxed prose prose-sm prose-gray max-w-none prose-p:my-2 prose-headings:font-semibold prose-headings:text-sm prose-headings:mb-1 prose-headings:mt-3 prose-a:text-[#2B5C8F] prose-li:my-0.5 ${!isDescriptionExpanded ? "max-h-[8rem] overflow-hidden" : ""}`}
-                dangerouslySetInnerHTML={{ __html: product.description ? marked.parse(product.description.replace(/\\n/g, '\n'), { breaks: true }) as string : '' }}
+                dangerouslySetInnerHTML={{
+                  __html: product.description
+                    ? (marked.parse(product.description.replace(/\\n/g, "\n"), {
+                        breaks: true,
+                      }) as string)
+                    : "",
+                }}
               />
-              {!isDescriptionExpanded && (product.description && product.description.length > 200) && (
-                <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
-              )}
               {product.description && product.description.length > 200 && (
-                <button
-                  type="button"
-                  onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                  class="mt-2 text-[#2B5C8F] font-medium text-sm flex items-center gap-1 hover:text-[#1e4166] focus:outline-none transition-colors"
+                <div
+                  class={`flex justify-center mt-3 ${!isDescriptionExpanded ? "pt-4 border-t border-gray-200" : ""}`}
                 >
-                  {isDescriptionExpanded ? (
-                    <>Show Less <ChevronUp class="w-4 h-4" /></>
-                  ) : (
-                    <>Read More <ChevronDown class="w-4 h-4" /></>
-                  )}
-                </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setIsDescriptionExpanded(!isDescriptionExpanded)
+                    }
+                    class="group relative inline-flex items-center gap-1 font-medium text-sm text-[#2B5C8F] hover:text-[#1e4166] focus:outline-none transition-colors"
+                  >
+                    {isDescriptionExpanded ? (
+                      <>
+                        Show Less <ChevronUp class="w-4 h-4" />
+                      </>
+                    ) : (
+                      <>
+                        Read More <ChevronDown class="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -144,32 +158,30 @@ export function ProductDetails(
                   Select Variant
                 </h3>
                 <div class="flex flex-wrap gap-2">
-                  {product.variants.map((
-                    variant: HttpTypes.StoreProductVariant,
-                  ) => (
-                    <button
-                      type="button"
-                      key={variant.id}
-                      role="radio"
-                      aria-checked={selectedVariantId === variant.id}
-                      onClick={() => setSelectedVariantId(variant.id)}
-                      class={`px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-black transition-colors text-sm ${
-                        selectedVariantId === variant.id
-                          ? "border-black bg-black text-white"
-                          : "border-gray-300 hover:border-black text-gray-900"
-                      }`}
-                    >
-                      {variant.title}
-                    </button>
-                  ))}
+                  {product.variants.map(
+                    (variant: HttpTypes.StoreProductVariant) => (
+                      <button
+                        type="button"
+                        key={variant.id}
+                        role="radio"
+                        aria-checked={selectedVariantId === variant.id}
+                        onClick={() => setSelectedVariantId(variant.id)}
+                        class={`px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-black transition-colors text-sm ${
+                          selectedVariantId === variant.id
+                            ? "border-black bg-black text-white"
+                            : "border-gray-300 hover:border-black text-gray-900"
+                        }`}
+                      >
+                        {variant.title}
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
             )}
 
             {error && (
-              <div class="mb-3 text-red-600 text-sm font-medium">
-                {error}
-              </div>
+              <div class="mb-3 text-red-600 text-sm font-medium">{error}</div>
             )}
 
             <div class="pt-4 border-t border-gray-200">
@@ -177,11 +189,13 @@ export function ProductDetails(
                 type="button"
                 onClick={handleAddToCart}
                 disabled={isAdding || !selectedVariantId}
-                class="w-full flex items-center justify-center gap-2 bg-[#2B5C8F] hover:bg-[#1e4166] text-white py-3 rounded-xl font-bold text-base transition-colors shadow-sm disabled:opacity-70"
+                class="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white py-3 rounded-xl font-bold text-base transition-colors shadow-sm disabled:opacity-70"
               >
-                {isAdding
-                  ? <Loader2 class="w-5 h-5 animate-spin" />
-                  : "Add to Cart"}
+                {isAdding ? (
+                  <Loader2 class="w-5 h-5 animate-spin" />
+                ) : (
+                  "Add to Cart"
+                )}
               </button>
               <div class="mt-3 flex items-center justify-center gap-4 text-xs text-gray-500">
                 <span class="flex items-center gap-1">
@@ -196,8 +210,7 @@ export function ProductDetails(
                       stroke-linejoin="round"
                       stroke-width="2"
                       d="M5 13l4 4L19 7"
-                    >
-                    </path>
+                    ></path>
                   </svg>
                   In Stock
                 </span>
@@ -213,8 +226,7 @@ export function ProductDetails(
                       stroke-linejoin="round"
                       stroke-width="2"
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    >
-                    </path>
+                    ></path>
                   </svg>
                   1-Year Warranty
                 </span>

@@ -3,6 +3,7 @@
 A blazing-fast, modern e-commerce storefront built with [Deno Fresh](https://fresh.deno.dev/) and [Medusa v2](https://medusajs.com/).
 
 ## Features
+
 - ⚡ **Ultra-fast Performance:** Server-side rendered with Deno Fresh and Preact islands.
 - 🛍️ **Full E-commerce Flow:** Product listing, cart management, and checkout.
 - 👤 **Unified Dashboard:** Customer profile, delivery addresses, and order history combined into a single view with inline editing.
@@ -14,6 +15,14 @@ A blazing-fast, modern e-commerce storefront built with [Deno Fresh](https://fre
 - 🚀 **UX Polish:** GitHub-style Top Loading Progress Bar and seamless client-side page transitions.
 
 ## Changelog
+
+- **Footer Update:** Made the copyright year in the footer dynamically update to the current year.
+- **Product Details Fix:** Reverted the "Read More" and "Show Less" pills back to normal text per design request.
+- **Add to Cart Button:** Changed the background color of the 'Add to Cart' buttons to a sleek dark grey/black shade for a more modern look.
+- **Product Details Polish:** Redesigned the "Read More" / "Show Less" button for product descriptions. It is now centered, styled as a pill button for higher visibility, and uses a solid top-border line separator instead of a fade-out gradient.
+- **Track Repair Box:** Updated the `CustomBox` component on the Store page to be an interactive repair tracking form, allowing users to enter their serial number directly on the store page to jump into tracking their device.
+- **Store Sort UI Update:** Reduced the width of the product list sort drop-down and shortened the copy (removed "arrivals" and "name:") for a cleaner look.
+- **UX Polish (Progress Bar):** Fixed the GitHub-style Top Loading Progress Bar so that it reliably triggers and completes during Fresh client-side (partial) navigation by hooking natively into `fetch`, `click` (capture phase), and `pushState` events.
 - **Header & API Fixes:** Resolved an issue causing the header to disappear by moving Medusa category fetching out of the asynchronous component and into a route middleware (`_middleware.ts`). Fixed duplicate header/footer issues on error pages.
 - **iFixit Guides Refactoring:** Refactored the `iFixit` API fetching to be static pre-defined collections since the original category API output formats changed, making the guides page load fast and reliably with real thumbnails.
 - **Store Filter UI Fix:** Reverted the product filtering UI sizes and styling back to their original dimensions, added subtle rounded corners, and removed the blue outline from the filter dropdown when selected.
@@ -23,8 +32,10 @@ A blazing-fast, modern e-commerce storefront built with [Deno Fresh](https://fre
 - **Account Dashboard Overhaul:** Merged profile, address, and orders into an inline-editable combined `/account` dashboard.
 
 ## Local Development
+
 1. Clone repo, supply `.env` variables `MEDUSA_BACKEND_URL` and `MEDUSA_PUBLISHABLE_KEY`.
 2. Run `deno task start`. Open `http://localhost:8000`.
 
 ## License
+
 MIT

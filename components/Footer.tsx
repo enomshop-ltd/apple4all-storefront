@@ -7,16 +7,24 @@ export function Footer() {
             <h3 class="font-semibold mb-4">Shop</h3>
             <ul class="space-y-2 text-sm text-gray-600">
               <li>
-                <a href="/shop/iphone" f-client-nav>iPhone</a>
+                <a href="/shop/iphone" f-client-nav>
+                  iPhone
+                </a>
               </li>
               <li>
-                <a href="/shop/mac" f-client-nav>Mac</a>
+                <a href="/shop/mac" f-client-nav>
+                  Mac
+                </a>
               </li>
               <li>
-                <a href="/shop/ipad" f-client-nav>iPad</a>
+                <a href="/shop/ipad" f-client-nav>
+                  iPad
+                </a>
               </li>
               <li>
-                <a href="/shop/watch" f-client-nav>Watch</a>
+                <a href="/shop/watch" f-client-nav>
+                  Watch
+                </a>
               </li>
             </ul>
           </div>
@@ -24,16 +32,24 @@ export function Footer() {
             <h3 class="font-semibold mb-4">Services</h3>
             <ul class="space-y-2 text-sm text-gray-600">
               <li>
-                <a href="/services/repairs" f-client-nav>Repairs</a>
+                <a href="/services/repairs" f-client-nav>
+                  Repairs
+                </a>
               </li>
               <li>
-                <a href="/services/guides" f-client-nav>DIY Guides (iFixit)</a>
+                <a href="/services/guides" f-client-nav>
+                  DIY Guides (iFixit)
+                </a>
               </li>
               <li>
-                <a href="/services/trade-in" f-client-nav>Trade-in</a>
+                <a href="/services/trade-in" f-client-nav>
+                  Trade-in
+                </a>
               </li>
               <li>
-                <a href="/services/financing" f-client-nav>Financing</a>
+                <a href="/services/financing" f-client-nav>
+                  Financing
+                </a>
               </li>
             </ul>
           </div>
@@ -41,16 +57,28 @@ export function Footer() {
             <h3 class="font-semibold mb-4">About</h3>
             <ul class="space-y-2 text-sm text-gray-600">
               <li>
-                <a href="/about/our-story" f-client-nav>Our Story</a>
+                <a href="/about/our-story" f-client-nav>
+                  Our Story
+                </a>
               </li>
               <li>
-                <a href="/about/careers" f-client-nav>Careers</a>
+                <a href="/about/careers" f-client-nav>
+                  Careers
+                </a>
               </li>
               <li>
-                <a href="/about/contact" f-client-nav>Contact</a>
+                <a href="/about/contact" f-client-nav>
+                  Contact
+                </a>
               </li>
               <li>
-                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="hover:text-red-600 transition-colors" title="Watch us attempt repairs and cry">
+                <a
+                  href="https://youtube.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:text-red-600 transition-colors"
+                  title="Watch us attempt repairs and cry"
+                >
                   Our YouTube (We Break Things) 💥
                 </a>
               </li>
@@ -88,7 +116,9 @@ export function Footer() {
               Cookies
             </a>
           </div>
-          <p>&copy; 2026 Apple4All. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} Apple4All. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

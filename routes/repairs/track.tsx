@@ -7,6 +7,7 @@ export default function TrackRepairRoute(req: Request) {
     Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000";
   const url = new URL(req.url);
   const token = url.searchParams.get("token") || "";
+  const serial = url.searchParams.get("serial") || "";
 
   console.debug(`[TrackRepairRoute] Rendered with backendUrl: ${backendUrl}`);
 
@@ -27,7 +28,7 @@ export default function TrackRepairRoute(req: Request) {
       <div class="route-container">
         {/* Fresh 2.3+ partial injection placeholder if needed */}
         <div f-client-nav>
-          <TrackRepairIsland backendUrl={backendUrl} initialToken={token} />
+          <TrackRepairIsland backendUrl={backendUrl} initialToken={token} initialSerial={serial} />
         </div>
       </div>
     </>

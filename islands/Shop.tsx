@@ -22,16 +22,19 @@ export default function Shop({ category }: { category?: string }) {
   const [currencyCode, setCurrencyCode] = useState("USD");
 
   const observer = useRef<IntersectionObserver | null>(null);
-  const lastElementRef = useCallback((node: HTMLDivElement | null) => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage((prev) => prev + 1);
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [loading, hasMore]);
+  const lastElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prev) => prev + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore],
+  );
 
   // Debounce search
   useEffect(() => {
@@ -57,9 +60,9 @@ export default function Shop({ category }: { category?: string }) {
           ? `&category=${encodeURIComponent(category)}`
           : "";
         const res = await fetch(
-          `/api/products?page=${page}&limit=12&sort=${sort}&q=${
-            encodeURIComponent(debouncedSearch)
-          }${categoryParam}`,
+          `/api/products?page=${page}&limit=12&sort=${sort}&q=${encodeURIComponent(
+            debouncedSearch,
+          )}${categoryParam}`,
         );
         const data = await res.json();
 
@@ -70,7 +73,7 @@ export default function Shop({ category }: { category?: string }) {
             setHasMore(false);
           } else {
             setProducts((prev) =>
-              page === 1 ? data.products : [...prev, ...data.products]
+              page === 1 ? data.products : [...prev, ...data.products],
             );
             setHasMore(data.products.length === 12); // Assuming limit is 12
             setIsError(false);
@@ -111,9 +114,9 @@ export default function Shop({ category }: { category?: string }) {
             </div>
             <div class="ml-3">
               <p class="text-sm text-red-700">
-                <strong>Store Unavailable:</strong>{" "}
-                We are currently experiencing technical difficulties connecting
-                to the store backend. Please try again later.
+                <strong>Store Unavailable:</strong> We are currently
+                experiencing technical difficulties connecting to the store
+                backend. Please try again later.
               </p>
             </div>
           </div>
@@ -136,14 +139,14 @@ export default function Shop({ category }: { category?: string }) {
           <div class="flex items-center gap-2 w-full sm:w-auto relative group">
             <SlidersHorizontal class="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none transition-colors group-focus-within:text-blue-500 shrink-0 z-10" />
             <select
-              class="w-full sm:w-auto py-1.5 pl-9 pr-8 text-sm bg-white border border-gray-300 rounded-lg hover:border-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium text-gray-700 cursor-pointer appearance-none bg-no-repeat bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[position:right_0.5rem_center] bg-[length:1em_1em]"
+              class="w-full sm:w-36 py-1.5 pl-9 pr-8 text-sm bg-white border border-gray-300 rounded-lg hover:border-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium text-gray-700 cursor-pointer appearance-none bg-no-repeat bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[position:right_0.5rem_center] bg-[length:1em_1em]"
               value={sort}
               onChange={(e) => setSort((e.target as HTMLSelectElement).value)}
             >
-              <option value="-created_at">Newest Arrivals</option>
-              <option value="created_at">Oldest Arrivals</option>
-              <option value="title">Name: A to Z</option>
-              <option value="-title">Name: Z to A</option>
+              <option value="-created_at">Newest</option>
+              <option value="created_at">Oldest</option>
+              <option value="title">A to Z</option>
+              <option value="-title">Z to A</option>
             </select>
           </div>
         </div>

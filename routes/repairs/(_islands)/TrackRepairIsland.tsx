@@ -3,11 +3,13 @@ import { useState, useEffect } from "preact/hooks";
 export default function TrackRepairIsland({
   backendUrl,
   initialToken,
+  initialSerial,
 }: {
   backendUrl: string;
   initialToken?: string;
+  initialSerial?: string;
 }) {
-  const [serialNumber, setSerialNumber] = useState("");
+  const [serialNumber, setSerialNumber] = useState(initialSerial || "");
   const [ticket, setTicket] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -15,8 +17,11 @@ export default function TrackRepairIsland({
   useEffect(() => {
     if (initialToken) {
       handleTokenSearch(initialToken);
+    } else if (initialSerial) {
+      // Create a synthetic event to trigger the existing handleSearch
+      handleSearch({ preventDefault: () => {} } as any);
     }
-  }, [initialToken]);
+  }, [initialToken, initialSerial]);
 
   const handleTokenSearch = async (token: string) => {
     setLoading(true);

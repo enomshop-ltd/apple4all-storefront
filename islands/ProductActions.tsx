@@ -73,7 +73,7 @@ export function ProductActions(
         <button
           onClick={handleAddToCart}
           disabled={isAdding || !selectedVariant}
-          class="w-full flex items-center justify-center gap-2 bg-[#2B5C8F] hover:bg-[#1e4166] text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-sm disabled:opacity-70"
+          class="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-sm disabled:opacity-70"
         >
           {isAdding ? <Loader2 class="w-5 h-5 animate-spin" /> : "Add to Cart"}
         </button>

@@ -44,7 +44,7 @@ export function AddToCartButton(
       type="button"
       onClick={handleAddToCart}
       disabled={isLoading || !variantId}
-      class="w-full bg-[#2B5C8F] hover:bg-[#1e4166] text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center gap-2"
+      class="w-full bg-gray-900 hover:bg-black text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center gap-2"
     >
       {isLoading
         ? (

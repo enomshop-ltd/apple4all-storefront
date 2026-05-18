@@ -1,14 +1,12 @@
 import { useEffect, useState } from "preact/hooks";
 
 export function CustomBox() {
-  const [data, setData] = useState<
-    {
-      title: string;
-      description: string;
-      buttonText: string;
-      linkText: string;
-    } | null
-  >(null);
+  const [data, setData] = useState<{
+    title: string;
+    description: string;
+    buttonText: string;
+    linkText: string;
+  } | null>(null);
 
   useEffect(() => {
     // Mock data from a JSON string
@@ -61,12 +59,23 @@ export function CustomBox() {
       <h3 class="text-xl font-bold text-gray-900 mb-2">{data.title}</h3>
       <p class="text-sm text-gray-700 mb-8 flex-1">{data.description}</p>
 
-      <a
-        href="/repairs/track"
-        class="block w-full text-center py-3 px-4 bg-white border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 transition-colors mb-4"
-      >
-        {data.buttonText}
-      </a>
+      <form action="/repairs/track" method="get" class="mb-4">
+        <div class="flex gap-2">
+          <input
+            type="text"
+            name="serial"
+            placeholder="Enter serial number..."
+            class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            required
+          />
+          <button
+            type="submit"
+            class="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors whitespace-nowrap"
+          >
+            {data.buttonText}
+          </button>
+        </div>
+      </form>
       <a
         href="https://www.youtube.com/@UrbanDeviceCare"
         target="_blank"
