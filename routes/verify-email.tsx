@@ -1,5 +1,4 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { medusaUrl } from "../lib/sdk.ts";
 import { CheckCircle2, XCircle } from "lucide-preact";
 
 interface VerifyPageData {
@@ -23,7 +22,8 @@ export const handler: Handlers<VerifyPageData> = {
     try {
       // Call Medusa backend to verify the email
       // We expect the user to have implemented POST /store/customers/verify-email
-      const res = await fetch(`${medusaUrl}/store/customers/verify-email`, {
+      const backendUrl = Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000";
+      const res = await fetch(`${backendUrl}/store/customers/verify-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
