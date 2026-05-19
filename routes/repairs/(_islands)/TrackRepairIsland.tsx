@@ -3,13 +3,13 @@ import { useState, useEffect } from "preact/hooks";
 export default function TrackRepairIsland({
   backendUrl,
   initialToken,
-  initialSerial,
+  initialTicket,
 }: {
   backendUrl: string;
   initialToken?: string;
-  initialSerial?: string;
+  initialTicket?: string;
 }) {
-  const [serialNumber, setSerialNumber] = useState(initialSerial || "");
+  const [ticketNumber, setTicketNumber] = useState(initialTicket || "");
   const [ticket, setTicket] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,11 +17,11 @@ export default function TrackRepairIsland({
   useEffect(() => {
     if (initialToken) {
       handleTokenSearch(initialToken);
-    } else if (initialSerial) {
+    } else if (initialTicket) {
       // Create a synthetic event to trigger the existing handleSearch
       handleSearch({ preventDefault: () => {} } as any);
     }
-  }, [initialToken, initialSerial]);
+  }, [initialToken, initialTicket]);
 
   const handleTokenSearch = async (token: string) => {
     setLoading(true);
@@ -43,18 +43,18 @@ export default function TrackRepairIsland({
 
   const handleSearch = async (e: Event) => {
     e.preventDefault();
-    if (!serialNumber.trim()) return;
+    if (!ticketNumber.trim()) return;
 
     setLoading(true);
     setError("");
     setTicket(null);
     console.debug(
-      `[TrackRepairIsland] Searching for serial number: ${serialNumber}`,
+      `[TrackRepairIsland] Searching for ticket number: ${ticketNumber}`,
     );
 
     try {
       const response = await fetch(
-        `${backendUrl}/store/repairs/${encodeURIComponent(serialNumber)}`,
+        `${backendUrl}/store/repairs/${encodeURIComponent(ticketNumber)}`,
         {
           credentials: "omit",
         },
@@ -62,7 +62,7 @@ export default function TrackRepairIsland({
 
       if (!response.ok) {
         console.error(
-          `[TrackRepairIsland] Repair ticket not found for serial number: ${serialNumber}, status: ${response.status}`,
+          `[TrackRepairIsland] Repair ticket not found for ticket number: ${ticketNumber}, status: ${response.status}`,
         );
         throw new Error("Repair ticket not found");
       }
@@ -117,7 +117,7 @@ export default function TrackRepairIsland({
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4">Track Your Repair</h1>
         <p className="text-gray-600">
-          Enter your device serial number to check repair status
+          Enter your repair ticket number to check repair status
         </p>
       </div>
 
@@ -125,11 +125,11 @@ export default function TrackRepairIsland({
         <div className="flex gap-3">
           <input
             type="text"
-            value={serialNumber}
+            value={ticketNumber}
             onInput={(e) =>
-              setSerialNumber((e.target as HTMLInputElement).value)
+              setTicketNumber((e.target as HTMLInputElement).value)
             }
-            placeholder="Enter serial number..."
+            placeholder="Enter ticket number..."
             className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button

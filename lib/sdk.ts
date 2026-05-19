@@ -13,10 +13,12 @@ if (isProd && (!PUBLISHABLE_KEY || !BACKEND_URL)) {
   );
 }
 
+export const medusaUrl = BACKEND_URL || "http://localhost:9000";
+
 // Initialize the Medusa SDK for v2
 // The publishableKey passed here is automatically included in all Storefront API requests
 export const medusa = new Medusa({
-  baseUrl: BACKEND_URL || "http://localhost:9000",
+  baseUrl: medusaUrl,
   publishableKey: PUBLISHABLE_KEY ||
     "pk_",
   debug: false,

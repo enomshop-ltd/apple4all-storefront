@@ -28,7 +28,7 @@ export default function TrackRepairRoute(req: Request) {
       <div class="route-container">
         {/* Fresh 2.3+ partial injection placeholder if needed */}
         <div f-client-nav f-view-transition>
-          <TrackRepairIsland backendUrl={backendUrl} initialToken={token} initialSerial={serial} />
+          <TrackRepairIsland backendUrl={backendUrl} initialToken={token} initialTicket={serial} />
         </div>
       </div>
     </>
