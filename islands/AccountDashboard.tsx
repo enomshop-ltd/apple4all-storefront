@@ -118,54 +118,56 @@ export default function AccountDashboard({
 
   return (
     <div class="space-y-6 w-full max-w-5xl mx-auto">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { icon: Package, label: "Total Orders", val: orders.length },
-          {
-            icon: RefreshCcw,
-            label: "Returns",
-            val: orders
-              .filter((o) =>
-                ["returned", "partially_returned"].includes(
-                  o.fulfillment_status || "",
-                ),
-              )
-              .length.toString(),
-          },
-          {
-            icon: CreditCard,
-            label: "Unpaid",
-            val: formatAmount(
-              orders
+      {orders.length > 0 && (
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { icon: Package, label: "Total Orders", val: orders.length },
+            {
+              icon: RefreshCcw,
+              label: "Returns",
+              val: orders
                 .filter((o) =>
-                  ["not_paid", "awaiting", "requires_action"].includes(
-                    o.payment_status || "",
+                  ["returned", "partially_returned"].includes(
+                    o.fulfillment_status || "",
                   ),
                 )
-                .reduce((sum, o) => sum + (o.total || 0), 0),
-              currencyCode,
-            ),
-          },
-          {
-            icon: DollarSign,
-            label: "Credits",
-            val: formatAmount(0, currencyCode),
-          },
-        ].map((s, i) => (
-          <div
-            key={i}
-            class="bg-white p-4 rounded-xl border border-gray-200 flex items-center gap-4 shadow-sm"
-          >
-            <div class="p-3 bg-gray-50 text-gray-600 rounded-lg">
-              <s.icon class="w-6 h-6" />
+                .length.toString(),
+            },
+            {
+              icon: CreditCard,
+              label: "Unpaid",
+              val: formatAmount(
+                orders
+                  .filter((o) =>
+                    ["not_paid", "awaiting", "requires_action"].includes(
+                      o.payment_status || "",
+                    ),
+                  )
+                  .reduce((sum, o) => sum + (o.total || 0), 0),
+                currencyCode,
+              ),
+            },
+            {
+              icon: DollarSign,
+              label: "Credits",
+              val: formatAmount(0, currencyCode),
+            },
+          ].map((s, i) => (
+            <div
+              key={i}
+              class="bg-white p-4 rounded-xl border border-gray-200 flex items-center gap-4 shadow-sm"
+            >
+              <div class="p-3 bg-gray-50 text-gray-600 rounded-lg">
+                <s.icon class="w-6 h-6" />
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">{s.label}</p>
+                <p class="text-xl font-bold text-gray-900">{s.val}</p>
+              </div>
             </div>
-            <div>
-              <p class="text-sm text-gray-500">{s.label}</p>
-              <p class="text-xl font-bold text-gray-900">{s.val}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-gray-100">
           <h2 class="text-xl font-bold text-gray-900">Account data</h2>

@@ -11,8 +11,11 @@ export default define.page(function AccountLayout({ Component, url, state }) {
 
   const tabs = [
     { id: "overview", label: "Overview", href: "/account" },
-    { id: "orders", label: "My Orders", href: "/account/orders" }
   ];
+
+  if (state.hasOrders) {
+    tabs.push({ id: "orders", label: "My Orders", href: "/account/orders" });
+  }
 
   if (state.hasRepairs) {
     tabs.push({ id: "repairs", label: "Repairs", href: "/account/repairs" });
@@ -48,13 +51,6 @@ export default define.page(function AccountLayout({ Component, url, state }) {
                 {tab.label}
               </a>
             ))}
-            <a
-              href="/api/auth/logout"
-              f-client-nav="false"
-              class="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md"
-            >
-              Logout
-            </a>
           </nav>
         </aside>
 

@@ -28,6 +28,8 @@ export async function handler(ctx: FreshContext) {
 
     // Handle orders
     const { orders } = ordersResult;
+    ctx.state.hasOrders = orders && orders.length > 0;
+    
     const repairItems: any[] = [];
     orders.forEach((order) => {
       order.items?.forEach((item: any) => {
@@ -54,6 +56,7 @@ export async function handler(ctx: FreshContext) {
     ctx.state.repairItems = repairItems;
     ctx.state.repairs = fetchedRepairs;
   } catch (e) {
+    ctx.state.hasOrders = false;
     ctx.state.hasRepairs = false;
     ctx.state.repairItems = [];
     ctx.state.repairs = [];
