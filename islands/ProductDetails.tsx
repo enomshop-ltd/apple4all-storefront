@@ -145,38 +145,75 @@ export function ProductDetails({
 
           {/* Variants and Actions */}
           <div class="mt-auto flex flex-col">
-            {product.variants && product.variants.length > 1 && (
-              <div
-                class="mb-6"
-                role="radiogroup"
-                aria-labelledby="variant-label"
-              >
-                <h3
-                  id="variant-label"
-                  class="font-medium mb-2 text-xs text-gray-700 uppercase tracking-wider"
-                >
-                  Select Variant
-                </h3>
-                <div class="flex flex-wrap gap-2">
-                  {product.variants.map(
-                    (variant: HttpTypes.StoreProductVariant) => (
-                      <button
-                        type="button"
-                        key={variant.id}
-                        role="radio"
-                        aria-checked={selectedVariantId === variant.id}
-                        onClick={() => setSelectedVariantId(variant.id)}
-                        class={`px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-black transition-colors text-sm ${
-                          selectedVariantId === variant.id
-                            ? "border-black bg-black text-white"
-                            : "border-gray-300 hover:border-black text-gray-900"
-                        }`}
+            {product.variants && product.variants.length > 1 && product.options && (
+              <div class="mb-6 space-y-4">
+                {product.options.map((option: any) => {
+                  const uniqueValues = Array.from(new Set((option.values || []).map((v: any) => v.value)));
+                  
+                  // Helper options state parsing
+                  const getSelectedOptionMap = () => {
+                    const currentMap: Record<string, string> = {};
+                    if (selectedVariant && selectedVariant.options) {
+                      selectedVariant.options.forEach((opt: any) => {
+                        currentMap[opt.option_id] = opt.value;
+                      });
+                    }
+                    return currentMap;
+                  };
+
+                  const currentOptions = getSelectedOptionMap();
+                  
+                  // To update an option, find a variant that matches the other options + the new option value
+                  const updateOption = (optionId: string, val: string) => {
+                    const nextOptions = { ...currentOptions, [optionId]: val };
+                    let bestMatch = product.variants?.find((v: any) => {
+                      return v.options?.every((opt: any) => nextOptions[opt.option_id] === opt.value);
+                    });
+                    
+                    // If no exact match (sometimes options combinations are invalid), just pick any variant with the new value
+                    if (!bestMatch) {
+                       bestMatch = product.variants?.find((v: any) => {
+                         return v.options?.some((opt: any) => opt.option_id === optionId && opt.value === val);
+                       });
+                    }
+
+                    if (bestMatch && bestMatch.id) {
+                       setSelectedVariantId(bestMatch.id);
+                    }
+                  };
+
+                  return (
+                    <div key={option.id} role="radiogroup" aria-labelledby={`option-${option.id}`}>
+                      <h3
+                        id={`option-${option.id}`}
+                        class="font-medium mb-2 text-xs text-gray-700 uppercase tracking-wider"
                       >
-                        {variant.title}
-                      </button>
-                    ),
-                  )}
-                </div>
+                        {option.title}
+                      </h3>
+                      <div class="flex flex-wrap gap-2">
+                        {uniqueValues.map((val: any) => {
+                            const isSelected = currentOptions[option.id] === val;
+                            return (
+                              <button
+                                type="button"
+                                key={val}
+                                role="radio"
+                                aria-checked={isSelected}
+                                onClick={() => updateOption(option.id, val)}
+                                class={`px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-black transition-colors text-sm ${
+                                  isSelected
+                                    ? "border-black bg-black text-white"
+                                    : "border-gray-300 hover:border-black text-gray-900 bg-gray-50"
+                                }`}
+                              >
+                                {val}
+                              </button>
+                            );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
