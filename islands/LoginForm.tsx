@@ -25,20 +25,26 @@ export function LoginForm() {
         body: JSON.stringify({ email, password }),
       });
 
+      let data: any = {};
+      if (res.headers.get("content-type")?.includes("application/json")) {
+        data = await res.json();
+      }
+
       if (res.ok) {
         isSuccess = true;
         if (!isLogin) {
           setSuccess(
-            "Account created successfully! Redirecting you to your dashboard...",
+            data.message || "Account created successfully! Please check your email to verify your account.",
           );
+          // Switch to login tab so they can login after verification
           setTimeout(() => {
-            globalThis.location.href = "/account";
-          }, 2000);
+            setIsLogin(true);
+            setIsLoading(false);
+          }, 3000);
         } else {
           globalThis.location.href = "/account";
         }
       } else {
-        const data = await res.json();
         setError(
           data.error ||
             (isLogin ? "Invalid email or password." : "Registration failed."),
@@ -53,8 +59,10 @@ export function LoginForm() {
       );
       globalThis.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
-      // Keep loading spinner if successful registration to prevent double-clicks during redirect delay
-      if (!(isSuccess && !isLogin)) {
+      // If registration succeeded, we handle loading state in the timeout
+      if (isSuccess && !isLogin) {
+        // do nothing here, let the timeout handle it
+      } else if (!isSuccess || isLogin) {
         setIsLoading(false);
       }
     }

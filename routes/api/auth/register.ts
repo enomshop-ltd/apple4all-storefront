@@ -50,17 +50,20 @@ export const handler = define.handlers({
         }
       }
 
+      // Do not set the authentication cookie for auto-login
       const headers = new Headers();
       headers.set("Content-Type", "application/json");
-      headers.set(
-        "Set-Cookie",
-        `_medusa_jwt=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`,
-      );
 
-      return new Response(JSON.stringify({ success: true }), {
-        status: 200,
-        headers,
-      });
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Registration successful. Please check your email and verify your account to log in.",
+        }),
+        {
+          status: 200,
+          headers,
+        },
+      );
     } catch (e: unknown) {
       console.error("Registration error:", e);
       return new Response(

@@ -28,23 +28,31 @@ export const handler = define.handlers({
         if (matches) cartId = matches[1];
       }
 
-      if (cartId) {
-        try {
-          const { customer } = await medusa.store.customer.retrieve(
-            {},
+      try {
+        const { customer } = await medusa.store.customer.retrieve(
+          {},
+          { Authorization: `Bearer ${token}` },
+        );
+
+        if (customer?.metadata?.is_verified === false) {
+          return new Response(
+            JSON.stringify({ error: "Please verify your email before logging in." }),
+            {
+              status: 403,
+              headers: { "Content-Type": "application/json" },
+            },
+          );
+        }
+
+        if (cartId && customer?.id) {
+          await medusa.store.cart.update(
+            cartId,
+            { customer_id: customer.id, email: customer.email },
             { Authorization: `Bearer ${token}` },
           );
-
-          if (customer?.id) {
-            await medusa.store.cart.update(
-              cartId,
-              { customer_id: customer.id, email: customer.email },
-              { Authorization: `Bearer ${token}` },
-            );
-          }
-        } catch (err) {
-          console.error("Failed to associate cart with customer:", err);
         }
+      } catch (err) {
+        console.error("Failed to associate cart with customer or retrieve customer:", err);
       }
 
       // Set cookie
