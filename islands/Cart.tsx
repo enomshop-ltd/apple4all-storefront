@@ -15,6 +15,7 @@ export function Cart(
 
     const newQuantity = Math.max(1, item.quantity + delta);
 
+    globalThis.dispatchEvent(new Event("fresh:client-nav-start"));
     try {
       const res = await fetch(`/api/cart/items/${id}`, {
         method: "POST",
@@ -27,10 +28,13 @@ export function Cart(
       }
     } catch (e) {
       console.error("Failed to update quantity", e);
+    } finally {
+      globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
     }
   };
 
   const removeItem = async (id: string) => {
+    globalThis.dispatchEvent(new Event("fresh:client-nav-start"));
     try {
       const res = await fetch(`/api/cart/items/${id}`, {
         method: "DELETE",
@@ -41,6 +45,8 @@ export function Cart(
       }
     } catch (e) {
       console.error("Failed to remove item", e);
+    } finally {
+      globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
     }
   };
 

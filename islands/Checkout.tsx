@@ -84,6 +84,7 @@ export function Checkout({
     }
 
     try {
+      globalThis.dispatchEvent(new Event("fresh:client-nav-start"));
       // Step 1: Initialize Payment (updates cart and sets up Medusa Payment Session)
       const initRes = await fetch("/api/cart/initialize-payment", {
         method: "POST",
@@ -97,6 +98,7 @@ export function Checkout({
       });
 
       if (!initRes.ok) {
+        globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
         const data = await initRes.json();
         setError(data.error || "Failed to initialize checkout.");
         setIsProcessing(false);
@@ -108,23 +110,16 @@ export function Checkout({
 
       // Implement provider-specific flows where required (e.g., popups, redirects)
       if (paymentMethod.includes("paystack")) {
-        // Example: Initialize Paystack inline popup here using initData.paymentSession
-        // e.g., const paystack = new PaystackPop(); paystack.newTransaction({...});
-        // After successful payment, call finalizeCheckout()
         console.log("Paystack flow triggered", initData);
-         // For now, simulate success if no library is loaded
         await finalizeCheckout();
       } else if (paymentMethod.includes("stripe")) {
-        // Example: Confirm Stripe PaymentIntent
         console.log("Stripe flow triggered", initData);
-        // await stripe.confirmCardPayment(clientSecret, ...);
-        // After successful payment, call finalizeCheckout()
         await finalizeCheckout();
       } else {
-        // Manual payment methods can complete immediately
         await finalizeCheckout();
       }
     } catch (err) {
+      globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
       // FIX: Log the actual error to the console so it's not hidden next time!
       console.error("Checkout crash:", err);
       setError("An error occurred during checkout. Please try again.");
@@ -134,6 +129,7 @@ export function Checkout({
   };
 
   const finalizeCheckout = async () => {
+    globalThis.dispatchEvent(new Event("fresh:client-nav-start"));
     try {
       const res = await fetch("/api/cart/complete", {
         method: "POST",
@@ -146,11 +142,13 @@ export function Checkout({
           globalThis.location.href = "/account/orders";
         }, 2000);
       } else {
+        globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
         const data = await res.json();
         setError(data.error || "Failed to complete checkout.");
         globalThis.scrollTo({ top: 0, behavior: "smooth" });
       }
     } catch (_err) {
+      globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
       setError("An error occurred completing the order.");
       globalThis.scrollTo({ top: 0, behavior: "smooth" });
     } finally {

@@ -36,6 +36,7 @@ export function ProductActions(
     setIsAdding(true);
     setError("");
 
+    globalThis.dispatchEvent(new Event("fresh:client-nav-start"));
     try {
       const res = await fetch("/api/cart/items", {
         method: "POST",
@@ -47,10 +48,12 @@ export function ProductActions(
         // Redirect to cart or show success message
         window.location.href = "/cart";
       } else {
+        globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
         const data = await res.json();
         setError(data.error || "Failed to add to cart");
       }
     } catch (err) {
+      globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
       setError("An error occurred. Please try again.");
     } finally {
       setIsAdding(false);

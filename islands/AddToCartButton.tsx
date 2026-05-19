@@ -13,6 +13,7 @@ export function AddToCartButton(
     setIsLoading(true);
     setSuccess(false);
 
+    globalThis.dispatchEvent(new Event("fresh:client-nav-start"));
     try {
       const res = await fetch("/api/cart", {
         method: "POST",
@@ -31,8 +32,11 @@ export function AddToCartButton(
           // Optional: redirect to cart or show mini-cart
           globalThis.location.href = "/cart";
         }, 1000);
+      } else {
+        globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
       }
     } catch (e) {
+      globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
       console.error("Failed to add to cart", e);
     } finally {
       setIsLoading(false);
