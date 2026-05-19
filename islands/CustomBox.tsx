@@ -62,8 +62,8 @@ export function CustomBox() {
       <form action="/repairs/track" method="get" class="flex flex-col gap-4">
         <input
           type="text"
-          name="serial"
-          placeholder="Enter serial number..."
+          name="ticket"
+          placeholder="Enter ticket number..."
           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           required
         />
