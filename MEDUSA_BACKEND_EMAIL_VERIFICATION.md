@@ -12,56 +12,106 @@ You need to establish 3 things in your Medusa backend codebase:
 This subscriber listens for when a customer is created, generates a secure random token, stores it in the database/cache (or directly on customer metadata for simplicity), and triggers the notification module.
 
 ```typescript
-import { type SubscriberConfig, type SubscriberArgs } from "@medusajs/framework";
-import { INotificationModuleService, ICustomerModuleService } from "@medusajs/framework/types";
-import { Modules } from "@medusajs/framework/utils";
-import crypto from "crypto";
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+import { INotificationModuleService, ICustomerModuleService } from "@medusajs/framework/types"
+import { Modules } from "@medusajs/framework/utils"
+// Ensure this path matches the location of your email templates helper in your backend
+import { getAuthTemplate } from "../../utils/email-templates" 
+import crypto from "crypto"
 
-export default async function customerCreatedHandler({
-  event: { data },
+export default async function customerNotificationHandler({
+  event,
   container,
-}: SubscriberArgs<{ id: string }>) {
-  const customerModuleService: ICustomerModuleService = container.resolve(Modules.CUSTOMER);
-  const notificationModuleService: INotificationModuleService = container.resolve(Modules.NOTIFICATION);
+}: SubscriberArgs<any>) {
+  const logger = container.resolve("logger")
+  const eventName = event.name
+  const data = event.data
 
-  // Retrieve the newly created customer
-  const customer = await customerModuleService.retrieveCustomer(data.id);
+  logger.info(`[Nodemailer-Debug] 🟢 Triggered '${eventName}' subscriber.`)
 
-  // Generate a random 6-character hex token or code
-  const verificationToken = crypto.randomBytes(3).toString("hex").toUpperCase();
+  try {
+    const notificationModuleService: INotificationModuleService = container.resolve(Modules.NOTIFICATION)
+    
+    let email = ""
+    let templateName = ""
+    let emailSubject = ""
+    let htmlContent = ""
 
-  // Save the token - simplest way is in customer metadata temporarily
-  // You could also create a custom module/table for verification codes
-  await customerModuleService.updateCustomers(customer.id, {
-    metadata: {
-      ...customer.metadata,
-      verification_token: verificationToken,
-      is_verified: false
+    if (eventName === "customer.created") {
+      const customerService: ICustomerModuleService = container.resolve(Modules.CUSTOMER)
+      logger.debug(`[Nodemailer-Debug] Retrieving customer data for ID: ${data.id}...`)
+      
+      const customer = await customerService.retrieveCustomer(data.id)
+      email = customer.email
+      
+      // 1. Generate a random 6-character hex verification token
+      const verificationToken = crypto.randomBytes(3).toString("hex").toUpperCase()
+
+      // 2. Save the token and mark is_verified: false in customer metadata
+      await customerService.updateCustomers(customer.id, {
+        metadata: {
+          ...customer.metadata,
+          verification_token: verificationToken,
+          is_verified: false
+        }
+      })
+
+      // 3. Construct the verification URL 
+      // (Uses STOREFRONT_URL from backend's .env if deployed)
+      const storefrontUrl = process.env.STOREFRONT_URL || "http://localhost:8000"
+      const verificationUrl = `${storefrontUrl}/verify-email?token=${verificationToken}&email=${customer.email}`
+
+      // 4. Setup template payload for Nodemailer
+      templateName = "customer-verification"
+      emailSubject = "Verify Your Account - Apple4All"
+      htmlContent = getAuthTemplate(templateName, { 
+        name: customer.first_name,
+        verification_token: verificationToken,
+        verification_url: verificationUrl
+      })
+      
+    } else if (eventName === "auth.password_reset") {
+      logger.debug(`[Nodemailer-Debug] Processing password reset payload...`)
+      
+      email = data.email
+      templateName = "password-reset"
+      emailSubject = "Password Reset Request"
+      // data.token is provided by the raw Medusa auth module
+      htmlContent = getAuthTemplate(templateName, { token: data.token, email: data.email }) 
     }
-  });
 
-  // Construct the verification URL to point to your storefront (adjust domain)
-  // For local frontend, it's typically http://localhost:8000
-  const verificationUrl = `http://localhost:8000/verify-email?token=${verificationToken}&email=${customer.email}`;
+    if (!email) {
+      logger.warn(`[Nodemailer-Debug] ⚠️ No target email found for event ${eventName}. Aborting.`)
+      return
+    }
 
-  // Send the email via Notification Module
-  await notificationModuleService.createNotifications({
-    to: customer.email,
-    channel: "email",
-    template: "customer-verification", // The template ID in SendGrid or Resend
-    data: {
-      first_name: customer.first_name,
-      verification_token: verificationToken,
-      verification_url: verificationUrl
-    },
-  });
-  
-  console.log(`[Notification] Verification email sent to ${customer.email} with token ${verificationToken}`);
+    logger.debug(`[Nodemailer-Debug] Dispatching '${templateName}' template via Nodemailer...`)
+
+    await notificationModuleService.createNotifications({
+      to: email,
+      channel: "email",
+      template: templateName,
+      data: {
+        subject: emailSubject,
+        html: htmlContent,
+      },
+    })
+
+    logger.info(`[Nodemailer-Debug] ✅ Successfully dispatched '${eventName}' notification to ${email}`)
+  } catch (error) {
+    logger.error(`[Nodemailer-Debug] ❌ Failed to process '${eventName}'`, error)
+    if (error instanceof Error && error.stack) {
+      logger.error(`[Nodemailer-Debug] Stack trace: \n${error.stack}`)
+    }
+  }
 }
 
 export const config: SubscriberConfig = {
-  event: "customer.created",
-};
+  event: [
+    "customer.created",
+    "auth.password_reset"
+  ],
+}
 ```
 
 ## 2. API Route to Verify Email (`src/api/store/customers/verify-email/route.ts`)
