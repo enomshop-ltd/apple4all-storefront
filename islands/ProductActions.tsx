@@ -1,15 +1,35 @@
-import { useState } from "preact/hooks";
+import { useState, useMemo } from "preact/hooks";
 import { Loader2 } from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
 
 export function ProductActions(
   { product }: { product: HttpTypes.StoreProduct },
 ) {
-  const [selectedVariant, setSelectedVariant] = useState(
-    product.variants?.[0]?.id,
-  );
+  const [options, setOptions] = useState<Record<string, string>>(() => {
+    const initialOptions: Record<string, string> = {};
+    const defaultVariant = product.variants?.[0];
+    if (defaultVariant?.options) {
+      defaultVariant.options.forEach((opt: any) => {
+        if (opt.option_id) initialOptions[opt.option_id] = opt.value;
+      });
+    }
+    return initialOptions;
+  });
+
+  const selectedVariant = useMemo(() => {
+    if (!product.variants) return null;
+    return product.variants.find((v: any) => {
+      const variantOptions = v.options || [];
+      return variantOptions.every((opt: any) => options[opt.option_id] === opt.value);
+    });
+  }, [options, product.variants]);
+
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState("");
+
+  const updateOption = (optionId: string, value: string) => {
+    setOptions((prev) => ({ ...prev, [optionId]: value }));
+  };
 
   const handleAddToCart = async () => {
     if (!selectedVariant) return;
@@ -20,7 +40,7 @@ export function ProductActions(
       const res = await fetch("/api/cart/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ variant_id: selectedVariant, quantity: 1 }),
+        body: JSON.stringify({ variant_id: selectedVariant.id, quantity: 1 }),
       });
 
       if (res.ok) {
@@ -39,27 +59,34 @@ export function ProductActions(
 
   return (
     <div class="flex flex-col h-full">
-      {product.variants && product.variants.length > 1 && (
-        <div class="mb-8" role="radiogroup" aria-labelledby="variant-label">
-          <h3 id="variant-label" class="font-medium mb-3">Select Variant</h3>
-          <div class="flex flex-wrap gap-3">
-            {product.variants.map((variant: HttpTypes.StoreProductVariant) => (
-              <button
-                key={variant.id}
-                role="radio"
-                aria-checked={selectedVariant === variant.id}
-                onClick={() =>
-                  setSelectedVariant(variant.id)}
-                class={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition-colors ${
-                  selectedVariant === variant.id
-                    ? "border-black bg-black text-white"
-                    : "border-gray-300 hover:border-black text-gray-900"
-                }`}
-              >
-                {variant.title}
-              </button>
-            ))}
-          </div>
+      {product.variants && product.variants.length > 1 && product.options && (
+        <div class="mb-8 space-y-6">
+          {product.options.map((option: any) => {
+            const uniqueValues = Array.from(new Set((option.values || []).map((v: any) => v.value)));
+            
+            return (
+              <div key={option.id} role="radiogroup" aria-labelledby={`option-${option.id}`}>
+                <h3 id={`option-${option.id}`} class="font-medium mb-3 text-sm text-gray-500 uppercase tracking-wider">{option.title}</h3>
+                <div class="flex flex-wrap gap-3">
+                  {uniqueValues.map((val: any) => (
+                    <button
+                      key={val}
+                      role="radio"
+                      aria-checked={options[option.id] === val}
+                      onClick={() => updateOption(option.id, val)}
+                      class={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors ${
+                        options[option.id] === val
+                          ? "border-black bg-black text-white"
+                          : "border-gray-200 hover:border-gray-400 text-gray-900 bg-gray-50"
+                      }`}
+                    >
+                      {val}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

@@ -48,6 +48,7 @@ To connect the storefront to your MedusaJS V2 backend, you need to configure you
 
 ## Recent Updates
 
+- **Product Page Variants**: Updated product pages to render Medusa's dynamic variant options (e.g., Year, Layout, Storage) logically mapped instead of falling back to a raw concatenated string, enabling a clearer option-oriented selection flow for customers.
 - **Account Authentication & Pricing:** Implemented user registration with MedusaJS email verification flows, cart-to-customer price list bindings (applies reduced pricing for specific Customer Groups like RESELLERs), and a unified account dashboard.
 - **Repair Module Integration:** Added a complete repair tracking pipeline bridging with the backend module. Authenticated users can view their repair history mapped to ticket numbers, while guests can track repairs openly with their ticket numbers. Added DIY repair guides using the iFixit API.
 - **Checkout Payment Options:** Implemented dynamic payment provider parsing on the checkout page. The storefront automatically fetches enabled payment providers (like Manual/Pay on Delivery, Paystack, Stripe) from MedusaJS and auto-populates the UI options based on plugins installed. Added clear extension hooks in the checkout logic for initializing frontend UI pop-ups. Administrators can configure specific active payment providers by setting the `PAYMENT_PROVIDERS` environment variable (e.g., `PAYMENT_PROVIDERS="pp_system_default:Pay on Delivery,pp_paystack_paystack:Paystack"`).
