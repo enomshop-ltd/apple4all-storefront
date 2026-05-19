@@ -14,43 +14,44 @@ A blazing-fast, modern e-commerce storefront built with [Deno Fresh](https://fre
 - 🎨 **Styling:** Fully styled with Tailwind CSS, Lucide icons, native markdown parsing for products, and polished glassy UI.
 - 🚀 **UX Polish:** GitHub-style Top Loading Progress Bar and seamless client-side page transitions.
 
-## Changelog
+## Connecting to MedusaJS Backend
 
-- **Repair Tracking Update:** Modified the frontend code in `TrackRepairIsland.tsx` and its parent components to fetch repair orders by their `ticketNumber` (`/store/repairs/${ticketNumber}`) instead of relying on the hardware's serial number, ensuring compatibility with the recent backend update.
-- **SDK Update:** Added `medusaUrl` export to `lib/sdk.ts` to fix missing variable errors.
-- **Email Verification Workflow:** Implemented the frontend and backend workflow for customer email verification upon registration. Added a `/verify-email` destination route to securely accept tokens and display the correct success/failure UI. Modified `/api/auth/register` to block auto-login on signup and display a verification prompt instead. Secured `/api/auth/login` to strictly check for the newly implemented `metadata.is_verified` claim before issuing auth cookies. Additionally, created a `MEDUSA_BACKEND_EMAIL_VERIFICATION.md` guide documenting the essential Medusa event subscriber (`customer.created`) and API route code required to complete the backend setup.
-- **Cleanup & Paystack Removal:** Removed all unused account profile islands (`ProfileForm.tsx`, `AddressesList.tsx`, `PasswordForm.tsx`, and the password API) that were orphaned after the recent Account Dashboard redesign. Additionally, removed all Paystack integration files (`InstallmentPayment.tsx` and `paystack-payment.ts` API route) as they are no longer needed.
-- **Dynamic Active Orders:** Adjusted the `AccountDashboard.tsx` view to only display the "Active orders" widget if the customer genuinely has an active order (status is not completed, canceled, or archived).
-- **Account Dashboard Polish:** Removed the placeholder "Flowbite PRO" subscription section from the account dashboard, and replaced the read-only Delivery Address field with an inline-editable grid linked to a new internal API wrapper (`/api/account/address`) that calls MedusaJS V2's `createAddress`/`updateAddress` SDK.
-- **Improved Registration UX:** Refactored the MedusaJS `/api/auth/register` route token extraction so newly created sessions correctly populate valid auth cookies, preventing unexpected logouts. Added a visual success banner ("Account created successfully! Redirecting you to your dashboard...") inside the `LoginForm` island with a 2-second delay to give clear feedback instead of instantly redirecting to the login portal.
-- **Dynamic Repairs Menu:** Added an intelligent `Repairs` tab under the Customer Account Overview. It natively checks the customer's previous or active order items via Medusa API in the route middleware, and only reveals the nested tracking page (complete with native chat, workflow approvals, and cost breakdown capabilities mapped to `TrackRepairIsland`) if valid repair line-items exist.
-- **Dynamic Customer Group:** The Account Overview now checks for Medusa customer groups and displays the group name (e.g., RESELLER) instead of a hardcoded "Essentials" tag.
-- **Header Auth State & Dropdown:** Added server-side cookie reading in root `_middleware.ts` to seamlessly pass `isLoggedIn` auth state to the global `<Header>` component. If logged in, the user icon automatically highlights in blue and displays a sleek CSS-only dropdown menu holding direct links to "Dashboard", "My Orders", and "Log out".
-- **Logout Client-Routing Fix:** Disabled Fresh's `f-client-nav` view transitions SPA feature specifically for all `<a href="/api/auth/logout">` tags by applying `f-client-nav="false"` preventing them from inheriting `<body f-client-nav>`. This forces a full native browser navigation and successfully resolves the `Encountered unknown island: LoginForm` hook collision that occurred when SPA-transitioning to the `/login` page post-logout.
-- **Cart-to-Customer Price List Binding:** Upgraded the `/api/auth/login.ts` and `/api/auth/register.ts` internal routes to automatically check for existing guest carts via the `_medusa_cart_id` cookie upon successful authentication. If a cart is found, it immediately synchronizes the cart via Medusa V2's `cart.update()` SDK, explicitly setting the `customer_id`. Furthermore, the cart creation endpoints (`/api/cart.ts` and `/api/cart/items/index.ts`) were upgraded to parse the user's JWT token, retrieve their customer account, and apply the `customer_id` and `email` on cart generation. **This guarantees that Medusa's dynamic pricing engine will seamlessly trigger and apply exclusive reduced prices to any line items if the customer belongs to a Customer Group (e.g., `RESELLER`) bounded by a specific Price List.**
-- **SEO Dynamic Sitemap:** Switched from a static file to a dedicated Deno Fresh API route (`/routes/sitemap.xml.ts`) that dynamically generates the `sitemap.xml` response by querying Medusa.js for the latest products.
-- **SEO Update:** Added a `robots.txt` file in the static directory to ensure valid search engine crawling and indexation.
-- **Smooth Page Transitions:** Implemented the browser-native View Transitions API natively via Fresh 2.3's `f-view-transition` attribute for partials, and the `<meta name="view-transition" content="same-origin" />` tag for full cross-document navigations.
-- **Footer Update:** Made the copyright year in the footer dynamically update to the current year.
-- **Product Details Fix:** Reverted the "Read More" and "Show Less" pills back to normal text per design request.
-- **Add to Cart Button:** Changed the background color of the 'Add to Cart' buttons to a sleek dark grey/black shade for a more modern look.
-- **Product Details Polish:** Redesigned the "Read More" / "Show Less" button for product descriptions. It is now centered, styled as a pill button for higher visibility, and uses a solid top-border line separator instead of a fade-out gradient.
-- **Track Repair Form Update:** Removed the "Track Repair Status" primary button and converted the YouTube link into a sleek, text-based "Track repair status" submit button underneath the input field.
-- **Account Dashboard:** Removed statically-mocked "Favorite products" and "Reviews added" fields replacing them with dynamically calculated "Unpaid" ammounts, "Credits", and "Returns" fetched from real order data.
-- **Store Sort UI Update:** Reduced the width of the product list sort drop-down and shortened the copy (removed "arrivals" and "name:") for a cleaner look.
-- **UX Polish (Progress Bar):** Fixed the GitHub-style Top Loading Progress Bar so that it reliably triggers and completes during Fresh client-side (partial) navigation by hooking natively into `fetch`, `click` (capture phase), and `pushState` events.
-- **Header & API Fixes:** Resolved an issue causing the header to disappear by moving Medusa category fetching out of the asynchronous component and into a route middleware (`_middleware.ts`). Fixed duplicate header/footer issues on error pages.
-- **iFixit Guides Refactoring:** Refactored the `iFixit` API fetching to be static pre-defined collections since the original category API output formats changed, making the guides page load fast and reliably with real thumbnails.
-- **Store Filter UI Fix:** Reverted the product filtering UI sizes and styling back to their original dimensions, added subtle rounded corners, and removed the blue outline from the filter dropdown when selected.
-- **DIY Repair Guides:** Added a new `/services/guides` directory that fetches dynamically from the public `iFixit` API, offering free repair guides to users with legal disclaimers about CC BY-NC-SA usage. Integrated into the main repairs page.
-- **Terms of Service Update:** Updated `/legal/terms` to clarify warranty (90 days limit), refund policies (store credit only), screen return policies (no returns, 48hr defect report), job cards requirement, and payment channels compliance.
-- **Repair Tracking module introduced:** Integrated the MedusaJS Repair module tracking UI allowing query via serial numbers.
-- **Account Dashboard Overhaul:** Merged profile, address, and orders into an inline-editable combined `/account` dashboard.
+To connect the storefront to your MedusaJS V2 backend, you need to configure your environment variables with your backend's URL and Publishable API Key.
+
+1. Create a `.env` file in the root of the project.
+2. Set the following environment variables:
+   ```env
+   MEDUSA_BACKEND_URL=http://localhost:9000 # Your Medusa backend URL (e.g., deployed domain or localhost)
+   MEDUSA_PUBLISHABLE_KEY=pk_your_publishable_key # Your Medusa publishable API key
+   ```
+   *Note: You can generate a publishable key in your Medusa Admin dashboard under **Settings > API Keys**.*
+
+3. If you are using backend extensions like email verification or the repair module, ensure your backend has the relevant plugins and API routes installed (refer to `MEDUSA_BACKEND_EMAIL_VERIFICATION.md` for guidance on email flows).
+
+## How to Install and Deploy (Deno Deploy)
+
+[Deno Deploy](https://console.deno.com/) is the optimal hosting platform for Deno Fresh applications, offering fast edge rendering.
+
+1. Push your storefront code to a GitHub repository.
+2. Go to [Deno Deploy](https://console.deno.com/) and sign in with your GitHub account.
+3. Click on **New Project**.
+4. Select your GitHub repository containing this codebase.
+5. In the framework preset, it should automatically detect **Fresh**.
+6. Set the entry point to `main.ts` (this is the default for Fresh apps).
+7. Under **Environment Variables**, add the `MEDUSA_BACKEND_URL` and `MEDUSA_PUBLISHABLE_KEY` from your backend.
+8. Click **Deploy Project**. Within seconds, your storefront will be globally deployed at the edge.
 
 ## Local Development
 
 1. Clone repo, supply `.env` variables `MEDUSA_BACKEND_URL` and `MEDUSA_PUBLISHABLE_KEY`.
 2. Run `deno task start`. Open `http://localhost:8000`.
+
+## Recent Updates
+
+- **Account Authentication & Pricing:** Implemented user registration with MedusaJS email verification flows, cart-to-customer price list bindings (applies reduced pricing for specific Customer Groups like RESELLERs), and a unified account dashboard.
+- **Repair Module Integration:** Added a complete repair tracking pipeline bridging with the backend module. Authenticated users can view their repair history mapped to ticket numbers, while guests can track repairs openly with their ticket numbers. Added DIY repair guides using the iFixit API.
+- **Checkout Payment Options:** Implemented dynamic payment provider parsing on the checkout page. The storefront automatically fetches enabled payment providers (like Manual/Pay on Delivery, Paystack, Stripe) from MedusaJS and auto-populates the UI options based on plugins installed. Added clear extension hooks in the checkout logic for initializing frontend UI pop-ups. Administrators can configure specific active payment providers by setting the `PAYMENT_PROVIDERS` environment variable (e.g., `PAYMENT_PROVIDERS="pp_system_default:Pay on Delivery,pp_paystack_paystack:Paystack"`).
+- **SEO & Performance:** Created a dynamic API route (`/sitemap.xml`) to dynamically parse Medusa products, added a `robots.txt` configuration, and cleaned up unused components to keep the boilerplate minimal.
 
 ## License
 

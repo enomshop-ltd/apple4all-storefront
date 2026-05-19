@@ -13,15 +13,19 @@ export function Checkout({
   initialCart,
   customer,
   shippingOptions,
+  paymentProviders,
 }: {
   initialCart: HttpTypes.StoreCart | null;
   customer: HttpTypes.StoreCustomer | null;
   shippingOptions: any[];
+  paymentProviders: any[];
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("manual");
+  const [paymentMethod, setPaymentMethod] = useState(
+    paymentProviders && paymentProviders.length > 0 ? paymentProviders[0].id : ""
+  );
 
   const cart = initialCart;
 
@@ -65,6 +69,20 @@ export function Checkout({
     };
     const email = formData.get("email")?.toString() || "";
 
+    if (!shipping_address.first_name || !shipping_address.last_name || !shipping_address.address_1 || !shipping_address.city || !shipping_address.postal_code) {
+      setError("Please fill out all required shipping address fields before checking out.");
+      setIsProcessing(false);
+      globalThis.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    if (!paymentMethod) {
+      setError("Please choose a payment method.");
+      setIsProcessing(false);
+      globalThis.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     try {
       // Step 1: Initialize Payment (updates cart and sets up Medusa Payment Session)
       const initRes = await fetch("/api/cart/initialize-payment", {
@@ -86,7 +104,26 @@ export function Checkout({
         return;
       }
 
-      await finalizeCheckout();
+      const initData = await initRes.json();
+
+      // Implement provider-specific flows where required (e.g., popups, redirects)
+      if (paymentMethod.includes("paystack")) {
+        // Example: Initialize Paystack inline popup here using initData.paymentSession
+        // e.g., const paystack = new PaystackPop(); paystack.newTransaction({...});
+        // After successful payment, call finalizeCheckout()
+        console.log("Paystack flow triggered", initData);
+         // For now, simulate success if no library is loaded
+        await finalizeCheckout();
+      } else if (paymentMethod.includes("stripe")) {
+        // Example: Confirm Stripe PaymentIntent
+        console.log("Stripe flow triggered", initData);
+        // await stripe.confirmCardPayment(clientSecret, ...);
+        // After successful payment, call finalizeCheckout()
+        await finalizeCheckout();
+      } else {
+        // Manual payment methods can complete immediately
+        await finalizeCheckout();
+      }
     } catch (err) {
       // FIX: Log the actual error to the console so it's not hidden next time!
       console.error("Checkout crash:", err);
@@ -393,25 +430,32 @@ export function Checkout({
             </div>
 
             <div class="space-y-4 mb-6">
-              <label
-                class={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${
-                  paymentMethod === "manual"
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment_method"
-                  value="manual"
-                  checked={paymentMethod === "manual"}
-                  onChange={() => setPaymentMethod("manual")}
-                  class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                />
-                <span class="ml-3 font-medium text-gray-900">
-                  Pay on Delivery (Manual)
-                </span>
-              </label>
+              {paymentProviders && paymentProviders.length > 0 ? paymentProviders.map((provider: any) => {
+                return (
+                  <label
+                    key={provider.id}
+                    class={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${
+                      paymentMethod === provider.id
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment_method"
+                      value={provider.id}
+                      checked={paymentMethod === provider.id}
+                      onChange={() => setPaymentMethod(provider.id)}
+                      class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <span class="ml-3 font-medium text-gray-900">
+                      {provider.name || provider.id}
+                    </span>
+                  </label>
+                );
+              }) : (
+                <p class="text-sm text-gray-500">No payment methods configured for your region.</p>
+              )}
             </div>
           </div>
         </form>

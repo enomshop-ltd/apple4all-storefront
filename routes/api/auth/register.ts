@@ -42,7 +42,7 @@ export const handler = define.handlers({
         try {
           await medusa.store.cart.update(
             cartId,
-            { customer_id: customer.id, email: customer.email },
+            { email: customer.email },
             { Authorization: `Bearer ${token}` },
           );
         } catch (err) {

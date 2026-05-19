@@ -110,7 +110,7 @@ export function ProductActions(
               >
               </path>
             </svg>
-            1-Year Warranty
+            90-Day Warranty
           </span>
         </div>
       </div>

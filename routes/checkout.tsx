@@ -10,7 +10,8 @@ export const handler = define.handlers({
   async GET(ctx) {
     let cart = null;
     let customer = null;
-    let shippingOptions = [];
+    let shippingOptions: any[] = [];
+    let paymentProviders: any[] = [];
     const cookies = getCookies(ctx.req.headers);
     const cartId = cookies["_medusa_cart_id"];
     const token = cookies["_medusa_jwt"];
@@ -47,6 +48,39 @@ export const handler = define.handlers({
         const { shipping_options } = await medusa.store.fulfillment
           .listCartOptions({ cart_id: cartId }, headers);
         shippingOptions = shipping_options || [];
+
+        // Fetch payment providers
+        paymentProviders = [];
+        const envProviders = Deno.env.get("PAYMENT_PROVIDERS");
+        
+        if (envProviders) {
+          // Format expected: "pp_system_default:Pay on Delivery,pp_paystack_paystack:Paystack"
+          try {
+            paymentProviders = envProviders.split(",").map(p => {
+              const [id, ...nameParts] = p.split(":");
+              return { id: id.trim(), name: nameParts.join(":").trim() || id.trim() };
+            }).filter(p => p.id);
+          } catch(e) {
+            console.error("Error parsing PAYMENT_PROVIDERS env var", e);
+          }
+        } else {
+          try {
+            const { payment_providers } = await medusa.store.payment.listPaymentProviders({ region_id: cart.region_id }, headers);
+            paymentProviders = (payment_providers || []).map((p: any) => {
+              let name = p.id;
+              if (p.id.includes("manual") || p.id === "pp_system_default") {
+                name = "Pay on Delivery (Manual)";
+              } else if (p.id.includes("paystack")) {
+                name = "Paystack";
+              } else if (p.id.includes("stripe")) {
+                name = "Credit Card (Stripe)";
+              }
+              return { id: p.id, name };
+            });
+          } catch (e) {
+            console.error("Error fetching payment providers", e);
+          }
+        }
       } catch (e) {
         console.error("Error fetching cart/addresses for checkout:", e);
       }
@@ -63,15 +97,16 @@ export const handler = define.handlers({
     ctx.state.title = `Checkout - Apple4All`;
     ctx.state.description = `Complete your purchase securely at Apple4All.`;
 
-    return page({ cart, customer, shippingOptions });
+    return page({ cart, customer, shippingOptions, paymentProviders });
   },
 });
 
 export default define.page(function CheckoutPage(props) {
-  const { cart, customer, shippingOptions } = props.data as {
+  const { cart, customer, shippingOptions, paymentProviders } = props.data as {
     cart: HttpTypes.StoreCart;
     customer: HttpTypes.StoreCustomer | null;
     shippingOptions: unknown[];
+    paymentProviders: unknown[];
   };
 
   return (
@@ -85,6 +120,7 @@ export default define.page(function CheckoutPage(props) {
         initialCart={cart}
         customer={customer}
         shippingOptions={shippingOptions}
+        paymentProviders={paymentProviders}
       />
     </main>
   );

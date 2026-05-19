@@ -60,14 +60,12 @@ export const handler = define.handlers({
           region_id = regions?.[0]?.id;
         }
         
-        let customer_id;
         let email;
         
         if (token) {
             try {
                const { customer } = await medusa.store.customer.retrieve({}, { Authorization: `Bearer ${token}` });
                if (customer) {
-                   customer_id = customer.id;
                    email = customer.email;
                }
             } catch (err) {
@@ -79,7 +77,6 @@ export const handler = define.handlers({
         const { cart: newCart } = await medusa.store.cart.create(
           {
             region_id,
-            customer_id,
             email
           },
           {},
