@@ -23,7 +23,7 @@ export default define.page(async function ProductPage(ctx) {
     const region = await getStoreRegion();
     currencyCode = region?.currency_code || "USD";
 
-    const query: Record<string, unknown> = { handle };
+    const query: Record<string, unknown> = { handle, fields: "*variants,*variants.options,*options,*options.values,+variants.inventory_quantity,+variants.manage_inventory,+variants.allow_backorder" };
     if (region?.id) {
       query.region_id = region.id;
     }

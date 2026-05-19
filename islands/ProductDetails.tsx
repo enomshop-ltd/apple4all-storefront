@@ -30,6 +30,12 @@ export function ProductDetails({
     selectedVariant,
   );
 
+  const isOutOfStock = selectedVariant
+    ? selectedVariant.manage_inventory === true &&
+      selectedVariant.allow_backorder === false &&
+      (selectedVariant.inventory_quantity === null || selectedVariant.inventory_quantity <= 0)
+    : false;
+
   const handleAddToCart = async () => {
     if (!selectedVariantId) return;
     setIsAdding(true);
@@ -225,11 +231,17 @@ export function ProductDetails({
               <button
                 type="button"
                 onClick={handleAddToCart}
-                disabled={isAdding || !selectedVariantId}
-                class="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white py-3 rounded-xl font-bold text-base transition-colors shadow-sm disabled:opacity-70"
+                disabled={isAdding || !selectedVariantId || isOutOfStock}
+                class={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-base transition-colors shadow-sm disabled:opacity-70 ${
+                  isOutOfStock
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-gray-900 hover:bg-black text-white"
+                }`}
               >
                 {isAdding ? (
                   <Loader2 class="w-5 h-5 animate-spin" />
+                ) : isOutOfStock ? (
+                  "Out of Stock"
                 ) : (
                   "Add to Cart"
                 )}

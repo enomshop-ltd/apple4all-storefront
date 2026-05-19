@@ -95,6 +95,11 @@ export function Cart(
               <h3 class="font-semibold text-lg text-gray-900 mb-1">
                 {item.title}
               </h3>
+              {(item.variant_title || item.variant?.title) && (
+                <p class="text-xs text-gray-500 mb-1.5">
+                  {item.variant_title || item.variant?.title}
+                </p>
+              )}
               <p class="text-gray-600 font-medium">
                 {formatAmount(item.unit_price, currencyCode)}
               </p>

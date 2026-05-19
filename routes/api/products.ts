@@ -20,6 +20,7 @@ export const handler = define.handlers({
         limit,
         offset: (page - 1) * limit,
         order: sort,
+        fields: "*variants,*variants.options,*options,*options.values,+variants.inventory_quantity,+variants.manage_inventory,+variants.allow_backorder",
       };
       if (q) query.q = q;
 
