@@ -17,9 +17,7 @@ export default define.page(function AccountLayout({ Component, url, state }) {
     tabs.push({ id: "orders", label: "My Orders", href: "/account/orders" });
   }
 
-  if (state.hasRepairs) {
-    tabs.push({ id: "repairs", label: "Repairs", href: "/account/repairs" });
-  }
+  tabs.push({ id: "repairs", label: "Repairs", href: "/account/repairs" });
 
   return (
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">

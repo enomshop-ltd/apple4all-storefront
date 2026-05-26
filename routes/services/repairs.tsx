@@ -10,7 +10,7 @@ export const handler = define.handlers({
     ctx.state.description =
       "Expert Mac repair services in Westlands, Nairobi. From screen replacements to logic board repairs. Track your ongoing repair live.";
     return page({ 
-      backendUrl: Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000",
+      backendUrl: Deno.env.get("MEDUSA_BACKEND_URL")!,
       publishableKey: Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "" 
     });
   },

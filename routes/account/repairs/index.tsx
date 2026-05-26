@@ -6,7 +6,7 @@ export const handler = define.handlers({
   GET(ctx) {
     const { repairItems, repairs } = ctx.state;
     const backendUrl =
-      Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000";
+      Deno.env.get("MEDUSA_BACKEND_URL")!;
     const publishableKey = Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "";
     return page({ repairItems, repairs, backendUrl, publishableKey });
   },

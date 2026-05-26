@@ -5,11 +5,13 @@ export default function TrackRepairIsland({
   initialToken,
   initialTicket,
   publishableApiKey,
+  isLoggedIn = false,
 }: {
   backendUrl: string;
   initialToken?: string;
   initialTicket?: string;
   publishableApiKey?: string;
+  isLoggedIn?: boolean;
 }) {
   const [ticketNumber, setTicketNumber] = useState(initialTicket || "");
   const [ticket, setTicket] = useState<any>(null);
@@ -122,29 +124,29 @@ export default function TrackRepairIsland({
   };
 
   return (
-    <div class="max-w-4xl mx-auto px-4 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">Track Your Repair</h1>
-        <p className="text-gray-600">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold mb-2">Track Your Repair</h1>
+        <p className="text-gray-600 text-sm">
           Enter your repair ticket number to check repair status
         </p>
       </div>
 
-      <form onSubmit={handleSearch} className="mb-8">
-        <div className="flex gap-3">
+      <form onSubmit={handleSearch} className="mb-6 max-w-lg mx-auto">
+        <div className="flex gap-2">
           <input
             type="text"
             value={ticketNumber}
             onInput={(e) =>
               setTicketNumber((e.target as HTMLInputElement).value)
             }
-            placeholder="Enter ticket number (e.g., REPAIR-1234)..."
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="e.g. REPAIR-1234"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-sm"
           />
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="px-5 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-sm text-sm font-medium"
           >
             {loading ? "Searching..." : "Track"}
           </button>
@@ -153,23 +155,25 @@ export default function TrackRepairIsland({
       </form>
 
       {ticket && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Status Overview */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-start justify-between mb-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+            <div className="flex items-start justify-between mb-4">
               <div>
-                <h2 className="text-2xl font-bold mb-2">
+                <h2 className="text-xl font-bold mb-1">
                   {ticket.ticket_number}
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm">
                   {ticket.device?.brand} {ticket.device?.model_name}
                 </p>
-                <p className="text-sm text-gray-500">
-                  S/N: {ticket.device?.serial_number}
-                </p>
+                {isLoggedIn && (
+                  <p className="text-sm text-gray-500">
+                    S/N: {ticket.device?.serial_number}
+                  </p>
+                )}
               </div>
               <span
-                className={`px-4 py-2 rounded-full text-white font-medium ${
+                className={`px-3 py-1 rounded-full text-white text-xs font-medium shadow-sm ${
                   getStatusInfo(ticket.status).color
                 }`}
               >
@@ -178,7 +182,7 @@ export default function TrackRepairIsland({
             </div>
 
             {/* Progress Bar */}
-            <div className="mb-6">
+            <div className="mb-4">
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div
                   className={`h-3 rounded-full transition-all ${
@@ -197,20 +201,45 @@ export default function TrackRepairIsland({
               </div>
             </div>
 
+            {/* Timeline */}
+            {ticket.estimated_completion && (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-xl font-bold mb-4">Timeline</h3>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-600">Estimated Completion</p>
+                    <p className="text-lg font-semibold">
+                      {new Date(ticket.estimated_completion).toLocaleDateString()}
+                    </p>
+                  </div>
+                  {ticket.warranty_expiry && isLoggedIn && (
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-600">Warranty Until</p>
+                      <p className="text-lg font-semibold">
+                        {new Date(ticket.warranty_expiry).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Issue Description */}
-            <div className="border-t pt-4">
-              <h3 className="font-semibold mb-2">Issue Description</h3>
-              <p className="text-gray-700">{ticket.issue_description}</p>
-              {ticket.accessories && (
-                <p className="text-sm text-gray-600 mt-2">
-                  Accessories: {ticket.accessories}
-                </p>
-              )}
-            </div>
+            {isLoggedIn && (
+              <div className="border-t pt-4">
+                <h3 className="font-semibold mb-2">Issue Description</h3>
+                <p className="text-gray-700">{ticket.issue_description}</p>
+                {ticket.accessories && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    Accessories: {ticket.accessories}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Cost Information */}
-          {(ticket.total_estimate > 0 || ticket.total_actual > 0) && (
+          {isLoggedIn && (ticket.total_estimate > 0 || ticket.total_actual > 0) && (
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-xl font-bold mb-4">Cost Breakdown</h3>
 
@@ -601,7 +630,7 @@ export default function TrackRepairIsland({
           )}
 
           {/* Media Gallery */}
-          {ticket.media && ticket.media.length > 0 && (
+          {isLoggedIn && ticket.media && ticket.media.length > 0 && (
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-xl font-bold mb-4">Device Photos</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -625,7 +654,7 @@ export default function TrackRepairIsland({
           )}
 
           {/* Customer-visible Notes */}
-          {ticket.notes &&
+          {isLoggedIn && ticket.notes &&
             ticket.notes.filter((n: any) => !n.is_internal).length > 0 && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-xl font-bold mb-4">Updates</h3>
@@ -645,8 +674,9 @@ export default function TrackRepairIsland({
             )}
 
           {/* Chat Messages */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-bold mb-4">Messages</h3>
+          {isLoggedIn && (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-xl font-bold mb-4">Messages</h3>
 
             {ticket.updates && ticket.updates.length > 0 ? (
               <div className="space-y-3 max-h-96 overflow-y-auto mb-6">
@@ -747,6 +777,7 @@ export default function TrackRepairIsland({
               </button>
             </form>
           </div>
+          )}
         </div>
       )}
     </div>

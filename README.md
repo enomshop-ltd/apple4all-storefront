@@ -23,7 +23,11 @@ A high-performance, SEO-optimized e-commerce storefront for Apple4All. Built wit
 - **Feature**: Integrated Medusa Repair Module frontend booking and dashboard routes (`/repairs/book` and `/repairs/dashboard`).
 - **Feature**: Secured `/repairs/dashboard` and `/repairs/book` with server-side middleware and graceful client-side unauthorized fallbacks.
 - **Enhancement**: Added robust frontend logging (`console.debug`, `console.info`, `console.error`) for Repair booking and dashboard fetch requests.
-- **Enhancement**: Added a root `/repairs` redirect to navigate users accurately to the `/services/repairs` informational page.
+- **Enhancement**: Removed all hardcoded `http://localhost:9000` defaults; frontend now strictly uses `Deno.env.get("MEDUSA_BACKEND_URL")` explicitly.
+- **Enhancement**: Re-organized `/repairs/dashboard` into `/repairs/` and integrated the "Repairs" menu directly into the Account sidebar for logged-in users.
+- **Fix**: Created proxy API routes (`/api/account/repairs` & `/api/repairs/book`) for secure backend access and added missing session cookies resolving `401 Unauthorized`.
+- **Privacy Check**: `TrackRepairIsland` will now gracefully limit sensitive tracking data (like Chat Messages, Issue descriptions, Notes, Quotes, & Receipts) showing only progress/timelines for anonymous users.
+- **UI Tweaks**: Made the `/repairs/track` page more compact, modern, and interactive with adjusted spacing and visual enhancements.
 - **Enhancement**: Refactored `BookRepairIsland` and `CustomerRepairsIsland` to adhere to the storefront's uniform `slate` design system and Tailwind styling cues.
 - **UI Upgrade**: Injected dynamic 'Book a Repair' hooks across informational service pages for better discoverability.
 - **Engagement**: Added an eye-catching CTA within the PromoBanner integrating relevant promotional taglines to drive repairs.

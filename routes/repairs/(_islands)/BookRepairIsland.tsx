@@ -35,15 +35,10 @@ export default function BookRepairIsland({
     console.debug("[BookRepairIsland] Submitting repair booking request...", { device, ticket });
 
     try {
-      const response = await fetch(`${backendUrl}/store/repairs`, {
+      const response = await fetch(`/api/repairs/book`, {
         method: "POST",
-        // Needs "include" to pass medusa shop session/cookie for authentication
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          ...(publishableApiKey
-            ? { "x-publishable-api-key": publishableApiKey }
-            : {}),
         },
         body: JSON.stringify({
           device,
@@ -67,7 +62,11 @@ export default function BookRepairIsland({
           // ignore parsing error
         }
         if (response.status === 401) {
-          console.warn("[BookRepairIsland] Unauthorized 401: Customer is not logged in to book a repair.");
+          console.warn("[BookRepairIsland] Unauthorized 401: Customer is not logged in to book a repair. Redirecting to login...");
+          if (typeof window !== "undefined") {
+            window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+            return; // Stop execution while redirecting
+          }
           msg = "You must be logged in to book a repair";
         }
         console.error(`[BookRepairIsland] Failed to book repair. Message:` , msg);
@@ -78,7 +77,9 @@ export default function BookRepairIsland({
       console.info(`[BookRepairIsland] Repair booked successfully. Ticket number: ${data.repair_ticket?.ticket_number}`);
       setSuccess(data.repair_ticket);
     } catch (err: any) {
-      console.error("[BookRepairIsland] Exception while booking repair:", err);
+      if (err.message !== "You must be logged in to book a repair") {
+        console.error("[BookRepairIsland] Exception while booking repair:", err);
+      }
       setError(err.message || "An unexpected error occurred");
     } finally {
       setLoading(false);

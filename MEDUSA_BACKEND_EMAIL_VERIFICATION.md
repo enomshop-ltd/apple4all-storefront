@@ -219,5 +219,5 @@ Once these are in place in your backend:
 2. Medusa's event bus triggers `customer.created`.
 3. The subscriber fires, saves the `verification_token`, and sends an email.
 4. The user clicks the link and comes to a page like `/verify-email`.
-5. The frontend submits a POST to `http://localhost:9000/store/customers/verify-email`.
+5. The frontend submits a POST to `${MEDUSA_BACKEND_URL}/store/customers/verify-email`.
 6. Medusa verifies and updates `metadata.is_verified = true`.

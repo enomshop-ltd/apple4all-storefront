@@ -15,27 +15,24 @@ export default function CustomerRepairsIsland({
 
   useEffect(() => {
     const fetchRepairs = async () => {
-      console.debug("[CustomerRepairsIsland] Fetching customer repairs from:", `${backendUrl}/store/customers/me/repairs`);
+      console.debug("[CustomerRepairsIsland] Fetching customer repairs from:", `/api/account/repairs`);
       try {
-        const response = await fetch(
-          `${backendUrl}/store/customers/me/repairs`,
-          {
-            method: "GET",
-            credentials: "include", // Requires the customer to be logged in and session active
-            headers: {
-              "Content-Type": "application/json",
-              ...(publishableApiKey
-                ? { "x-publishable-api-key": publishableApiKey }
-                : {}),
-            },
+        const response = await fetch(`/api/account/repairs`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+        });
 
         console.debug(`[CustomerRepairsIsland] Fetch repairs response status: ${response.status}`);
 
         if (!response.ok) {
           if (response.status === 401) {
-            console.warn("[CustomerRepairsIsland] Unauthorized 401: Customer is not logged in.");
+            console.warn("[CustomerRepairsIsland] Unauthorized 401: Customer is not logged in. Redirecting to login...");
+            if (typeof window !== "undefined") {
+              window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+              return; // Stop execution while redirecting
+            }
             throw new Error("You must be logged in to view your repairs.");
           }
           const errText = await response.text();
@@ -47,7 +44,9 @@ export default function CustomerRepairsIsland({
         console.info(`[CustomerRepairsIsland] Successfully loaded ${data.repair_tickets?.length || 0} repairs.`);
         setTickets(data.repair_tickets || []);
       } catch (err: any) {
-        console.error("[CustomerRepairsIsland] Exception while fetching repairs:", err);
+        if (err.message !== "You must be logged in to view your repairs.") {
+           console.error("[CustomerRepairsIsland] Exception while fetching repairs:", err);
+        }
         setError(err.message || "An unexpected error occurred");
       } finally {
         setLoading(false);

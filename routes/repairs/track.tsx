@@ -1,16 +1,18 @@
+import { FreshContext } from "fresh";
 import { Head, Partial } from "fresh/runtime";
 import TrackRepairIsland from "./(_islands)/TrackRepairIsland.tsx";
 
-export default function TrackRepairRoute(req: Request) {
+export default function TrackRepairRoute(req: Request, ctx: FreshContext) {
   // Pass the backend URL from the Fresh server environment (Deno.env) safely to the island.
   const backendUrl =
-    Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000";
+    Deno.env.get("MEDUSA_BACKEND_URL")!;
   const publishableKey = Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "";
   const url = new URL(req.url);
   const token = url.searchParams.get("token") || "";
   const ticket = url.searchParams.get("ticket") || url.searchParams.get("serial") || "";
+  const isLoggedIn = Boolean(ctx.state.isLoggedIn);
 
-  console.debug(`[TrackRepairRoute] Rendered with backendUrl: ${backendUrl}`);
+  console.debug(`[TrackRepairRoute] Rendered with backendUrl: ${backendUrl}, isLoggedIn: ${isLoggedIn}`);
 
   return (
     <>
@@ -36,6 +38,7 @@ export default function TrackRepairRoute(req: Request) {
               initialToken={token}
               initialTicket={ticket}
               publishableApiKey={publishableKey}
+              isLoggedIn={isLoggedIn}
             />
           </div>
         </div>

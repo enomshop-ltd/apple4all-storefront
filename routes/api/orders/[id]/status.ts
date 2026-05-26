@@ -8,8 +8,7 @@ export const handler = define.handlers({
     // IMPORTANT: Replace this with your actual Medusa SDK/Fetch logic
     // using your server-side environment variables (e.g., MEDUSA_BACKEND_URL)
     try {
-      const backendUrl = Deno.env.get("MEDUSA_BACKEND_URL") ||
-        "http://localhost:9000";
+      const backendUrl = Deno.env.get("MEDUSA_BACKEND_URL")!;
       const publishableKey = Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "";
 
       const response = await fetch(`${backendUrl}/store/orders/${orderId}`, {

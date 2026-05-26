@@ -15,8 +15,7 @@ export const handler = define.handlers({
     }
 
     try {
-      const backendUrl = Deno.env.get("MEDUSA_BACKEND_URL") ||
-        "http://localhost:9000";
+      const backendUrl = Deno.env.get("MEDUSA_BACKEND_URL")!;
       const publishableKey = Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "";
 
       const response = await fetch(
