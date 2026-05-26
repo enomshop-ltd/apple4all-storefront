@@ -1,5 +1,5 @@
 import { define } from "../../utils.ts";
-import { Head } from "fresh/runtime";
+import { Head, Partial } from "fresh/runtime";
 
 export default define.page(function AccountLayout({ Component, url, state }) {
   const path = url.pathname;
@@ -17,7 +17,12 @@ export default define.page(function AccountLayout({ Component, url, state }) {
     tabs.push({ id: "orders", label: "My Orders", href: "/account/orders" });
   }
 
-  // Removed repairs tab as requested
+  // Repairs links loading via partials
+  const repairTabs = [
+    { id: "repairs", label: "My Repairs", href: "/repairs" },
+    { id: "repairs-book", label: "↳ Book a Repair", href: "/repairs/book" },
+    { id: "repairs-track", label: "↳ Track a Repair", href: "/repairs/track" },
+  ];
 
   return (
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
@@ -49,11 +54,28 @@ export default define.page(function AccountLayout({ Component, url, state }) {
                 {tab.label}
               </a>
             ))}
+            
+            <div class="pt-4 pb-2">
+              <span class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Repairs</span>
+            </div>
+            
+            {repairTabs.map((tab) => (
+              <a
+                key={tab.id}
+                href={tab.href}
+                f-partial={tab.href}
+                class={`px-4 py-2 text-sm font-medium rounded-md text-left text-gray-600 hover:bg-gray-100 transition`}
+              >
+                {tab.label}
+              </a>
+            ))}
           </nav>
         </aside>
 
         <section class="flex-1">
-          <Component />
+          <Partial name="repair-content">
+            <Component />
+          </Partial>
         </section>
       </div>
     </main>

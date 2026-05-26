@@ -27,6 +27,10 @@ A high-performance, SEO-optimized e-commerce storefront for Apple4All. Built wit
 - **Enhancement**: Removed the Repairs tab completely from the My Account dashboard layout as requested.
 - **Bug Fix**: Fixed a missing route issue where `/repairs/track` threw a 404 due to plural directory mismatch.
 - **Bug Fix**: Addressed an empty state bug where `/repairs/` would incorrectly state "You do not have any active or past repair orders" by parsing both `repairs` and `repair_tickets` keys interchangeably from the API response payload.
+- **Bug Fix**: Fixed a Fresh 2 runtime error on the `/repairs/track` route, which was attempting to read context from legacy Fresh 1.0 parameters (`req, ctx`); updated to properly use `define.page` rendering and `props.url`.
+- **Bug Fix**: Removed duplicate "Timeline" components rendering redundantly inside the `TrackRepairIsland` component during timeline display.
+- **UI Enhancement**: Redesigned the `PromoBanner` entirely, replacing placeholder text with an interactive repair booking CTA, complete with the slogan "Our prices are lower than your expectations" and a vibrant repair illustration background.
+- **Enhancement**: Added 'Repairs' navigation links directly into the `/account/` sidebar, utilizing Fresh `<Partial>` rendering (`f-partial`) to load repair interfaces smoothly inline without breaking the account dashboard layout.
 - **Refactor**: Redirected internal link bindings away from `/repair/` pointing all anchors appropriately to `/repairs/`.
 - **Enhancement**: Refactored `BookRepairIsland` and `CustomerRepairsIsland` to adhere to the storefront's uniform `slate` design system and Tailwind styling cues.
 - **UI Upgrade**: Injected dynamic 'Book a Repair' hooks across informational service pages for better discoverability.

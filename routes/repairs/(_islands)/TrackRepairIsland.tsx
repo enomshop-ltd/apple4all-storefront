@@ -606,29 +606,6 @@ export default function TrackRepairIsland({
             </div>
           )}
 
-          {/* Timeline */}
-          {ticket.estimated_completion && (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-bold mb-4">Timeline</h3>
-              <div className="flex items-center gap-4">
-                <div className="flex-1">
-                  <p className="text-sm text-gray-600">Estimated Completion</p>
-                  <p className="text-lg font-semibold">
-                    {new Date(ticket.estimated_completion).toLocaleDateString()}
-                  </p>
-                </div>
-                {ticket.warranty_expiry && (
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-600">Warranty Until</p>
-                    <p className="text-lg font-semibold">
-                      {new Date(ticket.warranty_expiry).toLocaleDateString()}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Media Gallery */}
           {isLoggedIn && ticket.media && ticket.media.length > 0 && (
             <div className="bg-white rounded-lg shadow-md p-6">
