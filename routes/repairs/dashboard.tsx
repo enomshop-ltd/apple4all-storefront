@@ -1,4 +1,4 @@
-import { Head, Partial } from "$fresh/runtime.ts";
+import { Head, Partial } from "fresh/runtime";
 import CustomerRepairsIsland from "./(_islands)/CustomerRepairsIsland.tsx";
 
 export default function CustomerRepairsRoute() {

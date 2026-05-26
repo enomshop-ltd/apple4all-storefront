@@ -1,4 +1,4 @@
-import { Head, Partial } from "$fresh/runtime.ts";
+import { Head, Partial } from "fresh/runtime";
 import TrackRepairIsland from "./(_islands)/TrackRepairIsland.tsx";
 
 export default function TrackRepairRoute(req: Request) {

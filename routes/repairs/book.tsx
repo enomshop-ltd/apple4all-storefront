@@ -1,4 +1,4 @@
-import { Head, Partial } from "$fresh/runtime.ts";
+import { Head, Partial } from "fresh/runtime";
 import BookRepairIsland from "./(_islands)/BookRepairIsland.tsx";
 
 export default function BookRepairRoute() {
