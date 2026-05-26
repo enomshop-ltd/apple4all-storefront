@@ -7,15 +7,17 @@ export const handler = define.handlers({
     const { repairItems, repairs } = ctx.state;
     const backendUrl =
       Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000";
-    return page({ repairItems, repairs, backendUrl });
+    const publishableKey = Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "";
+    return page({ repairItems, repairs, backendUrl, publishableKey });
   },
 });
 
 export default define.page(function AccountRepairsPage(props) {
-  const { repairItems, repairs, backendUrl } = props.data as {
+  const { repairItems, repairs, backendUrl, publishableKey } = props.data as {
     repairItems: Array<Record<string, unknown>>;
     repairs: Array<any>;
     backendUrl: string;
+    publishableKey: string;
   };
 
   const hasNewRepairs = repairs && repairs.length > 0;
@@ -68,6 +70,7 @@ export default define.page(function AccountRepairsPage(props) {
                     <div class="p-4 border-t border-gray-200 bg-white">
                       <TrackRepairIsland
                         backendUrl={backendUrl}
+                        publishableKey={publishableKey}
                         initialToken={token}
                         initialTicket={repair.ticket_number || ""}
                       />
@@ -116,6 +119,7 @@ export default define.page(function AccountRepairsPage(props) {
                     <div class="p-4 border-t border-gray-200 bg-white">
                       <TrackRepairIsland
                         backendUrl={backendUrl}
+                        publishableKey={publishableKey}
                         initialToken={token}
                         initialTicket={serial}
                       />

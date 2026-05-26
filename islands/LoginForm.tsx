@@ -36,10 +36,9 @@ export function LoginForm() {
           setSuccess(
             data.message || "Account created successfully! Please check your email to verify your account.",
           );
-          // Switch to login tab so they can login after verification
+          // Redirect to the verification form with the email pre-populated
           setTimeout(() => {
-            setIsLogin(true);
-            setIsLoading(false);
+            globalThis.location.href = `/verify-email?email=${encodeURIComponent(email)}`;
           }, 3000);
         } else {
           globalThis.location.href = "/account";

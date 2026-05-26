@@ -9,12 +9,15 @@ export const handler = define.handlers({
     ctx.state.title = "Mac Repairs & Services - Apple4All";
     ctx.state.description =
       "Expert Mac repair services in Westlands, Nairobi. From screen replacements to logic board repairs. Track your ongoing repair live.";
-    return page({ backendUrl: Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000" });
+    return page({ 
+      backendUrl: Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000",
+      publishableKey: Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "" 
+    });
   },
 });
 
 export default define.page(function RepairsPage({ state, data }) {
-  const { backendUrl } = data;
+  const { backendUrl, publishableKey } = data;
 
   return (
     <div class="max-w-6xl mx-auto px-4 py-8">
@@ -40,7 +43,7 @@ export default define.page(function RepairsPage({ state, data }) {
             <Search class="w-48 h-48" />
           </div>
           <div class="relative z-10">
-            <TrackRepairIsland backendUrl={backendUrl} />
+            <TrackRepairIsland backendUrl={backendUrl} publishableKey={publishableKey} />
           </div>
         </div>
 

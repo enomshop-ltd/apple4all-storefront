@@ -4,10 +4,12 @@ export default function TrackRepairIsland({
   backendUrl,
   initialToken,
   initialTicket,
+  publishableKey = "",
 }: {
   backendUrl: string;
   initialToken?: string;
   initialTicket?: string;
+  publishableKey?: string;
 }) {
   const [ticketNumber, setTicketNumber] = useState(initialTicket || "");
   const [ticket, setTicket] = useState<any>(null);
@@ -29,7 +31,10 @@ export default function TrackRepairIsland({
     try {
       const response = await fetch(
         `${backendUrl}/store/repairs/token/${token}`,
-        { credentials: "omit" },
+        { 
+          credentials: "omit",
+          headers: { "x-publishable-api-key": publishableKey },
+        },
       );
       if (!response.ok) throw new Error("Invalid or expired token");
       const data = await response.json();
@@ -57,6 +62,7 @@ export default function TrackRepairIsland({
         `${backendUrl}/store/repairs/${encodeURIComponent(ticketNumber)}`,
         {
           credentials: "omit",
+          headers: { "x-publishable-api-key": publishableKey },
         },
       );
 
@@ -243,7 +249,7 @@ export default function TrackRepairIsland({
                               `${backendUrl}/store/repairs/approve`,
                               {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: { "Content-Type": "application/json", "x-publishable-api-key": publishableKey },
                                 body: JSON.stringify({
                                   token: initialToken,
                                   approved: true,
@@ -255,7 +261,7 @@ export default function TrackRepairIsland({
                               `${backendUrl}/store/repairs/${ticket.id}/approve`,
                               {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: { "Content-Type": "application/json", "x-publishable-api-key": publishableKey },
                                 body: JSON.stringify({ approved: true }),
                               },
                             );
@@ -300,7 +306,7 @@ export default function TrackRepairIsland({
                               `${backendUrl}/store/repairs/approve`,
                               {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: { "Content-Type": "application/json", "x-publishable-api-key": publishableKey },
                                 body: JSON.stringify({
                                   token: initialToken,
                                   approved: false,
@@ -312,7 +318,7 @@ export default function TrackRepairIsland({
                               `${backendUrl}/store/repairs/${ticket.id}/approve`,
                               {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: { "Content-Type": "application/json", "x-publishable-api-key": publishableKey },
                                 body: JSON.stringify({ approved: false }),
                               },
                             );
@@ -467,7 +473,7 @@ export default function TrackRepairIsland({
                     `${backendUrl}/store/repairs/${ticket.id}/messages`,
                     {
                       method: "POST",
-                      headers: { "Content-Type": "application/json" },
+                      headers: { "Content-Type": "application/json", "x-publishable-api-key": publishableKey },
                       body: JSON.stringify({ message }),
                       credentials: "omit",
                     },

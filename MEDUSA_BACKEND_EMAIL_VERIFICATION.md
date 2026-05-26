@@ -13,11 +13,12 @@ This subscriber listens for when a customer is created, generates a secure rando
 
 ```typescript
 import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
-import { INotificationModuleService, ICustomerModuleService } from "@medusajs/framework/types"
+import { ICustomerModuleService } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 // Ensure this path matches the location of your email templates helper in your backend
 import { getAuthTemplate } from "../../utils/email-templates" 
 import crypto from "crypto"
+import nodemailer from "nodemailer"
 
 export default async function customerNotificationHandler({
   event,
@@ -30,12 +31,11 @@ export default async function customerNotificationHandler({
   logger.info(`[Nodemailer-Debug] 🟢 Triggered '${eventName}' subscriber.`)
 
   try {
-    const notificationModuleService: INotificationModuleService = container.resolve(Modules.NOTIFICATION)
-    
     let email = ""
     let templateName = ""
     let emailSubject = ""
     let htmlContent = ""
+    let templateData = {}
 
     if (eventName === "customer.created") {
       const customerService: ICustomerModuleService = container.resolve(Modules.CUSTOMER)
@@ -57,8 +57,8 @@ export default async function customerNotificationHandler({
       })
 
       // 3. Construct the verification URL 
-      // (Uses STOREFRONT_URL from backend's .env if deployed)
-      const storefrontUrl = process.env.STOREFRONT_URL || "http://localhost:8000"
+      // Replace STOREFRONT_URL directly in your code or add it to your .env
+      const storefrontUrl = process.env.STOREFRONT_URL || "https://ais-dev-62ono6avaltafphj2pis2z-526705599121.europe-west2.run.app"
       const verificationUrl = `${storefrontUrl}/verify-email?token=${verificationToken}&email=${customer.email}`
 
       // 4. Setup template payload for Nodemailer
@@ -69,7 +69,7 @@ export default async function customerNotificationHandler({
         verification_token: verificationToken,
         verification_url: verificationUrl
       })
-      
+
     } else if (eventName === "auth.password_reset") {
       logger.debug(`[Nodemailer-Debug] Processing password reset payload...`)
       
@@ -80,21 +80,32 @@ export default async function customerNotificationHandler({
       htmlContent = getAuthTemplate(templateName, { token: data.token, email: data.email }) 
     }
 
-    if (!email) {
-      logger.warn(`[Nodemailer-Debug] ⚠️ No target email found for event ${eventName}. Aborting.`)
+    if (!email || !htmlContent) {
+      logger.warn(`[Nodemailer-Debug] ⚠️ No target email/content found for event ${eventName}. Aborting.`)
       return
     }
 
-    logger.debug(`[Nodemailer-Debug] Dispatching '${templateName}' template via Nodemailer...`)
+    logger.debug(`[Nodemailer-Debug] Dispatching '${templateName}' template via direct Nodemailer transport...`)
 
-    await notificationModuleService.createNotifications({
-      to: email,
-      channel: "email",
-      template: templateName,
-      data: {
-        subject: emailSubject,
-        html: htmlContent,
+    // Generate direct Nodemailer transport to bypass Medusa V2 content stripping bugs
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || "apple-4all.com",
+      port: parseInt(process.env.SMTP_PORT || "465"),
+      secure: process.env.SMTP_SECURE === "true",
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
       },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to: email,
+      subject: emailSubject,
+      html: htmlContent
     })
 
     logger.info(`[Nodemailer-Debug] ✅ Successfully dispatched '${eventName}' notification to ${email}`)
@@ -114,7 +125,41 @@ export const config: SubscriberConfig = {
 }
 ```
 
-## 2. API Route to Verify Email (`src/api/store/customers/verify-email/route.ts`)
+## 3. Email Template Utility (`src/utils/email-templates.ts`)
+
+You will also need to create a utility function to generate the email HTML content. This ensures the verification URL and token are properly rendered in the email sent by your notification provider.
+
+```typescript
+export function getAuthTemplate(templateName: string, data: any): string {
+  if (templateName === "customer-verification") {
+    return `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Verify Your Account</h2>
+        <p>Hello ${data.name || "Customer"},</p>
+        <p>Thank you for registering at Apple4All.</p>
+        <p>Please click the link below to verify your email address:</p>
+        <div style="margin: 30px 0;">
+          <a href="${data.verification_url}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            Verify Email
+          </a>
+        </div>
+        <p>Or manually enter this verification token on the verification page: <strong>${data.verification_token}</strong></p>
+        <hr style="border: 1px solid #eaeaea; margin: 20px 0;" />
+        <p style="color: #666; font-size: 12px;">If you did not request this, please ignore this email.</p>
+      </div>
+    `;
+  }
+  
+  if (templateName === "password-reset") {
+    // Implement your password reset template here if needed
+    return `<div>Password reset token: ${data.token}</div>`;
+  }
+
+  return "<div>No template found</div>";
+}
+```
+
+## 4. API Route to Verify Email (`src/api/store/customers/verify-email/route.ts`)
 
 When the user clicks the link or submits the form on the frontend, this Medusa API route validates the token and marks the customer as verified.
 
