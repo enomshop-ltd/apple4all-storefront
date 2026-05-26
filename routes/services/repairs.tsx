@@ -2,7 +2,7 @@ import { define } from "../../utils.ts";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
 import { Battery, Cpu, MonitorSmartphone, Wrench, Search, ShieldCheck, BookOpen } from "lucide-preact";
-import TrackRepairIsland from "../repairs/(_islands)/TrackRepairIsland.tsx";
+import TrackRepairIsland from "../repair/(_islands)/TrackRepairIsland.tsx";
 
 export const handler = define.handlers({
   GET(ctx) {
@@ -44,7 +44,11 @@ export default define.page(function RepairsPage({ state, data }) {
           </div>
           <div class="relative z-10 flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-900 px-4 pt-4 md:px-0 md:pt-0">Track or Book</h2>
+<<<<<<< HEAD
             <a href="/repairs/book" class="mr-4 md:mr-0 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition font-medium text-sm">
+=======
+            <a href="/repair/book" class="mr-4 md:mr-0 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition font-medium text-sm">
+>>>>>>> 0e3c954 (update)
               Book a Repair
             </a>
           </div>

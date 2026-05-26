@@ -17,7 +17,11 @@ export default define.page(function AccountLayout({ Component, url, state }) {
     tabs.push({ id: "orders", label: "My Orders", href: "/account/orders" });
   }
 
+<<<<<<< HEAD
   tabs.push({ id: "repairs", label: "Repairs", href: "/account/repairs" });
+=======
+  // Removed repairs tab as requested
+>>>>>>> 0e3c954 (update)
 
   return (
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">

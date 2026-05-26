@@ -41,13 +41,8 @@ export default function CustomerRepairsIsland({
         }
 
         const data = await response.json();
-<<<<<<< HEAD
-        console.info(`[CustomerRepairsIsland] Successfully loaded ${data.repair_tickets?.length || 0} repairs.`);
-        setTickets(data.repair_tickets || []);
-=======
         console.info(`[CustomerRepairsIsland] Successfully loaded ${data.repairs?.length || data.repair_tickets?.length || 0} repairs.`);
         setTickets(data.repairs || data.repair_tickets || []);
->>>>>>> 0e3c954 (update)
       } catch (err: any) {
         if (err.message !== "You must be logged in to view your repairs.") {
            console.error("[CustomerRepairsIsland] Exception while fetching repairs:", err);
@@ -110,7 +105,7 @@ export default function CustomerRepairsIsland({
           No repairs found
         </h3>
         <p class="mb-4">You have not booked any device for repair yet.</p>
-        <a href="/repairs/book" class="text-slate-900 hover:underline">
+        <a href="/repair/book" class="text-slate-900 hover:underline">
           Book your first repair
         </a>
       </div>
@@ -181,7 +176,7 @@ export default function CustomerRepairsIsland({
               </td>
               <td class="px-6 py-4 text-right whitespace-nowrap text-sm font-medium">
                 <a
-                  href={`/repairs/track?token=${t.approval_token || t.ticket_number}`}
+                  href={`/repair/track?token=${t.approval_token || t.ticket_number}`}
                   class="text-slate-900 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded transition-colors"
                 >
                   View details
