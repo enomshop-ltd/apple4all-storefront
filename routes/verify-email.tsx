@@ -1,4 +1,5 @@
-import { Handlers, PageProps } from "$fresh/server.ts";
+import { define } from "../utils.ts";
+import { page } from "fresh";
 import { CheckCircle2, XCircle } from "lucide-preact";
 
 interface VerifyPageData {
@@ -9,14 +10,17 @@ interface VerifyPageData {
   attempted: boolean;
 }
 
-export const handler: Handlers<VerifyPageData> = {
-  async GET(req, ctx) {
-    const url = new URL(req.url);
+export const handler = define.handlers({
+  async GET(ctx) {
+    const url = new URL(ctx.req.url);
     const token = url.searchParams.get("token");
     const email = url.searchParams.get("email");
 
+    console.debug(`[Storefront VerifyEmail] GET hit. Email: ${email}, Token provided: ${!!token}`);
+
     if (!token || !email) {
-      return ctx.render({
+      console.debug("[Storefront VerifyEmail] Missing email or token. Rendering input form.");
+      return page({
         success: false,
         message: "",
         email,
@@ -26,11 +30,11 @@ export const handler: Handlers<VerifyPageData> = {
     }
 
     try {
-      // Call Medusa backend to verify the email
-      // We expect the user to have implemented POST /store/customers/verify-email
       const backendUrl = Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000";
       const publishableKey = Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "";
       
+      console.debug(`[Storefront VerifyEmail] Fetching Medusa backend at: ${backendUrl}`);
+
       const res = await fetch(`${backendUrl}/store/customers/verify-email`, {
         method: "POST",
         headers: {
@@ -40,10 +44,13 @@ export const handler: Handlers<VerifyPageData> = {
         body: JSON.stringify({ email, token }),
       });
 
+      console.debug(`[Storefront VerifyEmail] Backend returned Status: ${res.status} ${res.statusText}`);
       const data = await res.json();
+      console.debug("[Storefront VerifyEmail] Backend JSON payload:", data);
 
       if (res.ok && data.success) {
-        return ctx.render({
+        console.info(`[Storefront VerifyEmail] Verification SUCCESS for: ${email}`);
+        return page({
           success: true,
           message: "Your email has been successfully verified!",
           email,
@@ -51,28 +58,30 @@ export const handler: Handlers<VerifyPageData> = {
           attempted: true,
         });
       } else {
-        return ctx.render({
+        console.warn(`[Storefront VerifyEmail] Verification FAILED. Reason: ${data.error || data.message}`);
+        return page({
           success: false,
-          message: data.error || "Failed to verify email. Please check your token and try again.",
+          message: data.error || data.message || "Failed to verify email. Please check your token and try again.",
           email,
           token,
           attempted: true,
         });
       }
     } catch (e) {
-      return ctx.render({
+      // The silent failure was happening here
+      console.error("[Storefront VerifyEmail] CRITICAL FETCH ERROR (Check MEDUSA_BACKEND_URL env var):", e);
+      return page({
         success: false,
-        message: "An unexpected error occurred during verification.",
+        message: "An unexpected network error occurred during verification.",
         email,
         token,
         attempted: true,
       });
     }
   },
-};
+});
 
-export default function VerifyEmailPage({ data }: PageProps<VerifyPageData>) {
-  // If we haven't attempted verification, or it failed, we show the form
+export default define.page<VerifyPageData>(function VerifyEmailPage({ data }) {
   const showForm = !data.attempted || !data.success;
 
   return (
@@ -159,4 +168,4 @@ export default function VerifyEmailPage({ data }: PageProps<VerifyPageData>) {
       </div>
     </div>
   );
-}
+});
