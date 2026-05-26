@@ -5,8 +5,10 @@ export default function TrackRepairRoute(req: Request) {
   // Pass the backend URL from the Fresh server environment (Deno.env) safely to the island.
   const backendUrl =
     Deno.env.get("MEDUSA_BACKEND_URL") || "http://localhost:9000";
+  const publishableKey = Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "";
   const url = new URL(req.url);
   const token = url.searchParams.get("token") || "";
+  const ticket = url.searchParams.get("ticket") || url.searchParams.get("serial") || "";
 
   console.debug(`[TrackRepairRoute] Rendered with backendUrl: ${backendUrl}`);
 
@@ -29,7 +31,12 @@ export default function TrackRepairRoute(req: Request) {
         <div class="route-container" f-client-nav>
           {/* Fresh 2.3+ partial injection placeholder if needed */}
           <div>
-            <TrackRepairIsland backendUrl={backendUrl} initialToken={token} />
+            <TrackRepairIsland
+              backendUrl={backendUrl}
+              initialToken={token}
+              initialTicket={ticket}
+              publishableApiKey={publishableKey}
+            />
           </div>
         </div>
       </Partial>

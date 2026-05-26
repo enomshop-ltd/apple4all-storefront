@@ -70,7 +70,7 @@ export default define.page(function AccountRepairsPage(props) {
                     <div class="p-4 border-t border-gray-200 bg-white">
                       <TrackRepairIsland
                         backendUrl={backendUrl}
-                        publishableKey={publishableKey}
+                        publishableApiKey={publishableKey}
                         initialToken={token}
                         initialTicket={repair.ticket_number || ""}
                       />
@@ -119,7 +119,7 @@ export default define.page(function AccountRepairsPage(props) {
                     <div class="p-4 border-t border-gray-200 bg-white">
                       <TrackRepairIsland
                         backendUrl={backendUrl}
-                        publishableKey={publishableKey}
+                        publishableApiKey={publishableKey}
                         initialToken={token}
                         initialTicket={serial}
                       />

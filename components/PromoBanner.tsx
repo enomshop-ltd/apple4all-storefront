@@ -33,19 +33,29 @@ export function PromoBanner() {
               Best iPhone for photos in 2026: Ultimate buyer's guide | Back
               Market
             </h2>
-            <p class="text-gray-600 text-xs md:text-sm leading-relaxed">
+            <p class="text-gray-600 text-xs md:text-sm leading-relaxed mb-4">
               Expert-tested guide to the 7 best iPhones for photography in 2026.
               Compare camera quality, features, and value to find your perfect
               match—from flagship Pro models to an iPhone under $200.
             </p>
+            <div class="bg-gray-50 rounded p-3 border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+              <span class="text-sm font-medium text-gray-800 italic">"Our prices are lower than your expectations." 👀</span>
+              <a
+                href="/repairs/book"
+                f-client-nav
+                class="inline-block px-4 py-2 bg-slate-900 text-white text-xs font-medium rounded hover:bg-slate-800 transition-colors whitespace-nowrap"
+              >
+                Book a Repair
+              </a>
+            </div>
           </div>
-          <div class="flex-shrink-0">
+          <div class="flex-shrink-0 self-start md:self-center">
             <a
               href="/product/iphone"
               f-client-nav
-              class="inline-block px-6 py-2.5 bg-white border border-gray-300 text-gray-900 font-medium rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+              class="inline-block px-5 py-2.5 bg-white border border-gray-300 text-gray-900 font-medium rounded hover:bg-gray-50 transition-colors whitespace-nowrap text-sm"
             >
-              See more
+              See guide
             </a>
           </div>
         </div>
