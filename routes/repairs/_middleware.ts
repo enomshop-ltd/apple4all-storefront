@@ -1,10 +1,8 @@
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 import { FreshContext } from "fresh";
 
-export async function handler(
-  req: Request,
-  ctx: FreshContext
-) {
+export async function handler(ctx: FreshContext) {
+  const req = ctx.req;
   const url = new URL(req.url);
   const path = url.pathname;
 
