@@ -23,6 +23,7 @@ A high-performance, SEO-optimized e-commerce storefront for Apple4All. Built wit
 - **Feature**: Integrated Medusa Repair Module frontend booking and dashboard routes (`/repairs/book` and `/repairs/dashboard`).
 - **Feature**: Secured `/repairs/dashboard` and `/repairs/book` with server-side middleware and graceful client-side unauthorized fallbacks.
 - **Enhancement**: Added robust frontend logging (`console.debug`, `console.info`, `console.error`) for Repair booking and dashboard fetch requests.
+- **Enhancement**: Added a root `/repairs` redirect to navigate users accurately to the `/services/repairs` informational page.
 - **Enhancement**: Refactored `BookRepairIsland` and `CustomerRepairsIsland` to adhere to the storefront's uniform `slate` design system and Tailwind styling cues.
 - **UI Upgrade**: Injected dynamic 'Book a Repair' hooks across informational service pages for better discoverability.
 - **Engagement**: Added an eye-catching CTA within the PromoBanner integrating relevant promotional taglines to drive repairs.

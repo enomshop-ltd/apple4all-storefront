@@ -1,4 +1,4 @@
-import { getCookies } from "std/http/cookie.ts";
+import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 import { FreshContext } from "fresh";
 
 export async function handler(
