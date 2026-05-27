@@ -9,7 +9,7 @@ export default function BookRepairRoute() {
   return (
     <>
       <Head>
-        <title>Book a Repair | Apple4All</title>
+        <title>Book a Repair | Urban Device Care</title>
         <meta
           name="description"
           content="Initiate a device for repair and get a pickup."
@@ -26,15 +26,11 @@ export default function BookRepairRoute() {
           <div class="mb-8">
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-4">Book a Repair</h1>
             <p class="text-slate-600">
-              Provide device details and book it in for a repair. Make sure you
-              are logged in.
+              Provide device details and book it in for a repair.
             </p>
           </div>
           <div>
-            <BookRepairIsland
-              backendUrl={backendUrl}
-              publishableApiKey={publishableKey}
-            />
+            <BookRepairIsland />
           </div>
         </div>
       </Partial>

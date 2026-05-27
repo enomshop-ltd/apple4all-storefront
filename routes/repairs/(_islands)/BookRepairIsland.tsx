@@ -1,289 +1,192 @@
 import { useState } from "preact/hooks";
 
-interface BookRepairIslandProps {
-  backendUrl: string;
-  publishableApiKey?: string;
-}
-
-export default function BookRepairIsland({
-  backendUrl,
-  publishableApiKey,
-}: BookRepairIslandProps) {
-  const [device, setDevice] = useState({
-    brand: "",
-    model_name: "",
-    serial_number: "",
-    imei: "",
-    condition: "",
-  });
-
-  const [ticket, setTicket] = useState({
-    issue_description: "",
-    accessories: "",
-  });
-
+export default function BookRepairIsland() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [successTicket, setSuccessTicket] = useState<string | null>(null);
+
+  // Form State
+  const [brand, setBrand] = useState("Apple");
+  const [modelName, setModelName] = useState("");
+  const [serialNumber, setSerialNumber] = useState("");
+  const [issueDescription, setIssueDescription] = useState("");
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    setSuccess(null);
-
-    console.debug("[BookRepairIsland] Submitting repair booking request...", { device, ticket });
+    setError(null);
 
     try {
-      const response = await fetch(`/api/repairs/book`, {
+      // 🚀 Hits our FreshJS Catch-All Proxy (routes/api/repairs/[...path].ts)
+      // The proxy automatically attaches the publishable key and the user's auth cookie!
+      const response = await fetch("/api/repairs", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          device,
-          ticket: {
-            issue_description: ticket.issue_description,
-            accessories: ticket.accessories || undefined,
-            terms_accepted: true,
-            data_wiped_consent: true,
+          device: {
+            brand,
+            model_name: modelName,
+            serial_number: serialNumber,
           },
+          issue_description: issueDescription,
         }),
       });
 
-      console.debug(`[BookRepairIsland] Submit repair response status: ${response.status}`);
-
       if (!response.ok) {
-        let msg = "Failed to book repair";
-        try {
-          const errData = await response.json();
-          msg = errData.message || msg;
-        } catch {
-          // ignore parsing error
-        }
-        if (response.status === 401) {
-          console.warn("[BookRepairIsland] Unauthorized 401: Customer is not logged in to book a repair. Redirecting to login...");
-          if (typeof window !== "undefined") {
-            window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
-            return; // Stop execution while redirecting
-          }
-          msg = "You must be logged in to book a repair";
-        }
-        console.error(`[BookRepairIsland] Failed to book repair. Message:` , msg);
-        throw new Error(msg);
+        const errText = await response.text();
+        console.error("[BookRepairIsland] Failed to book repair:", errText);
+        throw new Error("Failed to submit repair request. Please try again.");
       }
 
       const data = await response.json();
-      console.info(`[BookRepairIsland] Repair booked successfully. Ticket number: ${data.repair_ticket?.ticket_number}`);
-      setSuccess(data.repair_ticket);
+      
+      // Assuming the backend returns the created ticket inside data.repair_ticket
+      const ticketNumber = data.repair_ticket?.ticket_number || data.ticket_number;
+      setSuccessTicket(ticketNumber);
+      
+      console.info(`[BookRepairIsland] Successfully booked repair: ${ticketNumber}`);
     } catch (err: any) {
-      if (err.message !== "You must be logged in to book a repair") {
-        console.error("[BookRepairIsland] Exception while booking repair:", err);
-      }
-      setError(err.message || "An unexpected error occurred");
+      setError(err.message || "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
   };
 
-  if (success) {
+  if (successTicket) {
     return (
-      <div class="bg-emerald-50 text-emerald-900 p-8 rounded-lg border border-emerald-200">
-        <h2 class="text-2xl font-bold mb-4">Repair Booked Successfully!</h2>
-        <p class="mb-4">
-          Your device has been booked in for an evaluation. Your repair ticket
-          number is:
+      <div class="max-w-2xl mx-auto p-8 bg-green-50 border border-green-200 rounded-xl text-center shadow-sm">
+        <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-green-800 mb-2">Repair Request Submitted!</h2>
+        <p class="text-green-700 mb-6">
+          Your device has been successfully registered for repair. Your ticket number is:
         </p>
-        <p class="text-3xl font-mono bg-white inline-block px-4 py-2 rounded-md shadow-sm border border-emerald-300 mb-6">
-          {success.ticket_number}
-        </p>
-        <p class="mb-4 text-sm text-emerald-800">
-          Our team will evaluate the device issue soon and provide an estimated
-          repair cost. You will receive an update in the timeline.
-        </p>
-        <div class="flex gap-4">
+        <div class="text-3xl font-mono font-bold text-slate-900 mb-8 bg-white py-3 px-6 inline-block rounded-lg border border-green-200">
+          {successTicket}
+        </div>
+        <div class="space-x-4">
           <a
-            href={`/repairs/track?token=${success.approval_token || ""}`}
-            class="px-6 py-2 bg-emerald-700 text-white rounded hover:bg-emerald-800 transition"
+            href={`/repairs/track?token=${successTicket}`}
+            class="inline-block px-6 py-3 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition"
           >
             Track Repair Status
           </a>
-          <button
-            onClick={() => {
-              setSuccess(null);
-              setDevice({
-                brand: "",
-                model_name: "",
-                serial_number: "",
-                imei: "",
-                condition: "",
-              });
-              setTicket({
-                issue_description: "",
-                accessories: "",
-              });
-            }}
-            class="px-6 py-2 bg-white text-emerald-700 border border-emerald-300 rounded hover:bg-emerald-50 transition"
+          <a
+            href="/account/repairs"
+            class="inline-block px-6 py-3 bg-white text-slate-700 font-medium rounded-lg border border-slate-300 hover:bg-slate-50 transition"
           >
-            Book Another
-          </button>
+            Go to My Account
+          </a>
         </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} class="space-y-6">
-      {error && (
-        <div class="bg-red-50 text-red-600 p-4 border border-red-200 rounded">
-          {error}
-        </div>
-      )}
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-lg border border-slate-200">
-        <div class="col-span-full">
-          <h2 class="text-xl font-bold mb-2">1. Device Details</h2>
-          <p class="text-slate-500 text-sm">
-            Tell us about the device you are sending in.
-          </p>
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <label class="font-medium text-slate-700">Brand *</label>
-          <input
-            type="text"
-            required
-            value={device.brand}
-            onInput={(e) =>
-              setDevice({
-                ...device,
-                brand: (e.target as HTMLInputElement).value,
-              })
-            }
-            class="px-4 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-slate-900 focus:outline-none"
-            placeholder="e.g. Apple"
-          />
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <label class="font-medium text-slate-700">Model Name *</label>
-          <input
-            type="text"
-            required
-            value={device.model_name}
-            onInput={(e) =>
-              setDevice({
-                ...device,
-                model_name: (e.target as HTMLInputElement).value,
-              })
-            }
-            class="px-4 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-slate-900 focus:outline-none"
-            placeholder="e.g. iPhone 13 Pro"
-          />
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <label class="font-medium text-slate-700">Serial Number *</label>
-          <input
-            type="text"
-            required
-            value={device.serial_number}
-            onInput={(e) =>
-              setDevice({
-                ...device,
-                serial_number: (e.target as HTMLInputElement).value,
-              })
-            }
-            class="px-4 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-slate-900 focus:outline-none"
-            placeholder="Must be accurate to track the repair"
-          />
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <label class="font-medium text-slate-700">IMEI (Optional)</label>
-          <input
-            type="text"
-            value={device.imei}
-            onInput={(e) =>
-              setDevice({
-                ...device,
-                imei: (e.target as HTMLInputElement).value,
-              })
-            }
-            class="px-4 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-slate-900 focus:outline-none"
-            placeholder="For cellular devices"
-          />
-        </div>
+    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="p-6 bg-slate-50 border-b border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-900">Book a Repair</h2>
+        <p class="text-slate-600 mt-1">Tell us about your device and the issues you are experiencing.</p>
       </div>
 
-      <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 flex flex-col gap-6">
-        <div>
-          <h2 class="text-xl font-bold mb-2">2. What's wrong with it?</h2>
-        </div>
+      <div class="p-6">
+        {error && (
+          <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
 
-        <div class="flex flex-col gap-2">
-          <label class="font-medium text-slate-700">
-            Issue Description *
-          </label>
-          <textarea
-            required
-            rows={4}
-            value={ticket.issue_description}
-            onInput={(e) =>
-              setTicket({
-                ...ticket,
-                issue_description: (e.target as HTMLTextAreaElement).value,
-              })
-            }
-            class="px-4 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-slate-900 focus:outline-none"
-            placeholder="Please describe exactly what happened and what issues you are experiencing..."
-          ></textarea>
-        </div>
+        <form onSubmit={handleSubmit} class="space-y-6">
+          {/* Device Details Section */}
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-slate-800 border-b pb-2">Device Details</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Brand</label>
+                <select
+                  value={brand}
+                  onInput={(e) => setBrand((e.target as HTMLSelectElement).value)}
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                  required
+                >
+                  <option value="Apple">Apple</option>
+                  <option value="Samsung">Samsung</option>
+                  <option value="Google">Google</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
 
-        <div class="flex flex-col gap-2">
-          <label class="font-medium text-slate-700">Device Condition</label>
-          <input
-            type="text"
-            value={device.condition}
-            onInput={(e) =>
-              setDevice({
-                ...device,
-                condition: (e.target as HTMLInputElement).value,
-              })
-            }
-            class="px-4 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-slate-900 focus:outline-none"
-            placeholder="e.g. Scratched screen, dented corner"
-          />
-        </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Model Name</label>
+                <input
+                  type="text"
+                  value={modelName}
+                  onInput={(e) => setModelName((e.target as HTMLInputElement).value)}
+                  placeholder="e.g. MacBook Pro M2 2023"
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  required
+                />
+              </div>
+            </div>
 
-        <div class="flex flex-col gap-2">
-          <label class="font-medium text-slate-700">
-            Included Accessories (Optional)
-          </label>
-          <input
-            type="text"
-            value={ticket.accessories}
-            onInput={(e) =>
-              setTicket({
-                ...ticket,
-                accessories: (e.target as HTMLInputElement).value,
-              })
-            }
-            class="px-4 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-slate-900 focus:outline-none"
-            placeholder="e.g. Original Box, Charging cable"
-          />
-        </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">
+                Serial Number <span class="text-slate-400 font-normal">(Optional but recommended)</span>
+              </label>
+              <input
+                type="text"
+                value={serialNumber}
+                onInput={(e) => setSerialNumber((e.target as HTMLInputElement).value)}
+                placeholder="Enter device serial number"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-mono text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Issue Section */}
+          <div class="space-y-4 pt-2">
+            <h3 class="text-lg font-semibold text-slate-800 border-b pb-2">Issue Description</h3>
+            
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">What seems to be the problem?</label>
+              <textarea
+                value={issueDescription}
+                onInput={(e) => setIssueDescription((e.target as HTMLTextAreaElement).value)}
+                rows={4}
+                placeholder="Please describe the issue in as much detail as possible (e.g., 'Screen is cracked in the bottom left corner', 'Battery dies after 2 hours')."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="pt-4 flex items-center justify-end border-t border-slate-100">
+            <button
+              type="submit"
+              disabled={loading}
+              class="px-8 py-3 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center"
+            >
+              {loading ? (
+                <>
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Submitting...
+                </>
+              ) : (
+                "Book Repair"
+              )}
+            </button>
+          </div>
+        </form>
       </div>
-
-      <div class="pt-4 flex justify-end">
-        <button
-          type="submit"
-          disabled={loading}
-          class="px-8 py-3 bg-slate-900 text-white font-medium rounded shadow hover:bg-slate-800 disabled:bg-slate-300 disabled:shadow-none transition cursor-pointer"
-        >
-          {loading ? "Booking Repair..." : "Book Repair & Request Pickup"}
-        </button>
-      </div>
-    </form>
+    </div>
   );
 }
