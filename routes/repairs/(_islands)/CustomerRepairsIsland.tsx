@@ -1,77 +1,51 @@
 import { useEffect, useState } from "preact/hooks";
 
-interface CustomerRepairsIslandProps {
-  backendUrl: string;
-  publishableApiKey?: string;
-}
-
-export default function CustomerRepairsIsland({
-  backendUrl,
-  publishableApiKey,
-}: CustomerRepairsIslandProps) {
+export default function CustomerRepairsIsland() {
   const [tickets, setTickets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRepairs = async () => {
-      // Normalize the backend URL to prevent double slashes
-      const baseUrl = backendUrl.replace(/\/$/, "");
-      const targetUrl = `${baseUrl}/store/customers/me/repairs`;
-      
-      console.debug(`[CustomerRepairsIsland] 🔍 Fetching directly from Medusa: ${targetUrl}`);
+      console.debug("[CustomerRepairsIsland] 🔍 Fetching repairs via Fresh API Proxy...");
       
       try {
-        const headers: Record<string, string> = {
-          "Content-Type": "application/json",
-          ...(publishableApiKey ? { "x-publishable-api-key": publishableApiKey } : {}),
-        };
-
-        if (!publishableApiKey) {
-          console.warn("[CustomerRepairsIsland] ⚠️ Missing publishableApiKey! Medusa v2 requires this header.");
-        }
-
-        const response = await fetch(targetUrl, {
+        // Notice how clean this is. We just hit our own Fresh server.
+        // The browser automatically attaches the HttpOnly auth cookie to this request.
+        const response = await fetch(`/api/account/repairs`, {
           method: "GET",
-          headers,
-          // CRITICAL: Tells the browser to send the customer's session cookie cross-origin to Medusa
-          credentials: "include", 
+          headers: { "Content-Type": "application/json" },
         });
-
-        console.debug(`[CustomerRepairsIsland] Response status: ${response.status}`);
 
         if (!response.ok) {
           if (response.status === 401) {
-            console.warn("[CustomerRepairsIsland] ⚠️ 401 Unauthorized: Customer session missing or expired. Redirecting to login...");
+            console.warn("[CustomerRepairsIsland] ⚠️ 401 Unauthorized. Redirecting to login...");
             if (typeof window !== "undefined") {
               window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
-              return; // Halt execution while the browser redirects
+              return;
             }
             throw new Error("You must be logged in to view your repairs.");
           }
-          
-          const errText = await response.text();
-          console.error(`[CustomerRepairsIsland] ❌ Fetch failed. Backend details:`, errText);
           throw new Error(`Failed to load your repairs (Status: ${response.status}).`);
         }
 
         const data = await response.json();
         const repairs = data.repair_tickets || data.repairs || [];
         
-        console.info(`[CustomerRepairsIsland] ✅ Loaded ${repairs.length} repairs directly from Medusa.`);
+        console.info(`[CustomerRepairsIsland] ✅ Loaded ${repairs.length} repairs.`);
         setTickets(repairs);
       } catch (err: any) {
         if (err.message !== "You must be logged in to view your repairs.") {
-           console.error("[CustomerRepairsIsland] ❌ Direct fetch exception caught:", err);
+           console.error("[CustomerRepairsIsland] ❌ Fetch error:", err);
         }
-        setError(err.message || "An unexpected error occurred while fetching your repairs.");
+        setError(err.message || "An unexpected error occurred.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchRepairs();
-  }, [backendUrl, publishableApiKey]);
+  }, []);
 
   if (loading) {
     return (
@@ -131,12 +105,6 @@ export default function CustomerRepairsIsland({
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 capitalize border border-slate-200">
                   {t.status.replace(/_/g, " ")}
                 </span>
-                {t.status === "awaiting_approval" && !t.is_approved && t.terms_accepted && (
-                  <div class="mt-1 text-xs text-amber-600 font-medium">Needs Approval</div>
-                )}
-                {!t.terms_accepted && (
-                  <div class="mt-1 text-xs text-red-600 font-medium">Terms Pending</div>
-                )}
               </td>
               <td class="px-6 py-4 text-sm text-slate-600 line-clamp-2 max-w-[200px]" title={t.issue_description}>
                 {t.issue_description}
