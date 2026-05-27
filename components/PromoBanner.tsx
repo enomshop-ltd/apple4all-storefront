@@ -4,15 +4,9 @@ export function PromoBanner() {
       {/* Background pattern (dots constraint) */}
       <div class="absolute inset-0 opacity-[0.08] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '12px 12px' }} />
       
-<<<<<<< HEAD
-      <div class="md:w-1/4 relative min-h-[90px] overflow-hidden bg-black flex items-center justify-center border-b-4 md:border-b-0 md:border-r-4 border-black">
-        <img
-          src="https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&q=80&w=400"
-=======
       <div class="md:w-1/4 relative min-h-[85px] overflow-hidden bg-black flex items-center justify-center border-b-4 md:border-b-0 md:border-r-4 border-black">
         <img
           src="https://images.unsplash.com/photo-1588508065123-287b28e013da?auto=format&fit=crop&q=80&w=600"
->>>>>>> b375757 (Remove legal pages and layouts for cookies, privacy, terms, and services; update TrackRepairRoute to use new handler structure; delete unused files and components.)
           alt="Device Repair"
           loading="lazy"
           decoding="async"
@@ -21,11 +15,7 @@ export function PromoBanner() {
         />
       </div>
       
-<<<<<<< HEAD
       <div class="md:w-3/4 p-3 md:p-4 flex flex-col justify-center relative z-20">
-=======
-      <div class="md:w-3/4 p-4 md:p-6 flex flex-col justify-center relative z-20">
->>>>>>> b375757 (Remove legal pages and layouts for cookies, privacy, terms, and services; update TrackRepairRoute to use new handler structure; delete unused files and components.)
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 h-full">
           <div class="flex flex-col justify-center">
             <h2 class="text-xl font-black uppercase tracking-tight text-black flex flex-col gap-0.5 leading-none mb-1.5">
