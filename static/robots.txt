@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://apple4all.com/sitemap.xml
