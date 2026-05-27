@@ -7,11 +7,7 @@ export default function CustomerRepairsIsland() {
 
   useEffect(() => {
     const fetchRepairs = async () => {
-      console.debug("[CustomerRepairsIsland] 🔍 Fetching repairs via Fresh API Proxy...");
-      
       try {
-        // Notice how clean this is. We just hit our own Fresh server.
-        // The browser automatically attaches the HttpOnly auth cookie to this request.
         const response = await fetch(`/api/account/repairs`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -19,24 +15,24 @@ export default function CustomerRepairsIsland() {
 
         if (!response.ok) {
           if (response.status === 401) {
-            console.warn("[CustomerRepairsIsland] ⚠️ 401 Unauthorized. Redirecting to login...");
+            console.warn("[CustomerRepairsIsland] Session expired. Redirecting...");
             if (typeof window !== "undefined") {
               window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
               return;
             }
             throw new Error("You must be logged in to view your repairs.");
           }
-          throw new Error(`Failed to load your repairs (Status: ${response.status}).`);
+          const errText = await response.text();
+          console.error("Failed to load repairs:", errText);
+          throw new Error("Failed to load your repairs.");
         }
 
         const data = await response.json();
         const repairs = data.repair_tickets || data.repairs || [];
-        
-        console.info(`[CustomerRepairsIsland] ✅ Loaded ${repairs.length} repairs.`);
         setTickets(repairs);
       } catch (err: any) {
         if (err.message !== "You must be logged in to view your repairs.") {
-           console.error("[CustomerRepairsIsland] ❌ Fetch error:", err);
+           console.error("[CustomerRepairsIsland] Fetch error:", err);
         }
         setError(err.message || "An unexpected error occurred.");
       } finally {
@@ -105,6 +101,12 @@ export default function CustomerRepairsIsland() {
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 capitalize border border-slate-200">
                   {t.status.replace(/_/g, " ")}
                 </span>
+                {t.status === "awaiting_approval" && !t.is_approved && t.terms_accepted && (
+                  <div class="mt-1 text-xs text-amber-600 font-medium">Needs Approval</div>
+                )}
+                {!t.terms_accepted && (
+                  <div class="mt-1 text-xs text-red-600 font-medium">Terms Pending</div>
+                )}
               </td>
               <td class="px-6 py-4 text-sm text-slate-600 line-clamp-2 max-w-[200px]" title={t.issue_description}>
                 {t.issue_description}

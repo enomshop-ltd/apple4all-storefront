@@ -1,63 +1,51 @@
-import { Handlers } from "$fresh/server.ts";
+import { define } from "../../../utils.ts";
+import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 
-export const handler: Handlers = {
-  async GET(req, ctx) {
-    console.debug("[Fresh API Proxy] 🔄 Intercepting request for customer repairs...");
-
-    // 1. Grab environment variables (Server-side only, completely secure)
-    const backendUrl = Deno.env.get("MEDUSA_BACKEND_URL")?.replace(/\/$/, "") || "http://localhost:9000";
-    const publishableKey = Deno.env.get("MEDUSA_PUBLISHABLE_KEY");
-    
-    // 2. Extract the secure HttpOnly cookie from the incoming browser request
-    const cookieHeader = req.headers.get("cookie");
-
-    if (!publishableKey) {
-      console.error("[Fresh API Proxy] ❌ MEDUSA_PUBLISHABLE_KEY is missing in the environment!");
-      return new Response("Server configuration error", { status: 500 });
-    }
-
+export const handler = define.handlers({
+  GET: async (ctx) => {
     try {
-      const targetUrl = `${backendUrl}/store/customers/me/repairs`;
-      console.debug(`[Fresh API Proxy] 🚀 Forwarding request to: ${targetUrl}`);
+      const cookies = getCookies(ctx.req.headers);
+      const token = cookies["_medusa_jwt"];
 
-      // 3. Forward the request to Medusa with BOTH the cookie and the API key
-      const medusaRes = await fetch(targetUrl, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "x-publishable-api-key": publishableKey,
-          "cookie": cookieHeader || "", // This passes the customer auth session
-        },
-      });
-
-      console.debug(`[Fresh API Proxy] 📥 Medusa responded with status: ${medusaRes.status}`);
-
-      // 4. Pass the exact response (and status) back to the Island
-      if (!medusaRes.ok) {
-        const errorText = await medusaRes.text();
-        console.error(`[Fresh API Proxy] ⚠️ Upstream error from Medusa:`, errorText);
-        
-        return new Response(errorText, { 
-          status: medusaRes.status,
-          headers: { "Content-Type": "application/json" }
+      if (!token) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
         });
       }
 
-      // 5. Success! Parse and return the data
-      const data = await medusaRes.json();
-      console.info(`[Fresh API Proxy] ✅ Successfully retrieved repair data. Sending to client.`);
+      const backendUrl = Deno.env.get("MEDUSA_BACKEND_URL")!.replace(/\/$/, "");
+      const pubKey = Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "";
+
+      // We attach BOTH the customer auth token and the publishable API key
+      const response = await fetch(`${backendUrl}/store/customers/me/repairs`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "x-publishable-api-key": pubKey,
+        },
+      });
+
+      if (!response.ok) {
+        return new Response(await response.text(), {
+          status: response.status,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      const data = await response.json();
       
       return new Response(JSON.stringify(data), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-
-    } catch (error) {
-      console.error("[Fresh API Proxy] ❌ Network/Fetch exception:", error);
-      return new Response(JSON.stringify({ error: "Failed to connect to backend system" }), {
+    } catch (e: any) {
+      console.error("[Fresh API] Error fetching repairs proxy:", e);
+      return new Response(JSON.stringify({ error: e.message }), {
         status: 500,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
     }
-  }
-};
+  },
+});
