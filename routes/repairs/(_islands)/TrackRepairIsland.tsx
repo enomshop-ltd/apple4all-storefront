@@ -1,4 +1,5 @@
 import { useState, useEffect } from "preact/hooks";
+import { Info, Wrench } from "lucide-preact";
 
 export default function TrackRepairIsland({
   initialToken,
@@ -90,56 +91,66 @@ export default function TrackRepairIsland({
   };
 
   return (
-    <div class="max-w-4xl mx-auto px-4 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">Track Your Repair</h1>
-        <p className="text-gray-600 text-sm">
-          Enter your repair ticket number to check repair status
+    <div class="max-w-4xl mx-auto px-4 py-12">
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-6 text-slate-800">
+          <Wrench size={32} />
+        </div>
+        <h1 className="text-4xl font-semibold tracking-tight text-slate-900 mb-3">Track Your Repair</h1>
+        <p className="text-slate-500 text-lg max-w-md mx-auto">
+          Enter your repair ticket number to check the real-time status of your service.
         </p>
       </div>
 
-      <form onSubmit={handleSearch} className="mb-6 max-w-lg mx-auto">
-        <div className="flex gap-2">
+      <form onSubmit={handleSearch} className="mb-12 max-w-xl mx-auto">
+        <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             value={ticketNumber}
             onInput={(e) =>
               setTicketNumber((e.target as HTMLInputElement).value)
             }
-            placeholder="e.g. REPAIR-1234"
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-sm"
+            placeholder="Repair ID (e.g. REPAIR-1234)"
+            className="flex-1 px-5 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-base shadow-sm font-medium transition-all"
           />
           <button
             type="submit"
             disabled={loading}
-            className="px-5 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-sm text-sm font-medium"
+            className="px-8 py-3 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition disabled:bg-slate-400 disabled:cursor-not-allowed shadow-sm text-base font-semibold"
           >
-            {loading ? "Searching..." : "Track"}
+            {loading ? "Searching..." : "Track Repair"}
           </button>
         </div>
-        {error && <p className="text-red-500 mt-2">{error}</p>}
+        {error && (
+          <p className="text-red-600 mt-3 text-center bg-red-50 p-2 rounded-lg text-sm">{error}</p>
+        )}
       </form>
 
       {ticket && (
-        <div className="space-y-4">
+        <div className="space-y-6 max-w-3xl mx-auto">
           {/* Status Overview */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h2 className="text-xl font-bold mb-1">
-                  {ticket.ticket_number}
-                </h2>
-                <p className="text-gray-600 text-sm">
-                  {ticket.device?.brand} {ticket.device?.model_name}
-                </p>
-                {isLoggedIn && (
-                  <p className="text-sm text-gray-500">
-                    S/N: {ticket.device?.serial_number}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="p-6 sm:p-8 bg-slate-50 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex gap-4 items-center">
+                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                  <Info size={24} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-500 mb-1 uppercase tracking-wider">
+                    {ticket.ticket_number}
                   </p>
-                )}
+                  <h2 className="text-2xl font-bold text-slate-900">
+                    {ticket.device?.brand} {ticket.device?.model_name}
+                  </h2>
+                  {isLoggedIn && (
+                    <p className="text-sm text-slate-500 mt-1 font-medium">
+                      Serial Number: {ticket.device?.serial_number}
+                    </p>
+                  )}
+                </div>
               </div>
               <span
-                className={`px-3 py-1 rounded-full text-white text-xs font-medium shadow-sm ${
+                className={`px-4 py-1.5 rounded-full text-white text-sm font-semibold shadow-sm ${
                   getStatusInfo(ticket.status).color
                 }`}
               >
@@ -148,40 +159,42 @@ export default function TrackRepairIsland({
             </div>
 
             {/* Progress Bar */}
-            <div className="mb-4">
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div
-                  className={`h-3 rounded-full transition-all ${
-                    getStatusInfo(ticket.status).color
-                  }`}
-                  style={{
-                    width: `${getStatusInfo(ticket.status).progress}%`,
-                  }}
-                />
-              </div>
-              <div className="flex justify-between mt-2 text-xs text-gray-600">
-                <span>Received</span>
-                <span>Diagnosing</span>
-                <span>Repairing</span>
-                <span>Ready</span>
+            <div className="px-6 py-8 sm:px-8">
+              <div className="relative pt-2">
+                <div className="w-full bg-slate-100 rounded-full h-3 mb-4 overflow-hidden">
+                  <div
+                    className={`h-3 rounded-full transition-all duration-700 ease-out ${
+                      getStatusInfo(ticket.status).color
+                    }`}
+                    style={{
+                      width: `${getStatusInfo(ticket.status).progress}%`,
+                    }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs sm:text-sm font-semibold text-slate-400 px-1">
+                  <span className={`${getStatusInfo(ticket.status).progress >= 20 ? 'text-slate-900' : ''}`}>Received</span>
+                  <span className={`text-center ${getStatusInfo(ticket.status).progress >= 40 ? 'text-slate-900' : ''}`}>Diagnosing</span>
+                  <span className={`text-center ${getStatusInfo(ticket.status).progress >= 80 ? 'text-slate-900' : ''}`}>Repairing</span>
+                  <span className={`text-right ${getStatusInfo(ticket.status).progress >= 100 ? 'text-slate-900' : ''}`}>Ready</span>
+                </div>
               </div>
             </div>
 
             {/* Timeline */}
             {ticket.estimated_completion && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-xl font-bold mb-4">Timeline</h3>
-                <div className="flex items-center gap-4">
+              <div className="border-t border-slate-100 p-6 sm:p-8 bg-slate-50/50">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Service Timeline</h3>
+                <div className="flex flex-col sm:flex-row gap-6">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600">Estimated Completion</p>
-                    <p className="text-lg font-semibold">
-                      {new Date(ticket.estimated_completion).toLocaleDateString()}
+                    <p className="text-sm text-slate-500 mb-1">Estimated Completion</p>
+                    <p className="text-lg font-semibold text-slate-900">
+                      {new Date(ticket.estimated_completion).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
                   </div>
                   {ticket.warranty_expiry && isLoggedIn && (
                     <div className="flex-1">
-                      <p className="text-sm text-gray-600">Warranty Until</p>
-                      <p className="text-lg font-semibold">
+                      <p className="text-sm text-slate-500 mb-1">Warranty Coverage Until</p>
+                      <p className="text-lg font-semibold text-slate-900">
                         {new Date(ticket.warranty_expiry).toLocaleDateString()}
                       </p>
                     </div>
@@ -192,12 +205,12 @@ export default function TrackRepairIsland({
 
             {/* Issue Description */}
             {isLoggedIn && (
-              <div className="border-t pt-4">
-                <h3 className="font-semibold mb-2">Issue Description</h3>
-                <p className="text-gray-700">{ticket.issue_description}</p>
+              <div className="border-t border-slate-100 p-6 sm:p-8">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-3">Reported Issue</h3>
+                <p className="text-slate-800 leading-relaxed max-w-2xl">{ticket.issue_description}</p>
                 {ticket.accessories && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    Accessories: {ticket.accessories}
+                  <p className="text-sm text-slate-500 mt-4 bg-slate-50 p-3 rounded-lg inline-block">
+                    <span className="font-medium text-slate-700">Included Accessories:</span> {ticket.accessories}
                   </p>
                 )}
               </div>
@@ -206,8 +219,8 @@ export default function TrackRepairIsland({
 
           {/* Cost Information */}
           {isLoggedIn && (ticket.total_estimate > 0 || ticket.total_actual > 0) && (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-bold mb-4">Cost Breakdown</h3>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Cost Breakdown</h3>
 
               {ticket.parts && ticket.parts.length > 0 && (
                 <div className="mb-4 space-y-2">
@@ -467,8 +480,8 @@ export default function TrackRepairIsland({
 
           {/* RESTORED: Media Gallery */}
           {isLoggedIn && ticket.media && ticket.media.length > 0 && (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-bold mb-4">Device Photos</h3>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Device Photos</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {ticket.media.map((media: any) => (
                   <a
@@ -492,8 +505,8 @@ export default function TrackRepairIsland({
           {/* RESTORED: Customer-visible Notes */}
           {isLoggedIn && ticket.notes &&
             ticket.notes.filter((n: any) => !n.is_internal).length > 0 && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-xl font-bold mb-4">Updates</h3>
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+                <h3 className="text-xl font-bold text-slate-900 mb-6">Updates</h3>
                 <div className="space-y-3">
                   {ticket.notes
                     .filter((note: any) => !note.is_internal)
@@ -511,8 +524,8 @@ export default function TrackRepairIsland({
 
           {/* RESTORED: Chat Messages Interface */}
           {isLoggedIn && (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-bold mb-4">Messages</h3>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Messages</h3>
 
             {ticket.updates && ticket.updates.length > 0 ? (
               <div className="space-y-3 max-h-96 overflow-y-auto mb-6">
