@@ -1,9 +1,9 @@
-import { define } from "../utils.ts";
+import { define } from "../lib/utils.ts";
 import { Header } from "../components/Header.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Partial } from "fresh/runtime";
 import TopProgressBarIsland from "../islands/TopProgressBarIsland.tsx";
-import { STORE_NAME } from "../utils.ts";
+import { STORE_NAME } from "../lib/utils.ts";
 
 export default define.page(function App({ Component, state }) {
   const title = (state.title as string) || `${STORE_NAME} - Refurbished Tech`;

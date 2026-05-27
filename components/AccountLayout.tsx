@@ -1,6 +1,6 @@
 import { ComponentChildren } from "preact";
 import { Head, Partial } from "fresh/runtime";
-import { STORE_NAME } from "../utils.ts";
+import { STORE_NAME } from "../lib/utils.ts";
 
 interface AccountLayoutProps {
   children: ComponentChildren;

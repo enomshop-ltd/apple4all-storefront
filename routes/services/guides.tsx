@@ -1,8 +1,8 @@
-import { define } from "../../utils.ts";
+import { define } from "../../lib/utils.ts";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
 import { BookOpen, ExternalLink, AlertTriangle } from "lucide-preact";
-import { STORE_NAME } from "../../utils.ts";
+import { STORE_NAME } from "../../lib/utils.ts";
 
 export const handler = define.handlers({
   GET(ctx) {

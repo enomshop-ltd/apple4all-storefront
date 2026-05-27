@@ -1,5 +1,5 @@
 import { ShoppingCart, User } from "lucide-preact";
-import { STORE_NAME } from "../utils.ts";
+import { STORE_NAME } from "../lib/utils.ts";
 
 export function Header({ 
   categories = [],

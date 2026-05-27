@@ -1,5 +1,5 @@
 import { Head } from "fresh/runtime";
-import { STORE_NAME } from "../utils.ts";
+import { STORE_NAME } from "../lib/utils.ts";
 
 export default function Error404() {
   return (

@@ -1,4 +1,4 @@
-import { define } from "../../../utils.ts";
+import { define } from "../../../lib/utils.ts";
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 
 export const handler = define.handlers({

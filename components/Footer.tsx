@@ -1,4 +1,4 @@
-import { STORE_NAME } from "../utils.ts";
+import { STORE_NAME } from "../lib/utils.ts";
 export function Footer() {
   return (
     <footer class="bg-white border-t border-gray-200 pt-16 pb-8">

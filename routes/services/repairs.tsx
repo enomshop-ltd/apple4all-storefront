@@ -1,9 +1,9 @@
-import { define } from "../../utils.ts";
+import { define } from "../../lib/utils.ts";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
 import { Battery, Cpu, MonitorSmartphone, Wrench, Search, ShieldCheck, BookOpen } from "lucide-preact";
 import TrackRepairIsland from "../repairs/(_islands)/TrackRepairIsland.tsx";
-import { STORE_NAME } from "../../utils.ts";
+import { STORE_NAME } from "../../lib/utils.ts";
 
 export const handler = define.handlers({
   GET(ctx) {

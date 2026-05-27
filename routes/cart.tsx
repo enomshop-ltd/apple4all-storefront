@@ -1,10 +1,10 @@
-import { define } from "../utils.ts";
+import { define } from "../lib/utils.ts";
 import { Head } from "fresh/runtime";
 import { Cart } from "../islands/Cart.tsx";
 import { medusa } from "../lib/sdk.ts";
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 import { HttpTypes } from "@medusajs/types";
-import { STORE_NAME } from "../utils.ts";
+import { STORE_NAME } from "../lib/utils.ts";
 
 export default define.page(async function CartPage(ctx) {
   let cart: HttpTypes.StoreCart | null = null;

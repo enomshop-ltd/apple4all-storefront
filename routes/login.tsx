@@ -1,10 +1,10 @@
-import { define } from "../utils.ts";
+import { define } from "../lib/utils.ts";
 import { LoginForm } from "../islands/LoginForm.tsx";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
 
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
-import { STORE_NAME } from "../utils.ts";
+import { STORE_NAME } from "../lib/utils.ts";
 
 export const handler = define.handlers({
   GET(ctx) {

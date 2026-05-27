@@ -1,4 +1,4 @@
-import { define } from "../utils.ts";
+import { define } from "../lib/utils.ts";
 import { page } from "fresh";
 import { CheckCircle2, XCircle } from "lucide-preact";
 

@@ -1,4 +1,4 @@
-import { define } from "../../../../utils.ts"; // Adjust path to your utils.ts
+import { define } from "../../../../lib/utils.ts"; // Adjust path to your utils.ts
 import { HttpTypes } from "@medusajs/types";
 
 export const handler = define.handlers({

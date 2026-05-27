@@ -1,6 +1,6 @@
-import { define } from "../../utils.ts";
+import { define } from "../../lib/utils.ts";
 import { Head, Partial } from "fresh/runtime";
-import { STORE_NAME } from "../../utils.ts";
+import { STORE_NAME } from "../../lib/utils.ts";
 import { ChevronDown, ChevronRight } from "lucide-preact";
 
 export default define.page(function AccountLayout({ Component, url, state }) {

@@ -1,4 +1,4 @@
-import { define } from "../../../utils.ts";
+import { define } from "../../../lib/utils.ts";
 import { medusa } from "../../../lib/sdk.ts";
 
 export const handler = define.handlers({

@@ -1,7 +1,7 @@
 import { Head } from "fresh/runtime";
-import { define } from "../utils.ts";
+import { define } from "../lib/utils.ts";
 import Shop from "../islands/Shop.tsx";
-import { STORE_NAME } from "../utils.ts";
+import { STORE_NAME } from "../lib/utils.ts";
 
 export default define.page(function StorePage() {
   return (

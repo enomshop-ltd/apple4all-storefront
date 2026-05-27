@@ -1,4 +1,4 @@
-import { define } from "../../utils.ts";
+import { define } from "../../lib/utils.ts";
 import { Head, Partial } from "fresh/runtime";
 import TrackRepairIsland from "./(_islands)/TrackRepairIsland.tsx";
 import { page } from "fresh";

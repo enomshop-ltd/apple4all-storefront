@@ -1,11 +1,11 @@
 import { Head } from "fresh/runtime";
-import { define } from "../../utils.ts";
+import { define } from "../../lib/utils.ts";
 import { medusa } from "../../lib/sdk.ts";
 import { getStoreRegion } from "../../lib/data.ts";
 import { ProductDetails } from "../../islands/ProductDetails.tsx";
 import { HttpTypes } from "@medusajs/types";
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
-import { STORE_NAME } from "../../utils.ts";
+import { STORE_NAME } from "../../lib/utils.ts";
 
 export default define.page(async function ProductPage(ctx) {
   const handle = ctx.params.handle;

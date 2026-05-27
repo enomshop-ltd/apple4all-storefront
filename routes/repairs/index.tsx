@@ -1,6 +1,6 @@
 import { Head, Partial } from "fresh/runtime";
 import CustomerRepairsIsland from "./(_islands)/CustomerRepairsIsland.tsx";
-import { STORE_NAME } from "../../utils.ts";
+import { STORE_NAME } from "../../lib/utils.ts";
 
 export default function CustomerRepairsRoute() {
   const backendUrl =

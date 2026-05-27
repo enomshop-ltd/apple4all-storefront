@@ -1,6 +1,6 @@
 import { Head, Partial } from "fresh/runtime";
 import BookRepairIsland from "./(_islands)/BookRepairIsland.tsx";
-import { STORE_NAME } from "../../utils.ts";
+import { STORE_NAME } from "../../lib/utils.ts";
 
 export default function BookRepairRoute() {
   const backendUrl =

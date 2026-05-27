@@ -1,4 +1,4 @@
-import { define } from "../../../utils.ts";
+import { define } from "../../../lib/utils.ts";
 import { medusa } from "../../../lib/sdk.ts";
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 import Image from "../../../islands/Image.tsx";
@@ -8,7 +8,7 @@ import OrderStatusBadge from "../../../islands/OrderStatusBadge.tsx";
 import { formatAmount } from "../../../lib/pricing.ts";
 import { getUnifiedOrderNumber } from "../../../lib/order-utils.ts";
 import DownloadInvoiceButton from "@/islands/DownloadInvoiceButton.tsx";
-import { STORE_NAME } from "../../../utils.ts";
+import { STORE_NAME } from "../../../lib/utils.ts";
 
 export const handler = define.handlers({
   async GET(ctx) {
