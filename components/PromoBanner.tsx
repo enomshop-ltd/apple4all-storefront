@@ -15,7 +15,7 @@ export function PromoBanner() {
         />
       </div>
       
-      <div class="md:w-3/4 p-3 md:p-4 flex flex-col justify-center relative z-20">
+      <div class="md:w-3/4 p-4 md:p-6 flex flex-col justify-center relative z-20">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 h-full">
           <div class="flex flex-col justify-center">
             <h2 class="text-xl font-black uppercase tracking-tight text-black flex flex-col gap-0.5 leading-none mb-1.5">
@@ -42,11 +42,7 @@ export function PromoBanner() {
             <a
               href="/services/repairs"
               f-client-nav
-<<<<<<< HEAD
-              class="text-black font-bold text-xs uppercase tracking-wider hover:opacity-70 transition-opacity whitespace-nowrap"
-=======
               class="text-black font-bold text-xs uppercase tracking-wider hover:opacity-70 transition-opacity whitespace-nowrap underline underline-offset-2 decoration-2"
->>>>>>> b375757 (Remove legal pages and layouts for cookies, privacy, terms, and services; update TrackRepairRoute to use new handler structure; delete unused files and components.)
             >
               Learn More
             </a>
