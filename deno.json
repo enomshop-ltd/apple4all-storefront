@@ -13,6 +13,7 @@
   "imports": {
     "@/": "./",
     "@medusajs/js-sdk": "npm:@medusajs/js-sdk@^2.13.4",
+    "@std/front-matter": "jsr:@std/front-matter@^1.0.9",
     "fresh": "jsr:@fresh/core@^2.3.3",
     "lucide-preact": "npm:lucide-preact@^1.6.0",
     "preact": "npm:preact@^10.29.1",

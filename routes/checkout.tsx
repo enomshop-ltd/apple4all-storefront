@@ -112,7 +112,7 @@ export default define.page(function CheckoutPage(props) {
   };
 
   return (
-    <main class="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
       <Head>
         <title>{props.state.title as string}</title>
         <meta name="description" content={props.state.description as string} />

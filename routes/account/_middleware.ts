@@ -7,9 +7,10 @@ export async function handler(ctx: FreshContext) {
   const token = cookies["_medusa_jwt"];
 
   if (!token) {
-    const url = new URL(ctx.req.url);
-    url.pathname = "/login";
-    return Response.redirect(url, 302);
+    const originalUrl = new URL(ctx.req.url);
+    const loginUrl = new URL("/login", ctx.req.url);
+    loginUrl.searchParams.set("redirect", originalUrl.pathname + originalUrl.search);
+    return Response.redirect(loginUrl, 302);
   }
 
   // Pass the token to the state

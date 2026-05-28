@@ -1,5 +1,8 @@
 import { useState, useEffect } from "preact/hooks";
 import { Info, Wrench } from "lucide-preact";
+import { render } from "preact";
+import QRCode from "npm:qrcode";
+import { RepairDocumentTemplate } from "../../components/RepairDocumentTemplate.tsx";
 
 export default function TrackRepairIsland({
   initialToken,
@@ -60,6 +63,51 @@ export default function TrackRepairIsland({
     }
   };
 
+  const handleDownloadDocument = async (type: string) => {
+    if (!ticket) return;
+    
+    const loadHtml2Pdf = () => new Promise<any>((resolve) => {
+      if ((window as any).html2pdf) return resolve((window as any).html2pdf);
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+      script.onload = () => resolve((window as any).html2pdf);
+      document.head.appendChild(script);
+    });
+
+    try {
+      const html2pdf = await loadHtml2Pdf();
+      
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      document.body.appendChild(container);
+
+      const trackUrl = new URL(globalThis.location.href).href;
+      const qrCodeUrl = await QRCode.toDataURL(trackUrl, { margin: 1, width: 100 });
+
+      render(<RepairDocumentTemplate ticket={ticket} type={type} qrCodeUrl={qrCodeUrl} />, container);
+
+      await new Promise(r => setTimeout(r, 200));
+
+      const opt = {
+        margin:       [10, 10],
+        filename:     `${type}_${ticket.ticket_number}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().set(opt).from(container).save();
+
+      render(null, container);
+      container.remove();
+    } catch (e) {
+      console.error("Failed to generate PDF document", e);
+      alert("An error occurred while downloading the document.");
+    }
+  };
+
   const getStatusInfo = (status: string) => {
     const statusMap: Record<
       string,
@@ -91,7 +139,7 @@ export default function TrackRepairIsland({
   };
 
   return (
-    <div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="max-w-7xl mx-auto px-4 py-12">
       <div className="text-center mb-10">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-6 text-slate-800">
           <Wrench size={32} />
@@ -302,106 +350,138 @@ export default function TrackRepairIsland({
           )}
 
           {/* Dynamic Documents Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
-            <h3 className="text-xl font-bold text-slate-900 mb-4">Documents</h3>
-            <p className="text-sm text-slate-500 mb-6">
-              Official documents are generated dynamically as your repair progresses.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Job Card: Always available */}
-              <a
-                href={initialToken ? `/api/repairs/token/${initialToken}/document?type=job_card` : `/api/repairs/${ticket.id}/document?type=job_card`}
-                target="_blank"
-                className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:border-slate-300 transition text-center"
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Job Card: Always available */}
+            <button
+              onClick={() => handleDownloadDocument('job_card')}
+              className="flex flex-col items-center justify-center p-3 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:border-slate-300 transition text-center"
+            >
+              <span className="font-semibold text-slate-700 mb-1">Job Card</span>
+              <span className="text-xs text-slate-500">Intake Details</span>
+            </button>
+
+            {/* Quote: Available when estimate exists or past diagnosing */}
+            {(!['received', 'diagnosing'].includes(ticket.status) || ticket.total_estimate > 0) && (
+              <button
+                onClick={() => handleDownloadDocument('quote')}
+                className="flex flex-col items-center justify-center p-3 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition text-center"
               >
-                <span className="font-semibold text-slate-700 mb-1">Job Card</span>
-                <span className="text-xs text-slate-500">Intake Details</span>
-              </a>
+                <span className="font-semibold text-orange-800 mb-1">Quotation</span>
+                <span className="text-xs text-orange-600">Cost Estimate</span>
+              </button>
+            )}
 
-              {/* Quote: Available when estimate exists or past diagnosing */}
-              {(!['received', 'diagnosing'].includes(ticket.status) || ticket.total_estimate > 0) && (
-                <a
-                  href={initialToken ? `/api/repairs/token/${initialToken}/document?type=quote` : `/api/repairs/${ticket.id}/document?type=quote`}
-                  target="_blank"
-                  className="flex flex-col items-center justify-center p-4 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition text-center"
-                >
-                  <span className="font-semibold text-orange-800 mb-1">Quotation</span>
-                  <span className="text-xs text-orange-600">Cost Estimate</span>
-                </a>
-              )}
+            {/* Invoice: Available when ready or completed */}
+            {['ready', 'completed'].includes(ticket.status) && (
+              <button
+                onClick={() => handleDownloadDocument('invoice')}
+                className="flex flex-col items-center justify-center p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition text-center"
+              >
+                <span className="font-semibold text-blue-700 mb-1">Tax Invoice</span>
+                <span className="text-xs text-blue-500">Final Billing</span>
+              </button>
+            )}
 
-              {/* Invoice: Available when ready or completed */}
-              {['ready', 'completed'].includes(ticket.status) && (
-                <a
-                  href={initialToken ? `/api/repairs/token/${initialToken}/document?type=invoice` : `/api/repairs/${ticket.id}/document?type=invoice`}
-                  target="_blank"
-                  className="flex flex-col items-center justify-center p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition text-center"
-                >
-                  <span className="font-semibold text-blue-700 mb-1">Tax Invoice</span>
-                  <span className="text-xs text-blue-500">Final Billing</span>
-                </a>
-              )}
+            {/* Receipt: Available when completed (assumed paid) */}
+            {ticket.status === 'completed' && (
+              <button
+                onClick={() => handleDownloadDocument('receipt')}
+                className="flex flex-col items-center justify-center p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition text-center"
+              >
+                <span className="font-semibold text-green-700 mb-1">Receipt</span>
+                <span className="text-xs text-green-600">Proof of Payment</span>
+              </button>
+            )}
+          </div>
 
-              {/* Receipt: Available when completed (assumed paid) */}
-              {ticket.status === 'completed' && (
-                <a
-                  href={initialToken ? `/api/repairs/token/${initialToken}/document?type=receipt` : `/api/repairs/${ticket.id}/document?type=receipt`}
-                  target="_blank"
-                  className="flex flex-col items-center justify-center p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition text-center"
-                >
-                  <span className="font-semibold text-green-700 mb-1">Receipt</span>
-                  <span className="text-xs text-green-600">Proof of Payment</span>
-                </a>
-              )}
+          {/* Action Required: Terms */}
+          {!ticket.terms_accepted && (
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-xl shadow-sm">
+              <h4 className="text-yellow-800 font-bold mb-2">
+                Action Required: Legal & Compliance
+              </h4>
+              <p className="text-yellow-800 mb-4 text-sm">
+                Before we can proceed with any work, you must review and
+                agree to our Repair Terms & Conditions.
+              </p>
+
+              <div className="flex flex-col gap-3 mb-4">
+                <label className="flex items-center gap-2 text-gray-800">
+                  <input
+                    type="checkbox"
+                    id="termsCheck"
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-sm">
+                    I agree to the Repair Terms & Conditions
+                  </span>
+                </label>
+                <label className="flex items-center gap-2 text-gray-800">
+                  <input
+                    type="checkbox"
+                    id="dataCheck"
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-sm">
+                    I consent to a device data wipe (if necessary)
+                  </span>
+                </label>
+              </div>
+
+              <button
+                onClick={async () => {
+                  const terms = (document.getElementById("termsCheck") as HTMLInputElement).checked;
+                  const dataWipe = (document.getElementById("dataCheck") as HTMLInputElement).checked;
+
+                  if (!terms) {
+                    alert("Please agree to the Repair Terms to continue.");
+                    return;
+                  }
+
+                  try {
+                    const targetUrl = initialToken ? `/api/repairs/compliance` : `/api/repairs/${ticket.id}/compliance`;
+                    const bodyData = initialToken 
+                      ? { token: initialToken, terms_accepted: true, data_wiped_consent: dataWipe }
+                      : { terms_accepted: true, data_wiped_consent: dataWipe };
+
+                    const response = await fetch(targetUrl, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(bodyData),
+                    });
+
+                    if (response.ok) {
+                      alert("Terms accepted successfully!");
+                      if (initialToken) handleTokenSearch(initialToken);
+                      else handleSearch(new Event("submit") as any);
+                    } else {
+                      throw new Error("Failed to accept terms");
+                    }
+                  } catch (err: any) {
+                    alert(err.message || "Failed to update compliance details");
+                  }
+                }}
+                className="w-full px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition font-medium shadow-sm"
+              >
+                Accept & Continue
+              </button>
             </div>
-              {!ticket.terms_accepted && (
-                <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
-                  <h4 className="text-yellow-800 font-bold mb-2">
-                    Action Required: Legal & Compliance
-                  </h4>
-                  <p className="text-yellow-800 mb-4 text-sm">
-                    Before we can proceed with any work, you must review and
-                    agree to our Repair Terms & Conditions.
-                  </p>
+          )}
 
-                  <div className="flex flex-col gap-3 mb-4">
-                    <label className="flex items-center gap-2 text-gray-800">
-                      <input
-                        type="checkbox"
-                        id="termsCheck"
-                        className="rounded border-gray-300"
-                      />
-                      <span className="text-sm">
-                        I agree to the Repair Terms & Conditions
-                      </span>
-                    </label>
-                    <label className="flex items-center gap-2 text-gray-800">
-                      <input
-                        type="checkbox"
-                        id="dataCheck"
-                        className="rounded border-gray-300"
-                      />
-                      <span className="text-sm">
-                        I consent to a device data wipe (if necessary)
-                      </span>
-                    </label>
-                  </div>
-
+          {/* Action Required: Approval */}
+          {ticket.status === "awaiting_approval" &&
+            !ticket.is_approved &&
+            ticket.terms_accepted && (
+              <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl shadow-sm">
+                <p className="text-orange-800 font-medium mb-3">
+                  Your approval is required to proceed with the repair.
+                </p>
+                <div className="flex gap-2">
                   <button
                     onClick={async () => {
-                      const terms = (document.getElementById("termsCheck") as HTMLInputElement).checked;
-                      const dataWipe = (document.getElementById("dataCheck") as HTMLInputElement).checked;
-
-                      if (!terms) {
-                        alert("Please agree to the Repair Terms to continue.");
-                        return;
-                      }
-
                       try {
-                        const targetUrl = initialToken ? `/api/repairs/compliance` : `/api/repairs/${ticket.id}/compliance`;
-                        const bodyData = initialToken 
-                          ? { token: initialToken, terms_accepted: true, data_wiped_consent: dataWipe }
-                          : { terms_accepted: true, data_wiped_consent: dataWipe };
+                        const targetUrl = initialToken ? `/api/repairs/approve` : `/api/repairs/${ticket.id}/approve`;
+                        const bodyData = initialToken ? { token: initialToken, approved: true } : { approved: true };
 
                         const response = await fetch(targetUrl, {
                           method: "POST",
@@ -410,98 +490,59 @@ export default function TrackRepairIsland({
                         });
 
                         if (response.ok) {
-                          alert("Terms accepted successfully!");
+                          alert("Repair approved! Work will begin shortly.");
                           if (initialToken) handleTokenSearch(initialToken);
                           else handleSearch(new Event("submit") as any);
                         } else {
-                          throw new Error("Failed to accept terms");
+                          throw new Error("Failed to approve repair");
                         }
-                      } catch (err: any) {
-                        alert(err.message || "Failed to update compliance details");
+                      } catch (err) {
+                        alert("Failed to approve repair");
                       }
                     }}
-                    className="w-full px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition"
+                    className="flex-1 px-4 py-2 bg-orange-600 text-white rounded font-medium hover:bg-orange-700 shadow-sm"
                   >
-                    Accept & Continue
+                    Approve Repair
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (!confirm("Are you sure you want to decline this repair? This will cancel the ticket.")) return;
+                      try {
+                        const targetUrl = initialToken ? `/api/repairs/approve` : `/api/repairs/${ticket.id}/approve`;
+                        const bodyData = initialToken ? { token: initialToken, approved: false } : { approved: false };
+
+                        const response = await fetch(targetUrl, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify(bodyData),
+                        });
+
+                        if (response.ok) {
+                          alert("Repair has been declined and cancelled.");
+                          if (initialToken) handleTokenSearch(initialToken);
+                          else handleSearch(new Event("submit") as any);
+                        } else {
+                          throw new Error("Failed to decline repair");
+                        }
+                      } catch (err) {
+                        alert("Failed to decline repair");
+                      }
+                    }}
+                    className="flex-1 px-4 py-2 bg-gray-600 text-white rounded font-medium hover:bg-gray-700 shadow-sm"
+                  >
+                    Decline Repair
                   </button>
                 </div>
-              )}
+              </div>
+            )}
 
-              {ticket.status === "awaiting_approval" &&
-                !ticket.is_approved &&
-                ticket.terms_accepted && (
-                  <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded">
-                    <p className="text-orange-800 font-medium mb-3">
-                      Your approval is required to proceed with the repair.
-                    </p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={async () => {
-                          try {
-                            const targetUrl = initialToken ? `/api/repairs/approve` : `/api/repairs/${ticket.id}/approve`;
-                            const bodyData = initialToken ? { token: initialToken, approved: true } : { approved: true };
-
-                            const response = await fetch(targetUrl, {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify(bodyData),
-                            });
-
-                            if (response.ok) {
-                              alert("Repair approved! Work will begin shortly.");
-                              if (initialToken) handleTokenSearch(initialToken);
-                              else handleSearch(new Event("submit") as any);
-                            } else {
-                              throw new Error("Failed to approve repair");
-                            }
-                          } catch (err) {
-                            alert("Failed to approve repair");
-                          }
-                        }}
-                        className="flex-1 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
-                      >
-                        Approve Repair
-                      </button>
-                      <button
-                        onClick={async () => {
-                          if (!confirm("Are you sure you want to decline this repair? This will cancel the ticket.")) return;
-                          try {
-                            const targetUrl = initialToken ? `/api/repairs/approve` : `/api/repairs/${ticket.id}/approve`;
-                            const bodyData = initialToken ? { token: initialToken, approved: false } : { approved: false };
-
-                            const response = await fetch(targetUrl, {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify(bodyData),
-                            });
-
-                            if (response.ok) {
-                              alert("Repair has been declined and cancelled.");
-                              if (initialToken) handleTokenSearch(initialToken);
-                              else handleSearch(new Event("submit") as any);
-                            } else {
-                              throw new Error("Failed to decline repair");
-                            }
-                          } catch (err) {
-                            alert("Failed to decline repair");
-                          }
-                        }}
-                        className="flex-1 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-                      >
-                        Decline Repair
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-              {ticket.is_approved && (
-                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded">
-                  <p className="text-green-800 text-sm">
-                    Approved on{" "}
-                    {new Date(ticket.approved_at).toLocaleDateString()}
-                  </p>
-                </div>
-              )}
+          {/* Approval Confirmation */}
+          {ticket.is_approved && (
+            <div className="p-3 bg-green-50 border border-green-200 rounded-xl shadow-sm">
+              <p className="text-green-800 text-sm font-medium">
+                Approved on{" "}
+                {new Date(ticket.approved_at).toLocaleDateString()}
+              </p>
             </div>
           )}
 

@@ -35,11 +35,18 @@ export function Header({
               <a
                 href={`/shop/${category.handle}`}
                 f-client-nav
-                class="text-gray-900 font-medium hover:text-blue-600 capitalize"
+                class="text-gray-900 font-medium hover:text-slate-600 capitalize"
               >
                 {category.name}
               </a>
             ))}
+            <a
+              href="/news"
+              f-client-nav
+              class="text-gray-900 font-medium hover:text-slate-600 capitalize"
+            >
+              News
+            </a>
           </nav>
           <div class="flex items-center space-x-4">
             <div class="relative group">

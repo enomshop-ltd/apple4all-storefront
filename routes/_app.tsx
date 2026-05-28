@@ -32,17 +32,19 @@ export default define.page(function App({ Component, state }) {
       <body
         f-client-nav
         f-view-transition
-        class="min-h-screen bg-[#F6F7F8] font-sans text-gray-900 flex flex-col"
+        class={`min-h-screen bg-[#F6F7F8] font-sans text-gray-900 flex flex-col ${state?.hideLayout ? 'print:bg-white bg-white' : ''}`}
       >
-        <TopProgressBarIsland />
-        <Header 
-          categories={(state?.categories as any[]) || []} 
-          isLoggedIn={!!state?.isLoggedIn}
-        />
+        {!state?.hideLayout && <TopProgressBarIsland />}
+        {!state?.hideLayout && (
+          <Header 
+            categories={(state?.categories as any[]) || []} 
+            isLoggedIn={!!state?.isLoggedIn}
+          />
+        )}
         <Partial name="main">
           <Component />
         </Partial>
-        <Footer />
+        {!state?.hideLayout && <Footer />}
       </body>
     </html>
   );

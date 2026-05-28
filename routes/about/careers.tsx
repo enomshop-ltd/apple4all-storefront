@@ -14,7 +14,7 @@ export const handler = define.handlers({
 
 export default define.page(function CareersPage(props) {
   return (
-    <div class="prose prose-blue max-w-none">
+    <div class="prose prose-slate max-w-none">
       <Head>
         <title>{props.state.title as string}</title>
         <meta name="description" content={props.state.description as string} />
@@ -35,44 +35,10 @@ export default define.page(function CareersPage(props) {
       </h2>
 
       <div class="space-y-6">
-        <div class="p-6 border border-gray-200 rounded-xl hover:shadow-md transition-shadow bg-white">
-          <h3 class="text-xl font-bold text-blue-600 mb-2">
-            Senior Mac Technician
-          </h3>
-          <p class="text-gray-600 mb-4 text-sm">
-            Full-time • Westlands, Nairobi
+        <div class="p-6 border border-gray-200/60 rounded-xl bg-slate-50 text-center">
+          <p class="text-gray-700">
+            We currently have no open positions. However, we're always happy to connect with talented individuals!
           </p>
-          <p class="text-gray-700 mb-4">
-            We are seeking an experienced technician capable of performing
-            complex logic board repairs, screen replacements, and deep
-            diagnostics on MacBooks and iMacs.
-          </p>
-          <a
-            href={`mailto:careers@${STORE_DOMAIN}?subject=Application:%20Senior%20Mac%20Technician`}
-            class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Apply Now
-          </a>
-        </div>
-
-        <div class="p-6 border border-gray-200 rounded-xl hover:shadow-md transition-shadow bg-white">
-          <h3 class="text-xl font-bold text-blue-600 mb-2">
-            Sales & Customer Success Associate
-          </h3>
-          <p class="text-gray-600 mb-4 text-sm">
-            Full-time • Westlands, Nairobi
-          </p>
-          <p class="text-gray-700 mb-4">
-            Join our front-of-house team to help customers find the perfect
-            refurbished Mac, explain our repair services, and ensure every
-            visitor leaves satisfied.
-          </p>
-          <a
-            href={`mailto:careers@${STORE_DOMAIN}?subject=Application:%20Sales%20Associate`}
-            class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Apply Now
-          </a>
         </div>
       </div>
 
@@ -96,7 +62,7 @@ export default define.page(function CareersPage(props) {
         people. Send your CV and a brief introduction to{" "}
         <a
           href={`mailto:careers@${STORE_DOMAIN}`}
-          class="text-blue-600 hover:underline"
+          class="text-slate-900 hover:underline font-medium"
         >
           careers@{STORE_DOMAIN}
         </a>.

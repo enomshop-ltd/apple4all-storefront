@@ -15,7 +15,7 @@ export const handler = define.handlers({
 
 export default define.page(function FinancingPage(props) {
   return (
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-7xl mx-auto px-4 py-12">
       <Head>
         <title>{props.state.title as string}</title>
         <meta name="description" content={props.state.description as string} />
@@ -32,8 +32,8 @@ export default define.page(function FinancingPage(props) {
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-        <div class="p-8 bg-gray-50 rounded-2xl border border-gray-100 hover:shadow-md transition-shadow">
-          <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+        <div class="p-8 bg-transparent rounded-2xl border border-gray-200/60 hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 bg-slate-200 text-slate-800 rounded-xl flex items-center justify-center mb-6">
             <CreditCard class="w-6 h-6" />
           </div>
           <h3 class="text-2xl font-bold text-gray-900 mb-3">
@@ -42,7 +42,7 @@ export default define.page(function FinancingPage(props) {
           <p class="text-gray-600 leading-relaxed mb-4">
             Pay for your device in manageable installments over 3 to 6 months. A
             down payment is required, and the balance is spread out to fit your
-            budget.
+            budget. We only release the device after you finish payment.
           </p>
           <ul class="space-y-2 text-sm text-gray-600">
             <li class="flex items-center gap-2">
@@ -59,22 +59,22 @@ export default define.page(function FinancingPage(props) {
           </ul>
         </div>
 
-        <div class="p-8 bg-gray-50 rounded-2xl border border-gray-100 hover:shadow-md transition-shadow">
-          <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+        <div class="p-8 bg-transparent rounded-2xl border border-gray-200/60 hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 bg-slate-200 text-slate-800 rounded-xl flex items-center justify-center mb-6">
             <ShieldCheck class="w-6 h-6" />
           </div>
           <h3 class="text-2xl font-bold text-gray-900 mb-3">
             Corporate & Business Accounts
           </h3>
           <p class="text-gray-600 leading-relaxed mb-4">
-            For businesses outfitting their teams, we offer tailored payment
+            For businesses outfitting their teams or requiring ongoing maintenance, we offer tailored payment
             plans and bulk purchasing discounts. Contact our B2B team for
             customized solutions.
           </p>
           <ul class="space-y-2 text-sm text-gray-600">
             <li class="flex items-center gap-2">
               <CheckCircle2 class="w-4 h-4 text-green-500" />{" "}
-              Net 30 terms available
+              Net 30 terms available (repairs only)
             </li>
             <li class="flex items-center gap-2">
               <CheckCircle2 class="w-4 h-4 text-green-500" />{" "}
@@ -87,16 +87,16 @@ export default define.page(function FinancingPage(props) {
         </div>
       </div>
 
-      <div class="bg-blue-600 text-white p-10 rounded-2xl text-center">
+      <div class="bg-slate-900 text-white p-10 rounded-2xl text-center">
         <h2 class="text-3xl font-bold mb-4">Ready to Apply?</h2>
-        <p class="text-blue-100 mb-8 max-w-xl mx-auto text-lg">
+        <p class="text-slate-300 mb-8 max-w-xl mx-auto text-lg">
           Visit our store in Westlands, Nairobi with your national ID and proof
           of income to start the application process.
         </p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">
           <a
             href="/about/contact"
-            class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+            class="bg-white text-slate-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
           >
             Contact Us
           </a>

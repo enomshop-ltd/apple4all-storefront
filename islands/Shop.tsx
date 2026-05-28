@@ -102,7 +102,7 @@ export default function Shop({ category }: { category?: string }) {
 
   return (
     <div
-      class={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${
+      class={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${
         category ? "pb-16 pt-4" : "py-16"
       }`}
     >

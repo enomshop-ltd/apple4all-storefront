@@ -3,6 +3,7 @@ import { page } from "fresh";
 import { Head } from "fresh/runtime";
 import { Clock, Mail, MapPin, Phone } from "lucide-preact";
 import { STORE_NAME, STORE_DOMAIN } from "../../lib/utils.ts";
+import ContactForm from "../../islands/ContactForm.tsx";
 
 export const handler = define.handlers({
   GET(ctx) {
@@ -15,7 +16,7 @@ export const handler = define.handlers({
 
 export default define.page(function ContactPage(props) {
   return (
-    <div class="max-w-4xl mx-auto">
+    <div class="w-full">
       <Head>
         <title>{props.state.title as string}</title>
         <meta name="description" content={props.state.description as string} />
@@ -31,7 +32,7 @@ export default define.page(function ContactPage(props) {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div class="space-y-8">
           <div class="flex items-start gap-4">
-            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+            <div class="p-3 bg-slate-200 text-slate-800 rounded-lg">
               <MapPin class="w-6 h-6" />
             </div>
             <div>
@@ -48,7 +49,7 @@ export default define.page(function ContactPage(props) {
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+            <div class="p-3 bg-slate-200 text-slate-800 rounded-lg">
               <Phone class="w-6 h-6" />
             </div>
             <div>
@@ -56,25 +57,25 @@ export default define.page(function ContactPage(props) {
               <p class="text-gray-600">
                 Sales & Support:{" "}
                 <a
-                  href="tel:+254700000000"
-                  class="text-blue-600 hover:underline"
+                  href="tel:+254115682959"
+                  class="text-slate-900 hover:underline"
                 >
-                  +254 700 000 000
+                  +254 11 568 2959
                 </a>
                 <br />
                 Repairs:{" "}
                 <a
-                  href="tel:+254711111111"
-                  class="text-blue-600 hover:underline"
+                  href="tel:+254115682959"
+                  class="text-slate-900 hover:underline"
                 >
-                  +254 711 111 111
+                  +254 11 568 2959
                 </a>
               </p>
             </div>
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+            <div class="p-3 bg-slate-200 text-slate-800 rounded-lg">
               <Mail class="w-6 h-6" />
             </div>
             <div>
@@ -83,7 +84,7 @@ export default define.page(function ContactPage(props) {
                 General Inquiries:{" "}
                 <a
                   href={`mailto:info@${STORE_DOMAIN}`}
-                  class="text-blue-600 hover:underline"
+                  class="text-slate-900 hover:underline"
                 >
                   info@{STORE_DOMAIN}
                 </a>
@@ -91,7 +92,7 @@ export default define.page(function ContactPage(props) {
                 Support:{" "}
                 <a
                   href={`mailto:support@${STORE_DOMAIN}`}
-                  class="text-blue-600 hover:underline"
+                  class="text-slate-900 hover:underline"
                 >
                   support@{STORE_DOMAIN}
                 </a>
@@ -100,7 +101,7 @@ export default define.page(function ContactPage(props) {
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+            <div class="p-3 bg-slate-200 text-slate-800 rounded-lg">
               <Clock class="w-6 h-6" />
             </div>
             <div>
@@ -116,85 +117,11 @@ export default define.page(function ContactPage(props) {
           </div>
         </div>
 
-        <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100">
+        <div class="p-8">
           <h3 class="text-2xl font-semibold text-gray-900 mb-6">
             Send us a Message
           </h3>
-          <form class="space-y-4">
-            <div>
-              <label
-                for="name"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                placeholder="John Doe"
-                required
-              />
-            </div>
-            <div>
-              <label
-                for="email"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                placeholder="john@example.com"
-                required
-              />
-            </div>
-            <div>
-              <label
-                for="subject"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Subject
-              </label>
-              <select
-                id="subject"
-                name="subject"
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white"
-              >
-                <option>Sales Inquiry</option>
-                <option>Repair Quote</option>
-                <option>Trade-In Evaluation</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div>
-              <label
-                for="message"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={4}
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
-                placeholder="How can we help you?"
-                required
-              >
-              </textarea>
-            </div>
-            <button
-              type="button"
-              class="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Send Message
-            </button>
-          </form>
+          <ContactForm storeDomain={STORE_DOMAIN} />
         </div>
       </div>
     </div>

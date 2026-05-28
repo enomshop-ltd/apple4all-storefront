@@ -21,7 +21,7 @@ export default define.page(function RepairsPage({ state, data }) {
   const { backendUrl, publishableKey } = data;
 
   return (
-    <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto px-4 py-8">
       <Head>
         <title>{state.title as string}</title>
         <meta name="description" content={state.description as string} />
@@ -39,7 +39,7 @@ export default define.page(function RepairsPage({ state, data }) {
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20 items-start">
         {/* Left Column: Track Repair (Interactive) */}
-        <div class="lg:col-span-7 bg-white rounded-3xl border border-gray-100 shadow-sm p-2 md:p-8 relative overflow-hidden group hover:shadow-md transition-shadow">
+        <div class="lg:col-span-7 rounded-3xl p-2 md:p-8 relative group transition-shadow">
           <div class="absolute top-0 right-0 p-8 opacity-5">
             <Search class="w-48 h-48" />
           </div>
@@ -100,16 +100,16 @@ export default define.page(function RepairsPage({ state, data }) {
             <p class="text-sm font-semibold text-orange-600">From KES 5,000</p>
           </div>
 
-          <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100 hover:bg-blue-100 transition-colors">
+          <div class="bg-slate-200 rounded-2xl p-6 border border-slate-300 hover:bg-slate-300 transition-colors">
             <a href="/services/guides" f-client-nav class="block">
               <div class="flex items-center gap-4 mb-3">
-                <div class="w-10 h-10 bg-blue-200 text-blue-700 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-slate-300 text-slate-800 rounded-lg flex items-center justify-center">
                   <BookOpen class="w-5 h-5" />
                 </div>
                 <h3 class="text-xl font-bold text-gray-900">DIY Repair Guides</h3>
               </div>
               <p class="text-gray-600 text-sm leading-relaxed mb-3">Feeling adventurous? Access free, open-source repair guides powered by iFixit for your Apple devices.</p>
-              <p class="text-sm font-semibold text-blue-600 flex items-center gap-1">Browse Guides &rarr;</p>
+              <p class="text-sm font-semibold text-slate-800 flex items-center gap-1">Browse Guides &rarr;</p>
             </a>
           </div>
         </div>

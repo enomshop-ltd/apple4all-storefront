@@ -12,7 +12,11 @@ export const handler = define.handlers({
     const token = cookies["_medusa_jwt"];
     if (!token) {
       console.log("No token found, redirecting to login");
-      return new Response("", { status: 302, headers: { Location: "/login" } });
+      const redirectPath = ctx.url.pathname + ctx.url.search;
+      return new Response("", {
+        status: 302,
+        headers: { Location: `/login?redirect=${encodeURIComponent(redirectPath)}` },
+      });
     }
     try {
       console.log("Fetching customer, orders, and currency concurrently");
@@ -34,10 +38,11 @@ export const handler = define.handlers({
       return page({ customer, orders, currencyCode });
     } catch (error) {
       console.error("Error fetching account overview data:", error);
+      const redirectPath = ctx.url.pathname + ctx.url.search;
       return new Response("", {
         status: 302,
         headers: {
-          Location: "/login",
+          Location: `/login?redirect=${encodeURIComponent(redirectPath)}`,
           "Set-Cookie":
             `_medusa_jwt=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`,
         },

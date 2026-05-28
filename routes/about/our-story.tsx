@@ -14,7 +14,7 @@ export const handler = define.handlers({
 
 export default define.page(function OurStoryPage(props) {
   return (
-    <div class="prose prose-blue max-w-none">
+    <div class="prose prose-slate max-w-none">
       <Head>
         <title>{props.state.title as string}</title>
         <meta name="description" content={props.state.description as string} />
@@ -68,9 +68,9 @@ export default define.page(function OurStoryPage(props) {
         for Kenya and the planet.
       </p>
 
-      <div class="mt-12 p-6 bg-blue-50 rounded-xl border border-blue-100">
-        <h3 class="text-xl font-semibold text-blue-900 mb-2">Visit Us Today</h3>
-        <p class="text-blue-800">
+      <div class="mt-12 p-6 bg-slate-200 rounded-xl border border-slate-300">
+        <h3 class="text-xl font-semibold text-slate-900 mb-2">Visit Us Today</h3>
+        <p class="text-slate-800">
           Drop by our store in Westlands to explore our inventory, chat with our
           technicians, or just talk tech. We're here for all your Apple needs.
         </p>

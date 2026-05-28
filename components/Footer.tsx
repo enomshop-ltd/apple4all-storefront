@@ -68,13 +68,18 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/about/contact" f-client-nav>
+                <a href="/about/contact" f-client-nav class="hover:text-gray-900 transition-colors">
                   Contact
                 </a>
               </li>
               <li>
+                <a href="/news" f-client-nav class="hover:text-gray-900 transition-colors">
+                  News
+                </a>
+              </li>
+              <li>
                 <a
-                  href="https://youtube.com"
+                  href="https://www.youtube.com/@UrbanDeviceCare"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="hover:text-red-600 transition-colors"

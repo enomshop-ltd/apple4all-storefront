@@ -18,7 +18,11 @@ export const handler = define.handlers({
     const orderId = ctx.params.id;
     if (!token) {
       console.log("No token found, redirecting to login");
-      return new Response("", { status: 302, headers: { Location: "/login" } });
+      const redirectPath = ctx.url.pathname + ctx.url.search;
+      return new Response("", {
+        status: 302,
+        headers: { Location: `/login?redirect=${encodeURIComponent(redirectPath)}` },
+      });
     }
     let order = null;
     try {
@@ -36,7 +40,8 @@ export const handler = define.handlers({
       console.error("Failed to fetch order details", e);
       if ((e as { status?: number })?.status === 401) {
         const headers = new Headers();
-        headers.set("Location", "/login");
+        const redirectPath = ctx.url.pathname + ctx.url.search;
+        headers.set("Location", `/login?redirect=${encodeURIComponent(redirectPath)}`);
         headers.set(
           "Set-Cookie",
           `_medusa_jwt=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`,

@@ -24,6 +24,7 @@ MEDUSA_PUBLISHABLE_KEY="pk_your_publishable_key_here"
 # Storefront Branding configuration
 STORE_NAME="Your Store Name"
 STORE_DOMAIN="yourstore.com"
+STOREFRONT_URL="http://localhost:8000"
 LOGO_URL="/logo.svg"
 ```
 
@@ -56,6 +57,9 @@ Follow these steps to get your storefront up and running:
 ## Changelog
 
 ### v1.2.0 (Current)
+- **Enhancement**: Added beautiful frontend HTML rendering for repair documents (Job Card, Quote, Tax Invoice, Receipt) to match the order invoice styling.
+- **Enhancement**: Introduced `STOREFRONT_URL` environment variable for robust QR code generation across invoices and repair documents.
+- **Enhancement**: Seamless post-login redirects implemented across account and repair tracking portals.
 This release focuses heavily on integrating and refining the Medusa Repair Module frontend. The repair booking and tracking workflows have been completely overhauled to act as standalone services with secured routing and seamless UI integration. We've introduced robust frontend logging, eradicated legacy parsing errors, and delivered significant UI upgrades to the `PromoBanner` and global navigations for a more polished and responsive customer experience.
 
 ### v1.1.0

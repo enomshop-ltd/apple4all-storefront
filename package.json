@@ -1,5 +1,5 @@
 {
-  "name": "apple4all-storefront",
+  "name": "freshjs-medusa-storefront",
   "private": true,
   "version": "0.0.1",
   "scripts": {
@@ -15,7 +15,7 @@
     "@tailwindcss/vite": "^4.2.1",
     "isomorphic-dompurify": "^3.13.0",
     "lucide-preact": "^1.6.0",
-    "marked": "^18.0.3",
+    "marked": "^18.0.4",
     "preact": "^10.29.0",
     "tailwindcss": "^4.2.1"
   },

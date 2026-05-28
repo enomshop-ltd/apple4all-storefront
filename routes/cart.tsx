@@ -30,7 +30,7 @@ export default define.page(async function CartPage(ctx) {
   }
 
   return (
-    <main class="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
       <Head>
         <title>Cart - {STORE_NAME}</title>
         <meta

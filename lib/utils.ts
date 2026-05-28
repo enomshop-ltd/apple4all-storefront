@@ -14,6 +14,6 @@ export interface State {
 
 export const define = createDefine<State>();
 
-export const STORE_NAME = Deno.env.get("STORE_NAME") || "Apple4All";
-export const STORE_DOMAIN = Deno.env.get("STORE_DOMAIN") || "apple4all.co.ke";
+export const STORE_NAME = Deno.env.get("STORE_NAME") || "Tech Store";
+export const STORE_DOMAIN = Deno.env.get("STORE_DOMAIN") || "techstore.com";
 export const LOGO_URL = Deno.env.get("LOGO_URL") || "/logo.svg";

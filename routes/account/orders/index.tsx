@@ -11,7 +11,11 @@ export const handler = define.handlers({
     const cookies = getCookies(ctx.req.headers);
     const token = cookies["_medusa_jwt"];
     if (!token) {
-      return new Response("", { status: 302, headers: { Location: "/login" } });
+      const redirectPath = ctx.url.pathname + ctx.url.search;
+      return new Response("", {
+        status: 302,
+        headers: { Location: `/login?redirect=${encodeURIComponent(redirectPath)}` },
+      });
     }
     try {
       const { orders } = await medusa.store.order.list(
@@ -25,10 +29,11 @@ export const handler = define.handlers({
       return page({ orders });
     } catch (error) {
       console.error("Error fetching orders data:", error);
+      const redirectPath = ctx.url.pathname + ctx.url.search;
       return new Response("", {
         status: 302,
         headers: {
-          Location: "/login",
+          Location: `/login?redirect=${encodeURIComponent(redirectPath)}`,
           "Set-Cookie":
             `_medusa_jwt=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`,
         },
@@ -42,7 +47,7 @@ export default define.page(function OrdersPage(props) {
     orders: HttpTypes.StoreOrder[];
   };
   return (
-    <div class="space-y-6 w-full max-w-5xl mx-auto">
+    <div class="space-y-6 w-full max-w-7xl mx-auto">
       <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-gray-100 flex items-center justify-between">
           <h2 class="text-xl font-bold text-gray-900">Order History</h2>

@@ -23,7 +23,7 @@ export default function CustomerRepairsRoute() {
         <meta name="view-transition" content="same-origin" />
       </Head>
       <Partial name="repair-content">
-        <div class="max-w-6xl mx-auto px-4 py-8" f-client-nav>
+        <div class="max-w-7xl mx-auto px-4 py-8" f-client-nav>
           <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">My Repairs</h1>
             <a
