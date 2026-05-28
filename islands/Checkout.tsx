@@ -76,6 +76,13 @@ export function Checkout({
       return;
     }
 
+    if (!selectedShippingOption) {
+      setError("Please choose a delivery method.");
+      setIsProcessing(false);
+      globalThis.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     if (!paymentMethod) {
       setError("Please choose a payment method.");
       setIsProcessing(false);
@@ -373,87 +380,90 @@ export function Checkout({
             </div>
           </div>
 
-          {/* Delivery Method */}
-          <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-            <div class="flex items-center gap-3 mb-6">
-              <Package class="w-6 h-6 text-blue-600" />
-              <h2 class="text-xl font-bold text-gray-900">Delivery Method</h2>
+          {/* Delivery & Payment Container */}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Delivery Method */}
+            <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+              <div class="flex items-center gap-3 mb-6">
+                <Package class="w-6 h-6 text-blue-600" />
+                <h2 class="text-xl font-bold text-gray-900">Delivery Method</h2>
+              </div>
+              {shippingOptions && shippingOptions.length > 0
+                ? (
+                  <div class="space-y-4">
+                    {shippingOptions.map((option) => (
+                      <label
+                        key={option.id}
+                        class={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-colors ${
+                          selectedShippingOption === option.id
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        <div class="flex items-center">
+                          <input
+                            type="radio"
+                            name="shipping_option"
+                            value={option.id}
+                            checked={selectedShippingOption === option.id}
+                            onChange={() => setSelectedShippingOption(option.id)}
+                            class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                          />
+                          <span class="ml-3 font-medium text-gray-900 flex-1">
+                            {option.name}
+                          </span>
+                        </div>
+                        <span class="font-medium text-gray-900 ml-2 whitespace-nowrap">
+                          {option.amount === 0
+                            ? "Free"
+                            : formatAmount(option.amount || 0, currencyCode)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )
+                : (
+                  <p class="text-gray-500 text-sm">
+                    No delivery methods available for this region.
+                  </p>
+                )}
             </div>
-            {shippingOptions && shippingOptions.length > 0
-              ? (
-                <div class="space-y-4">
-                  {shippingOptions.map((option) => (
+
+            {/* Payment Method */}
+            <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+              <div class="flex items-center gap-3 mb-6">
+                <CreditCard class="w-6 h-6 text-blue-600" />
+                <h2 class="text-xl font-bold text-gray-900">Payment Method</h2>
+              </div>
+
+              <div class="space-y-4 mb-6">
+                {paymentProviders && paymentProviders.length > 0 ? paymentProviders.map((provider: any) => {
+                  return (
                     <label
-                      key={option.id}
-                      class={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-colors ${
-                        selectedShippingOption === option.id
+                      key={provider.id}
+                      class={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${
+                        paymentMethod === provider.id
                           ? "border-blue-500 bg-blue-50"
                           : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
-                      <div class="flex items-center">
-                        <input
-                          type="radio"
-                          name="shipping_option"
-                          value={option.id}
-                          checked={selectedShippingOption === option.id}
-                          onChange={() => setSelectedShippingOption(option.id)}
-                          class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                        />
-                        <span class="ml-3 font-medium text-gray-900">
-                          {option.name}
-                        </span>
-                      </div>
-                      <span class="font-medium text-gray-900">
-                        {option.amount === 0
-                          ? "Free"
-                          : formatAmount(option.amount || 0, currencyCode)}
+                      <input
+                        type="radio"
+                        name="payment_method"
+                        value={provider.id}
+                        checked={paymentMethod === provider.id}
+                        onChange={() => setPaymentMethod(provider.id)}
+                        class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      />
+                      <span class="ml-3 font-medium text-gray-900">
+                        {provider.name || provider.id}
                       </span>
                     </label>
-                  ))}
-                </div>
-              )
-              : (
-                <p class="text-gray-500 text-sm">
-                  No delivery methods available for this region.
-                </p>
-              )}
-          </div>
-
-          {/* Payment Method */}
-          <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-            <div class="flex items-center gap-3 mb-6">
-              <CreditCard class="w-6 h-6 text-blue-600" />
-              <h2 class="text-xl font-bold text-gray-900">Payment Method</h2>
-            </div>
-
-            <div class="space-y-4 mb-6">
-              {paymentProviders && paymentProviders.length > 0 ? paymentProviders.map((provider: any) => {
-                return (
-                  <label
-                    key={provider.id}
-                    class={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${
-                      paymentMethod === provider.id
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      value={provider.id}
-                      checked={paymentMethod === provider.id}
-                      onChange={() => setPaymentMethod(provider.id)}
-                      class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                    />
-                    <span class="ml-3 font-medium text-gray-900">
-                      {provider.name || provider.id}
-                    </span>
-                  </label>
-                );
-              }) : (
-                <p class="text-sm text-gray-500">No payment methods configured for your region.</p>
-              )}
+                  );
+                }) : (
+                  <p class="text-sm text-gray-500">No payment methods configured for your region.</p>
+                )}
+              </div>
             </div>
           </div>
         </form>

@@ -25,6 +25,16 @@ export const handler = define.handlers({
         fields: "*region",
       }, reqHeaders);
 
+      const debugLog = async (msg: string, data?: any) => {
+        const line = `[${new Date().toISOString()}] ${msg} ${data ? JSON.stringify(data) : ""}\n`;
+        try {
+          await Deno.writeTextFile("/tmp/medusa_checkout_debug.log", line, { append: true });
+        } catch(e) {}
+      };
+
+      await debugLog("Starting initialize-payment for cart", cartId);
+      await debugLog("Body received:", body);
+
       // FIX 1: Capture the result of the cart update to ensure we aren't using a stale cart object
       const { cart: updatedCart } = await medusa.store.cart.update(
         cartId,
@@ -38,50 +48,40 @@ export const handler = define.handlers({
         reqHeaders,
       );
 
+      await debugLog("Cart after update:", updatedCart.id);
+
       let currentCart = updatedCart; // Use the freshly updated cart instead of existingCart
 
-      if (body.shipping_option_id) {
+      // Step A: Fetch available shipping options for the Cart's updated region/address
+      const { shipping_options } = await medusa.store.fulfillment.listCartOptions({ cart_id: cartId }, reqHeaders);
+      
+      let finalShippingOptionId = body.shipping_option_id;
+
+      // Verify the provided option is still valid for this updated address
+      const isValidOption = shipping_options && shipping_options.find(o => o.id === finalShippingOptionId);
+      
+      if (!isValidOption && shipping_options && shipping_options.length > 0) {
+        // If invalid or none provided, fallback to the first available option for this address
+        finalShippingOptionId = shipping_options[0].id;
+      }
+
+      if (finalShippingOptionId) {
         try {
+          await debugLog("Attempting to add valid shipping method:", finalShippingOptionId);
+          // Step B: Attach the selected option to the Cart
           const { cart } = await medusa.store.cart.addShippingMethod(
             cartId,
-            {
-              option_id: body.shipping_option_id,
-            },
-            {},
+            { option_id: finalShippingOptionId },
+            { fields: "*shipping_methods" },
             reqHeaders,
           );
           currentCart = cart;
-        } catch (err) {
-          console.warn("Shipping method may already exist", err);
-          const { cart } = await medusa.store.cart.retrieve(
-            cartId,
-            {},
-            reqHeaders,
-          );
-          currentCart = cart;
-        }
-      } else {
-        const { shipping_options } = await medusa.store.fulfillment
-          .listCartOptions({ cart_id: cartId }, reqHeaders);
-        if (shipping_options && shipping_options.length > 0) {
-          try {
-            const { cart } = await medusa.store.cart.addShippingMethod(
-              cartId,
-              {
-                option_id: shipping_options[0].id,
-              },
-              {},
-              reqHeaders,
-            );
-            currentCart = cart;
-          } catch (err) {
-            const { cart } = await medusa.store.cart.retrieve(
-              cartId,
-              {},
-              reqHeaders,
-            );
-            currentCart = cart;
-          }
+          await debugLog("Successfully added shipping method. Cart now has methods:", cart.shipping_methods);
+        } catch (err: any) {
+          console.error("Failed to add shipping method:", err);
+          const detail = err?.response?.data?.message || err?.message || "";
+          await debugLog("Failed to add shipping method error:", detail);
+          throw new Error(`Failed to add shipping method: ${detail}`);
         }
       }
 

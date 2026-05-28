@@ -21,7 +21,7 @@ export function AccountLayout({ children, activeTab }: AccountLayoutProps) {
         <title>My Account - {STORE_NAME}</title>
       </Head>
       <Partial name="main">
-        <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+        <main class="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
           <h1 class="text-3xl font-bold mb-8">My Account</h1>
           <div class="flex flex-col md:flex-row gap-8">
             <aside class="w-full md:w-64">

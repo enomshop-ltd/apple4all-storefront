@@ -1,6 +1,6 @@
-# Apple4All Storefront
+# Medusa V2 + Fresh.js 2.3 Storefront
 
-A high-performance, SEO-optimized e-commerce storefront for Apple4All. Built with Deno, Fresh.js, and MedusaJS, it provides a seamless shopping experience for refurbished Macs along with integrated repair tracking and customer services.
+A high-performance, SEO-optimized e-commerce storefront for Medusa V2 + Fresh.js 2.3. Built with Deno, Fresh.js, and MedusaJS, it provides a seamless shopping experience for refurbished Macs along with integrated repair tracking and customer services.
 
 ## Key Features
 
@@ -12,34 +12,56 @@ A high-performance, SEO-optimized e-commerce storefront for Apple4All. Built wit
 - **Performance & SEO:** Leverages Deno and Fresh's server-side rendering for optimal Core Web Vitals, enriched with standard SEO metadata and semantic HTML.
 - **Responsive Design:** A polished, mobile-first design implemented tightly with Tailwind CSS, utilizing clean typographic pairings and custom SVG iconography.
 
-## Development & Usage
+## Environment Variables
 
-- Run `deno task dev` to start the development server. 
-- The storefront requires a running MedusaJS backend. Ensure `MEDUSA_BACKEND_URL` and `MEDUSA_PUBLISHABLE_KEY` environment variables are correctly configured.
+To properly run this storefront, create a `.env` file in the root directory and populate it with the following variables:
+
+```env
+# Medusa Backend configuration
+MEDUSA_BACKEND_URL="http://localhost:9000"
+MEDUSA_PUBLISHABLE_KEY="pk_your_publishable_key_here"
+
+# Storefront Branding configuration
+STORE_NAME="Your Store Name"
+STORE_DOMAIN="yourstore.com"
+LOGO_URL="/logo.svg"
+```
+
+## Setup & Installation
+
+Follow these steps to get your storefront up and running:
+
+1. **Prerequisites:** Ensure you have [Deno](https://deno.land/) installed on your machine. You will also need a running MedusaJS backend instance.
+2. **Clone the Repository:**
+   ```bash
+   git clone <repository_url>
+   cd <repository_directory>
+   ```
+3. **Configure Environment Variables:** Create a `.env` file in the root directory and configure the variables detailed in the section above.
+4. **Install Dependencies:** Deno will handle dependencies automatically on the first run, but you can explicitly cache them by running:
+   ```bash
+   deno cache main.ts
+   ```
+5. **Start Development Server:**
+   ```bash
+   deno task dev
+   ```
+   This will start the local development server (typically on port 8000).
+6. **Production Build:** When deploying to production, use the build task to bundle assets for optimal performance:
+   ```bash
+   deno task build
+   deno task start
+   ```
 
 ## Changelog
 
 ### v1.2.0 (Current)
-- **Feature**: Integrated Medusa Repair Module frontend booking and dashboard routes (`/repairs/book` and `/repairs/dashboard`).
-- **Feature**: Secured `/repairs/dashboard` and `/repairs/book` with server-side middleware and graceful client-side unauthorized fallbacks.
-- **Enhancement**: Added robust frontend logging (`console.debug`, `console.info`, `console.error`) for Repair booking and dashboard fetch requests.
-- **Enhancement**: Relocated repair-related routes back to `/repairs/` explicitly moving them out of the `/account/` route space and making them self-encased.
-- **Enhancement**: Removed the Repairs tab completely from the My Account dashboard layout as requested.
-- **Bug Fix**: Fixed a missing route issue where `/repairs/track` threw a 404 due to plural directory mismatch.
-- **Bug Fix**: Addressed an empty state bug where `/repairs/` would incorrectly state "You do not have any active or past repair orders" by parsing both `repairs` and `repair_tickets` keys interchangeably from the API response payload.
-- **Bug Fix**: Fixed a Fresh 2 runtime error on the `/repairs/track` route, which was attempting to read context from legacy Fresh 1.0 parameters (`req, ctx`); updated to properly use `define.page` rendering and `props.url`.
-- **Bug Fix**: Removed duplicate "Timeline" components rendering redundantly inside the `TrackRepairIsland` component during timeline display.
-- **UI Enhancement**: Redesigned the `PromoBanner` entirely, replacing placeholder text with an interactive repair booking CTA, complete with the slogan "Our prices are lower than your expectations" and a vibrant repair illustration background. Added height adjustments inline. Update promo banner image to realistic repair image and tweaked "Learn More" into plain text link.
-- **Enhancement**: Added 'Repairs' navigation links directly into the `/account/` sidebar, utilizing Fresh `<Partial>` rendering (`f-partial`) to load repair interfaces smoothly inline without breaking the account dashboard layout.
-- **Refactor**: Redirected internal link bindings away from `/repair/` pointing all anchors appropriately to `/repairs/`.
-- **Enhancement**: Refactored `BookRepairIsland` and `CustomerRepairsIsland` to adhere to the storefront's uniform `slate` design system and Tailwind styling cues.
-- **UI Upgrade**: Injected dynamic 'Book a Repair' hooks across informational service pages for better discoverability.
-- **Engagement**: Added an eye-catching CTA within the PromoBanner integrating relevant promotional taglines to drive repairs.
+This release focuses heavily on integrating and refining the Medusa Repair Module frontend. The repair booking and tracking workflows have been completely overhauled to act as standalone services with secured routing and seamless UI integration. We've introduced robust frontend logging, eradicated legacy parsing errors, and delivered significant UI upgrades to the `PromoBanner` and global navigations for a more polished and responsive customer experience.
 
 ### v1.1.0
 - **Feature**: Integrated comprehensive email verification flow spanning `/login`, `/register`, and `/verify-email` routes.
 - **Feature**: Integrated Medusa Repair Module frontend paths mapping over `/repairs/track` and `account/repairs`.
-- **Enhancement**: Migrated TrackRepairIsland functionality to Apple4All's modern, minimal styling utilizing `slate` and `emerald` tailwind palettes.
+- **Enhancement**: Migrated TrackRepairIsland functionality to Medusa V2 + Fresh.js 2.3's modern, minimal styling utilizing `slate` and `emerald` tailwind palettes.
 - **Enhancement**: Implemented extensive frontend debugging utilizing `console.debug`, `console.info`, and `console.warn` for Medusa backend fetch requests.
 - **Bug Fix**: Resolved silent JSON parsing errors leading to generic fallback error messages on the Verification Page.
 - **UI Upgrade**: Applied View Transitions across all pages to ensure smooth client-side route navigation.
@@ -136,7 +158,7 @@ export default async function customerNotificationHandler({
 
       // 4. Setup template payload for Nodemailer
       templateName = "customer-verification"
-      emailSubject = "Verify Your Account - Apple4All"
+      emailSubject = `Verify Your Account - Medusa V2 + Fresh.js 2.3`
       htmlContent = getAuthTemplate(templateName, { 
         name: customer.first_name,
         verification_token: verificationToken,
@@ -209,7 +231,7 @@ export function getAuthTemplate(templateName: string, data: any): string {
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Verify Your Account</h2>
         <p>Hello ${data.name || "Customer"},</p>
-        <p>Thank you for registering at Apple4All.</p>
+        <p>Thank you for registering at Medusa V2 + Fresh.js 2.3.</p>
         <p>Please click the link below to verify your email address:</p>
         <div style="margin: 30px 0;">
           <a href="${data.verification_url}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">

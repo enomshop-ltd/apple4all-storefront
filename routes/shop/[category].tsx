@@ -33,7 +33,7 @@ export default define.page(function CategoryPage(props) {
         />
       </Head>
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <h1 class="text-4xl font-bold text-gray-900 mb-2">{title}</h1>
         <p class="text-lg text-gray-600">
           Browse our selection of certified refurbished {title}s.

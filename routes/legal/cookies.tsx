@@ -1,13 +1,13 @@
 import { define } from "../../lib/utils.ts";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
-import { STORE_NAME } from "../../lib/utils.ts";
+import { STORE_NAME, STORE_DOMAIN } from "../../lib/utils.ts";
 
 export const handler = define.handlers({
   GET(ctx) {
     ctx.state.title = `Cookie Policy - ${STORE_NAME}`;
     ctx.state.description =
-      "Learn how Apple4All uses cookies to improve your browsing experience.";
+      `Learn how ${STORE_NAME} uses cookies to improve your browsing experience.`;
     return page();
   },
 });
@@ -96,7 +96,7 @@ export default define.page(function CookiesPage(props) {
       <h2 class="text-xl font-semibold mt-8 mb-4">6. Contact Us</h2>
       <p class="text-gray-700 mb-4">
         If you have any questions about our use of cookies, please contact us at
-        privacy@apple4all.co.ke.
+        privacy@{STORE_DOMAIN}.
       </p>
     </div>
   );

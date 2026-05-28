@@ -1,4 +1,4 @@
-import { define } from "../../lib/utils.ts";
+import { define, STORE_NAME } from "../../lib/utils.ts";
 import { Head, Partial } from "fresh/runtime";
 import TrackRepairIsland from "./(_islands)/TrackRepairIsland.tsx";
 import { page } from "fresh";
@@ -23,12 +23,12 @@ export default define.page(function TrackRepairRoute(props) {
   return (
     <>
       <Head>
-        <title>Track Your Repair | EnomShop</title>
+        <title>Track Your Repair | {STORE_NAME}</title>
         <meta
           name="description"
           content="Track your device repair ticket status."
         />
-        <meta property="og:title" content="Track Your Repair" />
+        <meta property="og:title" content={`Track Your Repair | ${STORE_NAME}`} />
         <meta
           property="og:description"
           content="Track your device repair ticket status."

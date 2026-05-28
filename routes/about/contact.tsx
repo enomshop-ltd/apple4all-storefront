@@ -2,7 +2,7 @@ import { define } from "../../lib/utils.ts";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
 import { Clock, Mail, MapPin, Phone } from "lucide-preact";
-import { STORE_NAME } from "../../lib/utils.ts";
+import { STORE_NAME, STORE_DOMAIN } from "../../lib/utils.ts";
 
 export const handler = define.handlers({
   GET(ctx) {
@@ -82,18 +82,18 @@ export default define.page(function ContactPage(props) {
               <p class="text-gray-600">
                 General Inquiries:{" "}
                 <a
-                  href="mailto:info@apple4all.co.ke"
+                  href={`mailto:info@${STORE_DOMAIN}`}
                   class="text-blue-600 hover:underline"
                 >
-                  info@apple4all.co.ke
+                  info@{STORE_DOMAIN}
                 </a>
                 <br />
                 Support:{" "}
                 <a
-                  href="mailto:support@apple4all.co.ke"
+                  href={`mailto:support@${STORE_DOMAIN}`}
                   class="text-blue-600 hover:underline"
                 >
-                  support@apple4all.co.ke
+                  support@{STORE_DOMAIN}
                 </a>
               </p>
             </div>

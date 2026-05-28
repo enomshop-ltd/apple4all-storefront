@@ -1,7 +1,7 @@
 import { define } from "../../lib/utils.ts";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
-import { STORE_NAME } from "../../lib/utils.ts";
+import { STORE_NAME, STORE_DOMAIN } from "../../lib/utils.ts";
 
 export const handler = define.handlers({
   GET(ctx) {
@@ -43,6 +43,7 @@ export default define.page(function TermsPage(props) {
         <li><strong>Warranty Period:</strong> All repairs, refurbished items, used items, and accessories only come with a 90-day warranty covering hardware defects. Physical damage, liquid damage, and unauthorized modifications void this warranty.</li>
         <li><strong>Refunds:</strong> Refunds are only made in the form of store credit, and only if all other means have been exhausted (i.e., the item cannot be exchanged or repaired).</li>
         <li><strong>Screens:</strong> Screens once sold cannot be returned. Any defects must be reported within 48 hours of purchase or installation.</li>
+        <li><strong>External Services:</strong> Certain specialized repairs may require processing through our authorized external service partners. Warranty periods for these specific external services range from 48 hours to 4 weeks, determined at our sole discretion based on the nature of the service provided.</li>
       </ul>
 
       <h2 class="text-xl font-semibold mt-8 mb-4">4. Repairs, Services & Payments</h2>
@@ -55,8 +56,13 @@ export default define.page(function TermsPage(props) {
         <li><strong>Payments:</strong> Any money paid elsewhere other than directly to the company accounts or its official branches/affiliates will not be recognized.</li>
       </ul>
 
+      <h2 class="text-xl font-semibold mt-8 mb-4">5. Third-Party and External Services</h2>
+      <p class="text-gray-700 mb-4">
+        Our website and repair processes may utilize or link to external, third-party services, tools, or resources (such as iFixit repair guides, third-party payment gateways, and backend logistics). {STORE_NAME} does not endorse and is not responsible or liable for the content, availability, accuracy, or privacy practices of these external services. Your use of any third-party tools is entirely at your own risk and discretion, and subject to their respective terms.
+      </p>
+
       <h2 class="text-xl font-semibold mt-8 mb-4">
-        5. Limitation of Liability
+        6. Limitation of Liability
       </h2>
       <p class="text-gray-700 mb-4">
         {STORE_NAME} shall not be liable for any indirect, incidental, special,
@@ -64,10 +70,10 @@ export default define.page(function TermsPage(props) {
         services or products.
       </p>
 
-      <h2 class="text-xl font-semibold mt-8 mb-4">6. Contact Information</h2>
+      <h2 class="text-xl font-semibold mt-8 mb-4">7. Contact Information</h2>
       <p class="text-gray-700 mb-4">
         If you have any questions about these Terms, please contact us at
-        support@apple4all.co.ke or visit our store in Westlands, Nairobi.
+        support@{STORE_DOMAIN} or visit our store in Westlands, Nairobi.
       </p>
     </div>
   );

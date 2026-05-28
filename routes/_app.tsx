@@ -6,7 +6,7 @@ import TopProgressBarIsland from "../islands/TopProgressBarIsland.tsx";
 import { STORE_NAME } from "../lib/utils.ts";
 
 export default define.page(function App({ Component, state }) {
-  const title = (state.title as string) || `${STORE_NAME} - Refurbished Tech`;
+  const title = (state.title as string) || `${STORE_NAME} - More than a Mac Repair Shop`;
   const description =
     (state.description as string) ||
     "Discover certified refurbished devices and unbeatable prices on both new and pre-owned Apple products.";
@@ -22,7 +22,7 @@ export default define.page(function App({ Component, state }) {
         <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="icon" href="/favicon.ico" />
-        <meta property="og:title" content={`${STORE_NAME} - Refurbished Tech`} />
+        <meta property="og:title" content={`${STORE_NAME} - More than a Mac Repair Shop`} />
         <meta
           property="og:description"
           content="Discover certified refurbished devices and unbeatable prices on both new and pre-owned Apple products."
@@ -32,7 +32,7 @@ export default define.page(function App({ Component, state }) {
       <body
         f-client-nav
         f-view-transition
-        class="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 flex flex-col"
+        class="min-h-screen bg-[#F6F7F8] font-sans text-gray-900 flex flex-col"
       >
         <TopProgressBarIsland />
         <Header 

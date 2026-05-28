@@ -1,13 +1,13 @@
 import { define } from "../../lib/utils.ts";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
-import { STORE_NAME } from "../../lib/utils.ts";
+import { STORE_NAME, STORE_DOMAIN } from "../../lib/utils.ts";
 
 export const handler = define.handlers({
   GET(ctx) {
     ctx.state.title = `Privacy Policy - ${STORE_NAME}`;
     ctx.state.description =
-      "Learn how Apple4All collects, uses, and protects your personal information.";
+      `Learn how ${STORE_NAME} collects, uses, and protects your personal information.`;
     return page();
   },
 });
@@ -75,7 +75,7 @@ export default define.page(function PrivacyPage(props) {
       <h2 class="text-xl font-semibold mt-8 mb-4">7. Contact Us</h2>
       <p class="text-gray-700 mb-4">
         If you have any questions about this Privacy Policy, please contact us
-        at privacy@apple4all.co.ke.
+        at privacy@{STORE_DOMAIN}.
       </p>
     </div>
   );

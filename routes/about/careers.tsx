@@ -1,13 +1,13 @@
 import { define } from "../../lib/utils.ts";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
-import { STORE_NAME } from "../../lib/utils.ts";
+import { STORE_NAME, STORE_DOMAIN } from "../../lib/utils.ts";
 
 export const handler = define.handlers({
   GET(ctx) {
     ctx.state.title = `Careers - ${STORE_NAME}`;
     ctx.state.description =
-      "Join the Apple4All team in Westlands, Nairobi. We are always looking for passionate tech enthusiasts.";
+      `Join the ${STORE_NAME} team in Westlands, Nairobi. We are always looking for passionate tech enthusiasts.`;
     return page();
   },
 });
@@ -48,7 +48,7 @@ export default define.page(function CareersPage(props) {
             diagnostics on MacBooks and iMacs.
           </p>
           <a
-            href="mailto:careers@apple4all.co.ke?subject=Application:%20Senior%20Mac%20Technician"
+            href={`mailto:careers@${STORE_DOMAIN}?subject=Application:%20Senior%20Mac%20Technician`}
             class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Apply Now
@@ -68,7 +68,7 @@ export default define.page(function CareersPage(props) {
             visitor leaves satisfied.
           </p>
           <a
-            href="mailto:careers@apple4all.co.ke?subject=Application:%20Sales%20Associate"
+            href={`mailto:careers@${STORE_DOMAIN}?subject=Application:%20Sales%20Associate`}
             class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Apply Now
@@ -95,10 +95,10 @@ export default define.page(function CareersPage(props) {
         Don't see a position that fits? We're always open to meeting great
         people. Send your CV and a brief introduction to{" "}
         <a
-          href="mailto:careers@apple4all.co.ke"
+          href={`mailto:careers@${STORE_DOMAIN}`}
           class="text-blue-600 hover:underline"
         >
-          careers@apple4all.co.ke
+          careers@{STORE_DOMAIN}
         </a>.
       </p>
     </div>

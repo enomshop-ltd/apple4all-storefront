@@ -28,7 +28,7 @@ export default define.page(function OurStoryPage(props) {
       />
 
       <p class="text-lg text-gray-700 mb-6 leading-relaxed">
-        Located in the heart of Westlands, Nairobi, Apple4All began with a
+        Located in the heart of Westlands, Nairobi, {STORE_NAME} began with a
         simple mission: to make premium Apple technology accessible and
         sustainable for everyone in Kenya. We recognized a growing need for
         reliable, high-quality Mac products and expert repair services that

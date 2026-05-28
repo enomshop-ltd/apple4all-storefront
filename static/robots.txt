@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://apple4all.com/sitemap.xml
+Sitemap: https://urbandevicecare.co.uk/sitemap.xml

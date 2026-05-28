@@ -1,5 +1,5 @@
 import { ShoppingCart, User } from "lucide-preact";
-import { STORE_NAME } from "../lib/utils.ts";
+import { STORE_NAME, LOGO_URL } from "../lib/utils.ts";
 
 export function Header({ 
   categories = [],
@@ -12,16 +12,15 @@ export function Header({
 
   return (
     <header class="w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-md sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
-          <div class="flex-shrink-0 flex items-center gap-2">
+          <div class="flex-shrink-0 flex items-center h-full">
             <a
               href="/"
               f-client-nav
-              class="flex items-center gap-2 font-bold text-2xl tracking-tighter"
+              class="flex items-center h-full"
             >
-              <img src="/logo.svg" alt="{STORE_NAME} Logo" class="h-8 w-auto" />
-              Apple4All
+              <img src={LOGO_URL} alt={`${STORE_NAME} Logo`} class="h-16 w-auto object-contain" />
             </a>
           </div>
           <nav class="hidden md:flex space-x-8">

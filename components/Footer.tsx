@@ -2,7 +2,7 @@ import { STORE_NAME } from "../lib/utils.ts";
 export function Footer() {
   return (
     <footer class="bg-white border-t border-gray-200 pt-16 pb-8">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           <div>
             <h3 class="font-semibold mb-4">Shop</h3>
@@ -86,21 +86,22 @@ export function Footer() {
             </ul>
           </div>
           <div class="col-span-2 md:col-span-2">
-            <h3 class="font-semibold mb-4">Sign up for our newsletter</h3>
+            <h3 class="font-semibold mb-4">Quick Repair Tracker</h3>
             <p class="text-sm text-gray-600 mb-4">
-              Your email address will be used to send you our newsletter.
+              Enter your repair ticket or serial number to check live status.
             </p>
-            <form class="flex gap-2">
+            <form action="/repairs/track" method="GET" class="flex gap-2">
               <input
-                type="email"
-                placeholder="Email address"
+                type="text"
+                name="ticket"
+                placeholder="Ticket ID or Serial Number"
                 class="flex-1 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="submit"
                 class="bg-black text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
               >
-                Sign Up
+                Track
               </button>
             </form>
           </div>

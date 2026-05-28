@@ -1,16 +1,12 @@
 import { Head, Partial } from "fresh/runtime";
 import BookRepairIsland from "./(_islands)/BookRepairIsland.tsx";
-import { STORE_NAME } from "../../lib/utils.ts";
+import { STORE_NAME, define } from "../../lib/utils.ts";
 
-export default function BookRepairRoute() {
-  const backendUrl =
-    Deno.env.get("MEDUSA_BACKEND_URL")!;
-  const publishableKey = Deno.env.get("MEDUSA_PUBLISHABLE_KEY") || "";
-
+export default define.page(function BookRepairRoute(props) {
   return (
     <>
       <Head>
-        <title>Book a Repair | Urban Device Care</title>
+        <title>Book a Repair | {STORE_NAME}</title>
         <meta
           name="description"
           content="Initiate a device for repair and get a pickup."
@@ -37,4 +33,4 @@ export default function BookRepairRoute() {
       </Partial>
     </>
   );
-}
+});
