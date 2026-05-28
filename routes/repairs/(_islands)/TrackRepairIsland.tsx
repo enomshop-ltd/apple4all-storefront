@@ -382,8 +382,8 @@ export default function TrackRepairIsland({
               </button>
             )}
 
-            {/* Receipt: Available when completed (assumed paid) */}
-            {ticket.status === 'completed' && (
+            {/* Receipt: Available when payment is completed */}
+            {ticket.payment_status === 'paid' && (
               <button
                 onClick={() => handleDownloadDocument('receipt')}
                 className="flex flex-col items-center justify-center p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition text-center"

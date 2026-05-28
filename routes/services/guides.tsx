@@ -37,14 +37,14 @@ export default define.page(function GuidesPage({ state, data }) {
   const { macGuides, iphoneGuides } = data;
 
   return (
-    <div class="max-w-6xl mx-auto px-4 py-12">
+    <div class="max-w-7xl mx-auto px-4 py-12">
       <Head>
         <title>{state.title as string}</title>
         <meta name="description" content={state.description as string} />
       </Head>
 
       <div class="text-center mb-16 space-y-4">
-        <div class="inline-flex items-center justify-center p-3 bg-blue-50 text-blue-600 rounded-full mb-4">
+        <div class="inline-flex items-center justify-center p-3 bg-slate-200 text-slate-800 rounded-full mb-4">
           <BookOpen class="w-8 h-8" />
         </div>
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
@@ -79,17 +79,17 @@ export default define.page(function GuidesPage({ state, data }) {
                 href={`https://www.ifixit.com/Device/${encodeURIComponent(guide.name)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition-all group"
+                class="flex items-center justify-between p-4 border border-slate-300 rounded-xl hover:border-slate-400 hover:bg-slate-200/50 hover:shadow-sm transition-all group"
               >
                 <div class="flex items-center gap-3">
                   {guide.image?.thumbnail && (
                     <img src={guide.image.thumbnail} alt={guide.name} class="w-10 h-10 object-contain" />
                   )}
-                  <span class="font-medium text-gray-700 group-hover:text-blue-600">
+                  <span class="font-medium text-gray-700 group-hover:text-slate-900">
                     {guide.name}
                   </span>
                 </div>
-                <ExternalLink class="w-4 h-4 text-gray-400 group-hover:text-blue-600 shrink-0" />
+                <ExternalLink class="w-4 h-4 text-gray-400 group-hover:text-slate-900 shrink-0" />
               </a>
             )) : (
               <p class="text-gray-500">Temporarily unavailable. Please visit iFixit.com directly.</p>
@@ -108,17 +108,17 @@ export default define.page(function GuidesPage({ state, data }) {
                 href={`https://www.ifixit.com/Device/${encodeURIComponent(guide.name)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition-all group"
+                class="flex items-center justify-between p-4 border border-slate-300 rounded-xl hover:border-slate-400 hover:bg-slate-200/50 hover:shadow-sm transition-all group"
               >
                 <div class="flex items-center gap-3">
                   {guide.image?.thumbnail && (
                     <img src={guide.image.thumbnail} alt={guide.name} class="w-10 h-10 object-contain" />
                   )}
-                  <span class="font-medium text-gray-700 group-hover:text-blue-600">
+                  <span class="font-medium text-gray-700 group-hover:text-slate-900">
                     {guide.name}
                   </span>
                 </div>
-                <ExternalLink class="w-4 h-4 text-gray-400 group-hover:text-blue-600 shrink-0" />
+                <ExternalLink class="w-4 h-4 text-gray-400 group-hover:text-slate-900 shrink-0" />
               </a>
             )) : (
               <p class="text-gray-500">Temporarily unavailable. Please visit iFixit.com directly.</p>
