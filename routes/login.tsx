@@ -1,5 +1,5 @@
 import { define } from "../lib/utils.ts";
-import { LoginForm } from "../islands/LoginForm.tsx";
+import LoginForm from "../islands/LoginForm.tsx";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
 

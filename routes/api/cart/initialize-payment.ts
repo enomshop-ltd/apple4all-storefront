@@ -53,8 +53,11 @@ export const handler = define.handlers({
       let currentCart = updatedCart; // Use the freshly updated cart instead of existingCart
 
       // Step A: Fetch available shipping options for the Cart's updated region/address
-      const { shipping_options } = await medusa.store.fulfillment.listCartOptions({ cart_id: cartId }, reqHeaders);
+      const { shipping_options: rawOptions } = await medusa.store.fulfillment.listCartOptions({ cart_id: cartId }, reqHeaders);
       
+      // Filter out options that lack a price configuration to prevent backend crashes
+      const shipping_options = rawOptions?.filter((o: any) => o.amount !== null && o.amount !== undefined) || [];
+
       let finalShippingOptionId = body.shipping_option_id;
 
       // Verify the provided option is still valid for this updated address

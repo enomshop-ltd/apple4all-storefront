@@ -1,5 +1,5 @@
 import { define } from "../lib/utils.ts";
-import { Checkout } from "../islands/Checkout.tsx";
+import Checkout from "../islands/Checkout.tsx";
 import { medusa } from "../lib/sdk.ts";
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 import { HttpTypes } from "@medusajs/types";
@@ -46,9 +46,10 @@ export const handler = define.handlers({
         }
 
         // Fetch available delivery methods
-        const { shipping_options } = await medusa.store.fulfillment
+        const { shipping_options: rawOptions } = await medusa.store.fulfillment
           .listCartOptions({ cart_id: cartId }, headers);
-        shippingOptions = shipping_options || [];
+        
+        shippingOptions = rawOptions?.filter((o: any) => o.amount !== null && o.amount !== undefined) || [];
 
         // Fetch payment providers
         paymentProviders = [];

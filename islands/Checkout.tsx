@@ -9,7 +9,7 @@ import {
 import { HttpTypes } from "@medusajs/types";
 import { formatAmount } from "../lib/pricing.ts";
 
-export function Checkout({
+export default function Checkout({
   initialCart,
   customer,
   shippingOptions,

@@ -3,7 +3,7 @@ import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
 import { formatAmount } from "../lib/pricing.ts";
 
-export function Cart(
+export default function Cart(
   { initialCart }: { initialCart: HttpTypes.StoreCart | null },
 ) {
   const [cart, setCart] = useState(initialCart);

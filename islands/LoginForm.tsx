@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
 import { Loader2 } from "lucide-preact";
 
-export function LoginForm() {
+export default function LoginForm() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

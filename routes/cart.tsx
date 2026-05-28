@@ -1,6 +1,6 @@
 import { define } from "../lib/utils.ts";
 import { Head } from "fresh/runtime";
-import { Cart } from "../islands/Cart.tsx";
+import Cart from "../islands/Cart.tsx";
 import { medusa } from "../lib/sdk.ts";
 import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
 import { HttpTypes } from "@medusajs/types";
