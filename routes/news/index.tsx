@@ -1,6 +1,6 @@
 import { define } from "../../lib/utils.ts";
 import { Head } from "fresh/runtime";
-import { NewsPost } from "../../utils/news.ts";
+import { NewsPost } from "../../lib/news.ts";
 
 export default define.page(function NewsIndex({ state }) {
   const posts = state.posts as NewsPost[] || [];

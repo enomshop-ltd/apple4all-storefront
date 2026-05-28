@@ -1,5 +1,5 @@
 import { FreshContext } from "fresh";
-import { getPosts } from "../../utils/news.ts";
+import { getPosts } from "../../lib/news.ts";
 
 export async function handler(
   _req: Request,

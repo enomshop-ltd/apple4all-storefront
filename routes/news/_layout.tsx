@@ -1,5 +1,5 @@
 import { define } from "../../lib/utils.ts";
-import { NewsPost } from "../../utils/news.ts";
+import { NewsPost } from "../../lib/news.ts";
 
 export default define.page(function NewsLayout({ Component, state, url }) {
   const posts = state.posts as NewsPost[] || [];

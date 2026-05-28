@@ -1,6 +1,6 @@
 import { define } from "../../lib/utils.ts";
 import { Head } from "fresh/runtime";
-import { getPost, incrementViews, NewsPost } from "../../utils/news.ts";
+import { getPost, incrementViews, NewsPost } from "../../lib/news.ts";
 
 export const handler = define.handlers({
   async GET(ctx) {
