@@ -1,8 +1,7 @@
 import { useState, useEffect } from "preact/hooks";
 import { Info, Wrench } from "lucide-preact";
 import { render } from "preact";
-import QRCode from "npm:qrcode";
-import { RepairDocumentTemplate } from "../../components/RepairDocumentTemplate.tsx";
+import { RepairDocumentTemplate } from "../../../components/RepairDocumentTemplate.tsx";
 
 export default function TrackRepairIsland({
   initialToken,
@@ -84,7 +83,7 @@ export default function TrackRepairIsland({
       document.body.appendChild(container);
 
       const trackUrl = new URL(globalThis.location.href).href;
-      const qrCodeUrl = await QRCode.toDataURL(trackUrl, { margin: 1, width: 100 });
+      const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(trackUrl)}`;
 
       render(<RepairDocumentTemplate ticket={ticket} type={type} qrCodeUrl={qrCodeUrl} />, container);
 
@@ -382,8 +381,8 @@ export default function TrackRepairIsland({
               </button>
             )}
 
-            {/* Receipt: Available when payment is completed */}
-            {ticket.payment_status === 'paid' && (
+            {/* Receipt: Available when completed (assumed paid) */}
+            {ticket.status === 'completed' && (
               <button
                 onClick={() => handleDownloadDocument('receipt')}
                 className="flex flex-col items-center justify-center p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition text-center"
