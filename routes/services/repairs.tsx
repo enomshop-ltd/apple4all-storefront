@@ -45,7 +45,7 @@ export default define.page(function RepairsPage({ state, data }) {
           </div>
           <div class="relative z-10 flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-900 px-4 pt-4 md:px-0 md:pt-0">Track or Book</h2>
-            <a href="/repairs/book" class="mr-4 md:mr-0 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition font-medium text-sm">
+            <a href="/repairs/book" f-client-nav={false} class="mr-4 md:mr-0 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition font-medium text-sm">
               Book a Repair
             </a>
           </div>

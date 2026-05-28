@@ -72,7 +72,7 @@ export default function CustomerRepairsIsland() {
         </svg>
         <h3 class="text-lg font-medium text-slate-900 mb-1">No repairs found</h3>
         <p class="mb-4">You have not booked any device for repair yet.</p>
-        <a href="/repairs/book" class="text-slate-900 hover:underline font-medium">Book your first repair</a>
+        <a href="/repairs/book" f-client-nav={false} class="text-slate-900 hover:underline font-medium">Book your first repair</a>
       </div>
     );
   }
