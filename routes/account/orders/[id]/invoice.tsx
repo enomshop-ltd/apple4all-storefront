@@ -6,7 +6,6 @@ import { page } from "fresh";
 import { formatAmount } from "../../../../lib/pricing.ts";
 import { getUnifiedOrderNumber } from "../../../../lib/order-utils.ts";
 import { STORE_NAME } from "../../../../lib/utils.ts";
-import QRCode from "npm:qrcode";
 
 export const handler = define.handlers({
   async GET(ctx) {
@@ -59,7 +58,7 @@ export const handler = define.handlers({
 
     const storefrontUrl = Deno.env.get("STOREFRONT_URL")?.replace(/\/$/, "") || ctx.url.origin;
     const orderUrl = new URL(`/account/orders/${order.id}`, storefrontUrl).href;
-    const qrCodeUrl = await QRCode.toDataURL(orderUrl, { margin: 1, width: 100 });
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(orderUrl)}`;
 
     return page({ order, qrCodeUrl });
   },
