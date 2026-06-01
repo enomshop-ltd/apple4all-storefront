@@ -1,6 +1,6 @@
 import { define } from "../../lib/utils.ts";
 import { medusa } from "../../lib/sdk.ts";
-import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
+import { getCookies } from "jsr:@std/http@0.224.0/cookie";
 
 export const handler = define.handlers({
   GET: async (ctx) => {

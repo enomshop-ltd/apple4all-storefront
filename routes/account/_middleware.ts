@@ -1,5 +1,5 @@
 import { FreshContext } from "fresh";
-import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
+import { getCookies } from "jsr:@std/http@0.224.0/cookie";
 import { medusa, medusaUrl } from "../../lib/sdk.ts";
 
 export async function handler(ctx: FreshContext) {

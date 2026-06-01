@@ -1,7 +1,7 @@
 import { define } from "../lib/utils.ts";
 import Checkout from "../islands/Checkout.tsx";
 import { medusa } from "../lib/sdk.ts";
-import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
+import { getCookies } from "jsr:@std/http@0.224.0/cookie";
 import { HttpTypes } from "@medusajs/types";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";

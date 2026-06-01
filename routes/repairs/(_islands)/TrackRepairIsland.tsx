@@ -107,47 +107,45 @@ export default function TrackRepairIsland({
     }
   };
 
-  const getStatusInfo = (status: string) => {
-    const statusMap: Record<
-      string,
-      { label: string; color: string; progress: number }
-    > = {
-      received: { label: "Received", color: "bg-gray-500", progress: 20 },
-      diagnosing: { label: "Diagnosing", color: "bg-blue-500", progress: 40 },
-      awaiting_approval: {
-        label: "Awaiting Your Approval",
-        color: "bg-orange-500",
-        progress: 60,
-      },
-      repairing: {
-        label: "Being Repaired",
-        color: "bg-blue-600",
-        progress: 80,
-      },
-      ready: {
-        label: "Ready for Pickup",
-        color: "bg-green-500",
-        progress: 100,
-      },
-      completed: { label: "Completed", color: "bg-green-600", progress: 100 },
-      cancelled: { label: "Cancelled", color: "bg-red-500", progress: 0 },
-    };
-    return (
-      statusMap[status] || { label: status, color: "bg-gray-500", progress: 0 }
-    );
+  const getStepperIndex = (status: string) => {
+    switch (status) {
+      case "received": return 0;
+      case "diagnosing": return 1;
+      case "awaiting_approval": return 2;
+      case "repairing": return 3;
+      case "ready": return 4;
+      case "completed": return 5;
+      case "cancelled": return -1;
+      default: return 0;
+    }
   };
+
+  const getStatusDescription = (status: string) => {
+    switch (status) {
+      case "received": return "Your product has been successfully picked up and delivered to our service center. We will begin diagnosis shortly.";
+      case "diagnosing": return "Your product is currently undergoing diagnosis. Our team is diligently working to identify the issue and determine the necessary repairs or service required.";
+      case "awaiting_approval": return "We have completed the diagnosis. Please review and approve the repair estimate to proceed.";
+      case "repairing": return "Your product is currently being repaired by our expert technicians. We are using high-quality parts to bring it back to life.";
+      case "ready": return "Your repair is complete and your product is ready for delivery. It has passed all testing and packaging.";
+      case "completed": return "Your product has been successfully delivered back to you. Thank you for choosing our service.";
+      case "cancelled": return "This repair ticket has been cancelled.";
+      default: return "We are processing your repair ticket.";
+    }
+  };
+
+  const steps = [
+    { title: "Received", desc: "Product was received." },
+    { title: "Diagnosing", desc: "We are diagnosing your product." },
+    { title: "Approval", desc: "Awaiting your repair approval." },
+    { title: "Repairing", desc: "Product is being repaired." },
+    { title: "Ready", desc: "Ready for pickup/delivery." },
+    { title: "Completed", desc: "Repair is fully completed." },
+  ];
 
   return (
     <div class="max-w-7xl mx-auto px-4 py-12">
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-6 text-slate-800">
-          <Wrench size={32} />
-        </div>
-        <h1 className="text-4xl font-semibold tracking-tight text-slate-900 mb-3">Track Your Repair</h1>
-        <p className="text-slate-500 text-lg max-w-md mx-auto">
-          Enter your repair ticket number to check the real-time status of your service.
-        </p>
-      </div>
+      {/* Spacer to maintain vertical layout after removing header text */}
+      <div className="h-32 sm:h-48 mb-10"></div>
 
       <form onSubmit={handleSearch} className="mb-12 max-w-xl mx-auto">
         <div className="flex flex-col sm:flex-row gap-3">
@@ -174,117 +172,118 @@ export default function TrackRepairIsland({
       </form>
 
       {ticket && (
-        <div className="space-y-6 max-w-3xl mx-auto">
+        <div className="space-y-12 max-w-5xl mx-auto mt-8">
           {/* Status Overview */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="p-6 sm:p-8 bg-slate-50 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex gap-4 items-center">
-                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
-                  <Info size={24} />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-500 mb-1 uppercase tracking-wider">
-                    {ticket.ticket_number}
-                  </p>
-                  <h2 className="text-2xl font-bold text-slate-900">
-                    {ticket.device?.brand} {ticket.device?.model_name}
-                  </h2>
-                  {isLoggedIn && (
-                    <p className="text-sm text-slate-500 mt-1 font-medium">
-                      Serial Number: {ticket.device?.serial_number}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <span
-                className={`px-4 py-1.5 rounded-full text-white text-sm font-semibold shadow-sm ${
-                  getStatusInfo(ticket.status).color
-                }`}
-              >
-                {getStatusInfo(ticket.status).label}
-              </span>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="px-6 py-8 sm:px-8">
-              <div className="relative pt-2">
-                <div className="w-full bg-slate-100 rounded-full h-3 mb-4 overflow-hidden">
-                  <div
-                    className={`h-3 rounded-full transition-all duration-700 ease-out ${
-                      getStatusInfo(ticket.status).color
-                    }`}
-                    style={{
-                      width: `${getStatusInfo(ticket.status).progress}%`,
-                    }}
-                  />
-                </div>
-                <div className="flex justify-between text-xs sm:text-sm font-semibold text-slate-400 px-1">
-                  <span className={`${getStatusInfo(ticket.status).progress >= 20 ? 'text-slate-900' : ''}`}>Received</span>
-                  <span className={`text-center ${getStatusInfo(ticket.status).progress >= 40 ? 'text-slate-900' : ''}`}>Diagnosing</span>
-                  <span className={`text-center ${getStatusInfo(ticket.status).progress >= 80 ? 'text-slate-900' : ''}`}>Repairing</span>
-                  <span className={`text-right ${getStatusInfo(ticket.status).progress >= 100 ? 'text-slate-900' : ''}`}>Ready</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Timeline */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-semibold text-slate-900 mb-2">
+              Repair Status #{ticket.ticket_number}
+            </h2>
+            <p className="text-xs font-normal text-slate-500 mb-4">
+              {ticket.device?.brand} {ticket.device?.model_name}
+              {ticket.device?.serial_number ? ` | SN: ${ticket.device?.serial_number}` : ""}
+              {ticket.device?.imei ? ` | IMEI: ${ticket.device?.imei}` : ""}
+            </p>
+            <p className="text-slate-600 max-w-3xl mx-auto leading-relaxed text-base sm:text-lg">
+              {getStatusDescription(ticket.status)}
+            </p>
             {ticket.estimated_completion && (
-              <div className="border-t border-slate-100 p-6 sm:p-8 bg-slate-50/50">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Service Timeline</h3>
-                <div className="flex flex-col sm:flex-row gap-6">
-                  <div className="flex-1">
-                    <p className="text-sm text-slate-500 mb-1">Estimated Completion</p>
-                    <p className="text-lg font-semibold text-slate-900">
-                      {new Date(ticket.estimated_completion).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                    </p>
-                  </div>
-                  {ticket.warranty_expiry && isLoggedIn && (
-                    <div className="flex-1">
-                      <p className="text-sm text-slate-500 mb-1">Warranty Coverage Until</p>
-                      <p className="text-lg font-semibold text-slate-900">
-                        {new Date(ticket.warranty_expiry).toLocaleDateString()}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Issue Description */}
-            {isLoggedIn && (
-              <div className="border-t border-slate-100 p-6 sm:p-8">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-3">Reported Issue</h3>
-                <p className="text-slate-800 leading-relaxed max-w-2xl">{ticket.issue_description}</p>
-                {ticket.accessories && (
-                  <p className="text-sm text-slate-500 mt-4 bg-slate-50 p-3 rounded-lg inline-block">
-                    <span className="font-medium text-slate-700">Included Accessories:</span> {ticket.accessories}
-                  </p>
-                )}
+              <div className="mt-8 inline-flex items-center gap-2 text-lg text-slate-800 font-medium bg-blue-50/50 px-4 py-2 rounded-lg">
+                <span>Estimated time of delivery: {new Date(ticket.estimated_completion).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+                <span title="Please note that these are not guarantee estimates, delivery date is subject to change based on the repair progress." className="text-blue-500 cursor-help hover:text-blue-700 transition">
+                  <Info size={18} />
+                </span>
               </div>
             )}
           </div>
 
-          {/* Cost Information */}
-          {isLoggedIn && (ticket.total_estimate > 0 || ticket.total_actual > 0) && (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Cost Breakdown</h3>
+          {/* Stepper */}
+          <div className="relative mb-20 w-full px-2 sm:px-6">
+            {/* Horizontal Line Background */}
+            <div className="absolute top-1.5 left-[8.33%] right-[8.33%] w-[83.33%] h-[2px] bg-slate-200 -z-10" />
+            
+            {/* Active Horizontal Line */}
+            <div 
+              className="absolute top-1.5 left-[8.33%] h-[2px] bg-blue-500 -z-10 transition-all duration-1000 ease-in-out"
+              style={{ width: getStepperIndex(ticket.status) >= 0 ? `calc(83.33% * ${getStepperIndex(ticket.status) / (steps.length - 1)})` : '0%' }}
+            />
+
+            <div className="flex justify-between w-full">
+              {steps.map((step, idx) => {
+                const currentStep = getStepperIndex(ticket.status);
+                const isCompleted = idx <= currentStep;
+                
+                let dateStr = "-";
+                let dateColorClass = "text-slate-400";
+                
+                if (idx === 0 && ticket.created_at) {
+                  dateStr = new Date(ticket.created_at).toLocaleDateString("en-GB", { day: '2-digit', month: '2-digit', year: 'numeric' });
+                } else if (idx === 2 && ticket.is_approved && ticket.approved_at) {
+                  const d = new Date(ticket.approved_at);
+                  dateStr = `${d.toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' })} - ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
+                  dateColorClass = "text-green-500";
+                } else if (idx === currentStep && ticket.updated_at) {
+                  dateStr = new Date(ticket.updated_at).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' });
+                }
+
+                return (
+                  <div key={step.title} className="flex flex-col items-center w-1/6 relative">
+                    {/* Date */}
+                    <div className={`absolute -top-8 text-[10px] sm:text-xs font-medium ${dateColorClass} whitespace-nowrap`}>
+                      {dateStr}
+                    </div>
+                    
+                    {/* Node Circle */}
+                    <div className={`w-3.5 h-3.5 rounded-full mb-3 shadow-sm transition-colors duration-500 ${isCompleted ? 'bg-blue-500' : 'bg-slate-300'}`} />
+                    
+                    {/* Label */}
+                    <div className={`text-xs sm:text-sm font-semibold mb-1 transition-colors duration-500 ${isCompleted ? 'text-slate-900' : 'text-slate-400'}`}>
+                      {step.title}
+                    </div>
+                    
+                    {/* Description */}
+                    <div className="text-[10px] sm:text-xs text-slate-400 text-center px-1 leading-tight hidden sm:block h-8">
+                      {step.desc}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Issue Details */}
+          {ticket.issue_description && isLoggedIn && (
+            <div className="mt-16 py-10 border-y border-slate-200 text-left">
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-sm font-semibold uppercase tracking-wider text-slate-700">Reported Issue:</span>
+                <span className="text-sm text-slate-500">{ticket.issue_description}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Two Column Layout: Cost & Messages */}
+          <div className="flex flex-col lg:flex-row gap-8 items-start w-full">
+            {/* Cost Information */}
+            {isLoggedIn && (ticket.total_estimate > 0 || ticket.total_actual > 0) && (
+              <>
+              <div className="flex-1 w-full">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Cost Breakdown</h3>
 
               {ticket.parts && ticket.parts.length > 0 && (
-                <div className="mb-4 space-y-2">
-                  <h4 className="font-semibold text-gray-700 mb-2">
+                <div className="mb-6">
+                  <h4 className="text-sm font-medium text-slate-700 mb-2 border-b border-slate-200 pb-1">
                     Inventory Parts
                   </h4>
                   {ticket.parts.map((p: any) => (
                     <div
                       key={p.id}
-                      className="flex justify-between items-center text-sm p-3 bg-gray-50 border border-gray-100 rounded"
+                      className="flex justify-between items-start text-sm py-2 border-b border-slate-50 last:border-0 pl-4"
                     >
                       <div className="flex flex-col">
-                        <span className="font-medium text-gray-800">
+                        <span className="text-slate-700">
                           {p.title}{" "}
                           {p.product?.title ? `(${p.product.title})` : ""}
                         </span>
-                        <span className="text-gray-500 text-xs text-left">
+                        <span className="text-slate-400 text-xs text-left mt-0.5">
                           SKU: {p.sku || "-"}
                         </span>
                       </div>
@@ -293,9 +292,9 @@ export default function TrackRepairIsland({
                           <a
                             href={`/products/${p.product.handle}`}
                             target="_blank"
-                            className="text-blue-500 hover:underline text-xs mb-1"
+                            className="text-blue-500 hover:text-blue-600 text-xs mb-1"
                           >
-                            View in store
+                            Store link
                           </a>
                         )}
                       </div>
@@ -305,19 +304,19 @@ export default function TrackRepairIsland({
               )}
 
               {ticket.custom_parts && ticket.custom_parts.length > 0 && (
-                <div className="mb-4 space-y-2">
-                  <h4 className="font-semibold text-gray-700 mb-2">
-                    Custom Parts / Services
+                <div className="mb-6">
+                  <h4 className="text-sm font-medium text-slate-700 mb-2 border-b border-slate-200 pb-1">
+                    Custom Services
                   </h4>
                   {ticket.custom_parts.map((cp: any, idx: number) => (
                     <div
                       key={idx}
-                      className="flex justify-between items-center text-sm p-3 bg-gray-50 border border-gray-100 rounded"
+                      className="flex justify-between items-center text-sm py-2 border-b border-slate-50 last:border-0 pl-4"
                     >
-                      <span className="font-medium text-gray-800">
+                      <span className="text-slate-700">
                         {cp.name}
                       </span>
-                      <span className="font-medium">
+                      <span className="text-slate-700 font-medium">
                         KES {(cp.price / 100).toFixed(2)}
                       </span>
                     </div>
@@ -325,20 +324,20 @@ export default function TrackRepairIsland({
                 </div>
               )}
 
-              <div className="space-y-2 border-t pt-4">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Parts Estimate:</span>
-                  <span className="font-medium">
+              <div className="space-y-2 mt-2">
+                <div className="flex justify-between text-sm text-slate-500 pl-4">
+                  <span>Parts Estimate:</span>
+                  <span className="text-slate-700 font-medium">
                     KES {((ticket.parts_estimate || 0) / 100).toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Labor Estimate:</span>
-                  <span className="font-medium">
+                <div className="flex justify-between text-sm text-slate-500 pl-4">
+                  <span>Labor Estimate:</span>
+                  <span className="text-slate-700 font-medium">
                     KES {((ticket.labor_estimate || 0) / 100).toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between text-lg font-bold border-t pt-2 mt-2">
+                <div className="flex justify-between text-base font-semibold text-slate-800 border-t border-slate-200 pt-3 mt-3">
                   <span>Total Estimate:</span>
                   <span>
                     KES {((ticket.total_estimate || 0) / 100).toFixed(2)}
@@ -346,10 +345,133 @@ export default function TrackRepairIsland({
                 </div>
               </div>
             </div>
-          )}
+            {/* Divider */}
+            <div className="w-full h-px lg:w-px lg:h-auto lg:self-stretch bg-slate-200 block"></div>
+            </>
+            )}
 
-          {/* Dynamic Documents Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* RESTORED: Chat Messages Interface */}
+            {isLoggedIn && (
+              <div className="flex-1 w-full">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Messages</h3>
+
+              {ticket.updates && ticket.updates.length > 0 ? (
+                <div className="space-y-4 max-h-96 overflow-y-auto mb-6 pr-2">
+                  {ticket.updates.map((update: any) => (
+                    <div
+                      key={update.id}
+                      className={`border-b border-slate-100 last:border-0 pb-4 ${
+                        update.author_type === "customer" ? "text-right" : "text-left"
+                      }`}
+                    >
+                      <p className="text-xs text-slate-400 mb-1.5">
+                        <span className="font-medium text-slate-700 uppercase tracking-wider">{update.author_type === "customer" ? "You" : "Technician"}</span>
+                        {" "}•{" "}
+                        {new Date(update.created_at).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' })} at {new Date(update.created_at).toLocaleTimeString("en-US", { hour: 'numeric', minute: '2-digit' })}
+                      </p>
+                      <p className={`text-[13px] text-slate-800 leading-relaxed inline-block px-3.5 py-2 rounded-md max-w-[90%] text-left ${update.author_type === "customer" ? "bg-green-100" : "bg-blue-100"}`}>{update.message}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500 mb-6 border-b border-slate-100 pb-4">No messages yet.</p>
+              )}
+
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const form = e.target as HTMLFormElement;
+                  const input = form.elements.namedItem("message") as HTMLInputElement;
+                  const message = input.value.trim();
+
+                  if (!message) return;
+
+                  try {
+                    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = "Sending...";
+
+                    const bodyData: any = { message };
+                    if (initialToken) {
+                      bodyData.token = initialToken;
+                    }
+
+                    const response = await fetch(`/api/repairs/${ticket.id}/messages`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(bodyData),
+                    });
+
+                    if (!response.ok) throw new Error("Failed to send message");
+
+                    if (initialToken) {
+                      handleTokenSearch(initialToken);
+                    } else {
+                      handleSearch(new Event("submit") as any);
+                    }
+
+                    form.reset();
+                  } catch (err) {
+                    alert("Failed to send message");
+                    console.error(err);
+                  } finally {
+                    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Send Reply";
+                  }
+                }}
+                className="flex gap-3"
+              >
+                <input
+                  type="text"
+                  name="message"
+                  placeholder="Type your message..."
+                  className="flex-1 px-4 py-2 border border-slate-200 rounded text-sm focus:outline-none focus:border-slate-400 transition-colors"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-slate-800 text-white text-sm font-medium rounded hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed whitespace-nowrap transition-colors"
+                >
+                  Send Reply
+                </button>
+              </form>
+            </div>
+            )}
+          </div>
+
+          {/* Accessories & Documents Group */}
+          <div className="flex flex-col gap-4 border-t border-slate-200 pt-10">
+            {/* Included Accessories */}
+            {ticket.accessories && isLoggedIn && (
+              <div className="text-left">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-3">Included Accessories & Downloadable documents</h3>
+                <div className="flex flex-wrap gap-2">
+                  {ticket.accessories.split(',').map((acc: string, i: number) => {
+                    const colors = [
+                      "bg-red-50 text-red-700 border-red-200",
+                      "bg-blue-50 text-blue-700 border-blue-200",
+                      "bg-green-50 text-green-700 border-green-200",
+                      "bg-yellow-50 text-yellow-700 border-yellow-200",
+                      "bg-purple-50 text-purple-700 border-purple-200",
+                      "bg-pink-50 text-pink-700 border-pink-200",
+                      "bg-indigo-50 text-indigo-700 border-indigo-200",
+                      "bg-orange-50 text-orange-700 border-orange-200"
+                    ];
+                    // Deterministically pick a color based on index so it doesn't flicker on re-renders
+                    const color = colors[i % colors.length];
+                    return (
+                      <span key={i} className={`px-3 py-1 rounded-md text-xs font-semibold border ${color} shadow-sm`}>
+                        {acc.trim()}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Dynamic Documents Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
             {/* Job Card: Always available */}
             <button
               onClick={() => handleDownloadDocument('job_card')}
@@ -391,6 +513,7 @@ export default function TrackRepairIsland({
                 <span className="text-xs text-green-600">Proof of Payment</span>
               </button>
             )}
+            </div>
           </div>
 
           {/* Action Required: Terms */}
@@ -535,15 +658,6 @@ export default function TrackRepairIsland({
               </div>
             )}
 
-          {/* Approval Confirmation */}
-          {ticket.is_approved && (
-            <div className="p-3 bg-green-50 border border-green-200 rounded-xl shadow-sm">
-              <p className="text-green-800 text-sm font-medium">
-                Approved on{" "}
-                {new Date(ticket.approved_at).toLocaleDateString()}
-              </p>
-            </div>
-          )}
 
           {/* RESTORED: Media Gallery */}
           {isLoggedIn && ticket.media && ticket.media.length > 0 && (
@@ -589,95 +703,7 @@ export default function TrackRepairIsland({
               </div>
             )}
 
-          {/* RESTORED: Chat Messages Interface */}
-          {isLoggedIn && (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
-              <h3 className="text-xl font-bold text-slate-900 mb-6">Messages</h3>
 
-            {ticket.updates && ticket.updates.length > 0 ? (
-              <div className="space-y-3 max-h-96 overflow-y-auto mb-6">
-                {ticket.updates.map((update: any) => (
-                  <div
-                    key={update.id}
-                    className={`p-4 rounded ${
-                      update.author_type === "customer"
-                        ? "bg-blue-50 ml-8"
-                        : "bg-gray-50 mr-8"
-                    }`}
-                  >
-                    <p className="text-xs text-gray-500 mb-1">
-                      {update.author_type === "customer" ? "You" : "Technician"}{" "}
-                      - {new Date(update.created_at).toLocaleString()}
-                    </p>
-                    <p>{update.message}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500 mb-6">No messages yet.</p>
-            )}
-
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const form = e.target as HTMLFormElement;
-                const input = form.elements.namedItem("message") as HTMLInputElement;
-                const message = input.value.trim();
-
-                if (!message) return;
-
-                try {
-                  const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-                  submitBtn.disabled = true;
-                  submitBtn.textContent = "Sending...";
-
-                  const bodyData: any = { message };
-                  if (initialToken) {
-                    bodyData.token = initialToken;
-                  }
-
-                  const response = await fetch(`/api/repairs/${ticket.id}/messages`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(bodyData),
-                  });
-
-                  if (!response.ok) throw new Error("Failed to send message");
-
-                  if (initialToken) {
-                    handleTokenSearch(initialToken);
-                  } else {
-                    handleSearch(new Event("submit") as any);
-                  }
-
-                  form.reset();
-                } catch (err) {
-                  alert("Failed to send message");
-                  console.error(err);
-                } finally {
-                  const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-                  submitBtn.disabled = false;
-                  submitBtn.textContent = "Send Reply";
-                }
-              }}
-              className="flex gap-3"
-            >
-              <input
-                type="text"
-                name="message"
-                placeholder="Type your message..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              <button
-                type="submit"
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                Send Reply
-              </button>
-            </form>
-          </div>
-          )}
         </div>
       )}
     </div>

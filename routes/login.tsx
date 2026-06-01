@@ -3,7 +3,7 @@ import LoginForm from "../islands/LoginForm.tsx";
 import { page } from "fresh";
 import { Head } from "fresh/runtime";
 
-import { getCookies } from "https://deno.land/std@0.224.0/http/cookie.ts";
+import { getCookies } from "jsr:@std/http@0.224.0/cookie";
 import { STORE_NAME } from "../lib/utils.ts";
 
 export const handler = define.handlers({
@@ -29,6 +29,9 @@ export const handler = define.handlers({
 });
 
 export default define.page(function LoginPage(props) {
+  const url = new URL(props.url);
+  const redirectUrl = url.searchParams.get("redirect") || "/account";
+
   return (
     <main class="flex-1 flex items-center justify-center px-4 py-12">
       <Head>
@@ -43,7 +46,7 @@ export default define.page(function LoginPage(props) {
           </p>
         </div>
 
-        <LoginForm />
+        <LoginForm redirect={redirectUrl} />
       </div>
     </main>
   );

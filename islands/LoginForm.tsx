@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
 import { Loader2 } from "lucide-preact";
 
-export default function LoginForm() {
+export default function LoginForm({ redirect = "/account" }: { redirect?: string }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,8 +41,6 @@ export default function LoginForm() {
             globalThis.location.href = `/verify-email?email=${encodeURIComponent(email)}`;
           }, 3000);
         } else {
-          const urlParams = new URLSearchParams(globalThis.location.search);
-          const redirect = urlParams.get("redirect") || "/account";
           globalThis.location.href = redirect;
         }
       } else {

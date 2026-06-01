@@ -30,7 +30,7 @@ export function PromoBanner() {
           <div class="flex flex-row items-center gap-4 shrink-0">
             <a
               href="/repairs/book"
-              f-client-nav
+              f-client-nav={false}
               class="px-5 py-2.5 bg-black text-[#fcca0a] text-xs font-bold uppercase tracking-wider rounded-sm hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] transition-all flex items-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
