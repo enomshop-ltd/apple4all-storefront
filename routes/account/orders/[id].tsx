@@ -8,6 +8,7 @@ import OrderStatusBadge from "../../../islands/OrderStatusBadge.tsx";
 import { formatAmount } from "../../../lib/pricing.ts";
 import { getUnifiedOrderNumber } from "../../../lib/order-utils.ts";
 import DownloadInvoiceButton from "@/islands/DownloadInvoiceButton.tsx";
+import AccountOrderPaymentIsland from "../../../islands/AccountOrderPaymentIsland.tsx";
 import { STORE_NAME } from "../../../lib/utils.ts";
 
 export const handler = define.handlers({
@@ -59,16 +60,30 @@ export const handler = define.handlers({
         headers: { Location: "/account" },
       });
     }
+
+    // Fetch payment providers for partial payments
+    let paymentProviders = [];
+    try {
+      const { payment_providers } = await medusa.store.payment.listPaymentProviders(
+        {}, 
+        { Authorization: `Bearer ${token}` }
+      );
+      paymentProviders = payment_providers;
+    } catch (e) {
+      console.error("Failed to fetch payment providers", e);
+    }
+
     ctx.state.order = order;
+    ctx.state.paymentProviders = paymentProviders;
     ctx.state.title = `Order #${getUnifiedOrderNumber(order)} - ${STORE_NAME}`;
     ctx.state.description = `View details for order #${
       getUnifiedOrderNumber(order)
     }.`;
-    return page(order);
+    return page({ order, paymentProviders });
   },
 });
 export default define.page(function OrderDetailsPage(props) {
-  const order = props.data as HttpTypes.StoreOrder;
+  const { order, paymentProviders } = props.data as { order: HttpTypes.StoreOrder, paymentProviders: any[] };
   const currencyCode = order.currency_code || "USD";
   const subtotal = formatAmount(order.subtotal || 0, currencyCode);
   const shipping = (order.shipping_total || 0) === 0
@@ -193,6 +208,13 @@ export default define.page(function OrderDetailsPage(props) {
               </span>
             </div>
           </div>
+          
+          <AccountOrderPaymentIsland 
+            orderId={order.id}
+            remainingBalanceRaw={remainingBalanceRaw}
+            currencyCode={currencyCode}
+            paymentProviders={paymentProviders}
+          />
         </div>
       </div>
     </div>

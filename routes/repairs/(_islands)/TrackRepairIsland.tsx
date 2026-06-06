@@ -1,7 +1,5 @@
 import { useState, useEffect } from "preact/hooks";
 import { Info, Wrench } from "lucide-preact";
-import { render } from "preact";
-import { RepairDocumentTemplate } from "../../../components/RepairDocumentTemplate.tsx";
 
 export default function TrackRepairIsland({
   initialToken,
@@ -64,43 +62,40 @@ export default function TrackRepairIsland({
 
   const handleDownloadDocument = async (type: string) => {
     if (!ticket) return;
-    
-    const loadHtml2Pdf = () => new Promise<any>((resolve) => {
-      if ((window as any).html2pdf) return resolve((window as any).html2pdf);
-      const script = document.createElement("script");
-      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-      script.onload = () => resolve((window as any).html2pdf);
-      document.head.appendChild(script);
-    });
 
     try {
-      const html2pdf = await loadHtml2Pdf();
+      const targetUrl = initialToken 
+        ? `/api/repairs/token/${initialToken}/document?type=${type}` 
+        : `/api/repairs/${ticket.id}/document?type=${type}`;
+        
+      const response = await fetch(targetUrl);
       
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      container.style.top = '0';
-      document.body.appendChild(container);
-
-      const trackUrl = new URL(globalThis.location.href).href;
-      const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(trackUrl)}`;
-
-      render(<RepairDocumentTemplate ticket={ticket} type={type} qrCodeUrl={qrCodeUrl} />, container);
-
-      await new Promise(r => setTimeout(r, 200));
-
-      const opt = {
-        margin:       [10, 10],
-        filename:     `${type}_${ticket.ticket_number}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      await html2pdf().set(opt).from(container).save();
-
-      render(null, container);
-      container.remove();
+      if (!response.ok) {
+        let errorDetail = `Server returned ${response.status}`;
+        const rawText = await response.text();
+        try {
+          const errBody = JSON.parse(rawText);
+          errorDetail = errBody.error || errorDetail;
+          console.error("[TrackRepairIsland] PDF API Error Details:", errBody);
+        } catch (parseErr) {
+          errorDetail += ` - ${rawText}`;
+        }
+        throw new Error(errorDetail);
+      }
+      
+      // Automatically download the PDF blob
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `${ticket.ticket_number}-${type}.pdf`;
+      link.setAttribute("f-client-nav", "false"); // Prevent Fresh from intercepting blob: URLs
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      
     } catch (e) {
       console.error("Failed to generate PDF document", e);
       alert("An error occurred while downloading the document.");

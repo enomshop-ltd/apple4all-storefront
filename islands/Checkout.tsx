@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import {
   CreditCard,
   Loader2,
@@ -8,6 +8,7 @@ import {
 } from "lucide-preact";
 import { HttpTypes } from "@medusajs/types";
 import { formatAmount } from "../lib/pricing.ts";
+import PaystackCheckout from "./PaystackCheckout.tsx";
 
 export default function Checkout({
   initialCart,
@@ -26,8 +27,13 @@ export default function Checkout({
   const [paymentMethod, setPaymentMethod] = useState(
     paymentProviders && paymentProviders.length > 0 ? paymentProviders[0].id : ""
   );
+  const [paystackSession, setPaystackSession] = useState<{accessCode: string} | null>(null);
 
   const cart = initialCart;
+
+  useEffect(() => {
+    // Paystack script is now handled by PaystackCheckout component dynamically
+  }, []);
 
   const defaultAddress = customer?.addresses?.[0] || cart?.shipping_address;
   const defaultEmail = customer?.email || cart?.email || "";
@@ -118,7 +124,26 @@ export default function Checkout({
       // Implement provider-specific flows where required (e.g., popups, redirects)
       if (paymentMethod.includes("paystack")) {
         console.log("Paystack flow triggered", initData);
-        await finalizeCheckout();
+        
+        // Find the paystack session data
+        // Depending on medusa version/response, it might be in payment_collection or directly in cart
+        const paymentCollection = initData.cart?.payment_collection || initData.cart?.payment_collections?.[0];
+        const paystackSession = paymentCollection?.payment_sessions?.find(
+          (s: any) => s.provider_id === paymentMethod
+        );
+        
+        const accessCode = paystackSession?.data?.paystackTxAccessCode;
+
+        if (!accessCode) {
+          setError("Failed to initialize Paystack payment. Please try again.");
+          setIsProcessing(false);
+          globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
+          return;
+        }
+
+        setPaystackSession({ accessCode });
+        return; // Stop here, let PaystackCheckout render and auto-trigger
+
       } else if (paymentMethod.includes("stripe")) {
         console.log("Stripe flow triggered", initData);
         await finalizeCheckout();
@@ -521,6 +546,26 @@ export default function Checkout({
           <span>Secure checkout</span>
         </div>
       </div>
+
+      {/* Hidden Paystack trigger */}
+      {paystackSession && (
+        <div class="hidden">
+          <PaystackCheckout 
+            accessCode={paystackSession.accessCode}
+            autoTrigger={true}
+            onSuccess={async (transaction: any) => {
+              console.log("Paystack transaction successful:", transaction);
+              await finalizeCheckout();
+            }}
+            onCancel={() => {
+              setPaystackSession(null);
+              setError("Payment cancelled. Please try again to complete your order.");
+              setIsProcessing(false);
+              globalThis.dispatchEvent(new Event("fresh:client-nav-end"));
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

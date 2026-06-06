@@ -11,7 +11,7 @@ export default define.page(function App({ Component, state }) {
     (state.description as string) ||
     "Discover certified refurbished devices and unbeatable prices on both new and pre-owned Apple products.";
 
-  console.log("App state categories:", state?.categories);
+  // console.log("App state categories:", state?.categories);
 
   return (
     <html lang="en">

@@ -26,6 +26,8 @@ STORE_NAME="Your Store Name"
 STORE_DOMAIN="yourstore.com"
 STOREFRONT_URL="http://localhost:8000"
 LOGO_URL="/logo.svg"
+
+
 ```
 
 ## Setup & Installation

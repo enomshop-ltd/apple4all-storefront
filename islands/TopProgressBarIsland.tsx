@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 
-export default function TopProgressBarIsland() {
+function ProgressBarInner() {
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
 
@@ -181,4 +181,13 @@ export default function TopProgressBarIsland() {
       }}
     />
   );
+}
+
+export default function TopProgressBarIsland() {
+  if (typeof document === "undefined") {
+    // Return an empty placeholder on the server to prevent hydration mismatch crashes,
+    // while bypassing the Vite SSR Preact hook bug.
+    return <div id="top-progress-bar-placeholder" />;
+  }
+  return <ProgressBarInner />;
 }
