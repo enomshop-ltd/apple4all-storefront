@@ -27,6 +27,12 @@ STORE_DOMAIN="yourstore.com"
 STOREFRONT_URL="http://localhost:8000"
 LOGO_URL="/logo.svg"
 
+# Dynamic Payment Providers (Optional)
+# Allows filtering and renaming specific provider IDs returned by Medusa.
+# Format: "provider_id:Display Name,another_provider_id:Another Name"
+# Example for Multi-Account Paystack across different websites:
+PAYMENT_PROVIDERS="paystack_siteA:Paystack,pp_system_default:Pay on Delivery"
+
 
 ```
 

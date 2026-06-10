@@ -1,4 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
+import { useSignal } from "@preact/signals";
 
 function ProgressBarInner() {
   const [progress, setProgress] = useState(0);

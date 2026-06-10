@@ -2,7 +2,7 @@ import Medusa from "@medusajs/js-sdk";
 
 // Use environment variables for configuration
 const PUBLISHABLE_KEY = globalThis.Deno?.env?.get("MEDUSA_PUBLISHABLE_KEY");
-const BACKEND_URL = globalThis.Deno?.env?.get("MEDUSA_BACKEND_URL");
+const BACKEND_URL = globalThis.Deno?.env?.get("MEDUSA_BACKEND_URL") || "http://localhost:9000";
 
 const isProd = globalThis.Deno?.env?.get("DENO_ENV") === "production" ||
   globalThis.Deno?.env?.get("NODE_ENV") === "production";

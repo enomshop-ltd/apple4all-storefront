@@ -1,2 +1,2 @@
-// Import CSS files here for hot module reloading to work.
+/// <reference lib="dom" />
 import "./assets/styles.css";
